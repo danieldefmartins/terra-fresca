@@ -1091,9 +1091,12 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     roadSvg.style.transform=`translate(calc(-50% - ${xFollow}px),${-yFollow}px) rotate(${roll}deg)`;
   }
 
-  gsap.set('#filmSideTruck',{x:()=>vw(mob()?-82:-58)});
+  /* The truck begins beyond the right edge and later reverses left under the
+     suspended container; decreasing x also turns its wheels backward. */
+  gsap.set('#filmSideTruck',{x:()=>vw(mob()?112:108)});
   gsap.set('#filmSidePayload',{x:()=>vw(mob()?30:34),y:0,rotation:0});
-  gsap.set('#filmStacker',{autoAlpha:0});
+  /* Keep the crane physically offstage during packing instead of fading it in. */
+  gsap.set('#filmStacker',{autoAlpha:1,x:()=>vw(mob()?-72:-56)});
   gsap.set('#filmSpreader',{rotation:0,transformOrigin:'50% 100%'});
   /* Crane geometry from the real asset ratios. The spreader's lower beam meets
      the container roof exactly; no fixed overshoot and no tilted pickup. */
@@ -1142,36 +1145,40 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
       .to(c,{autoAlpha:0,duration:.03},.12+i*.058);
     tl.to('#filmFill',{opacity:(i+1)/6*.95,duration:.03},.12+i*.058);
   });
-  tl.to('#filmFill',{opacity:0,duration:.06,ease:'power1.in'},.44);
-  tl.to('#filmStacker',{autoAlpha:1,duration:.08,ease:'power1.out'},.44);
-  tl.to('#filmSpreader',{y:()=>dropPx(),duration:.10,ease:'power1.inOut'},.50)
-    .to('#filmCable',{height:()=>dropPx()+spreaderLead(),duration:.10,ease:'power1.inOut'},.50);
-  tl.to('#filmSidePayload',{y:()=>-dropPx(),rotation:0,duration:.18,ease:'power1.inOut'},.62)
-    .to('#filmSpreader',{y:0,duration:.18,ease:'power1.inOut'},.62)
-    .to('#filmCable',{height:()=>spreaderLead(),duration:.18,ease:'power1.inOut'},.62);
-  tl.to('#filmSideTruck',{x:()=>vw(loadingTruckX()),duration:.30,ease:'power2.out'},.62);
-  tl.to('#filmSidePayload',{y:()=>-deckRest(),rotation:0,duration:.15,ease:'power2.in'},.94)
-    .to('#filmSpreader',{y:()=>Math.max(0,dropPx()-deckRest()),duration:.15,ease:'power2.in'},.94)
-    .to('#filmCable',{height:()=>Math.max(0,dropPx()-deckRest())+spreaderLead(),duration:.15,ease:'power2.in'},.94)
-    .to('#filmSideTruck',{y:3,duration:.04,ease:'power1.out'},1.085)
-    .to('#filmSideTruck',{y:0,duration:.05,ease:'sine.out'},1.13)
-    .to('#filmSpreader',{y:0,duration:.09,ease:'power1.inOut'},1.13)
-    .to('#filmCable',{height:()=>spreaderLead(),duration:.09,ease:'power1.inOut'},1.13);
-  tl.to('#filmStacker',{x:vw(-24),autoAlpha:0,duration:.24,ease:'power2.in'},1.14)
-    .to('#filmOriginCopy',{autoAlpha:0,y:-24,duration:.25,ease:'power2.in'},1.15);
+  tl.to('#filmFill',{opacity:0,duration:.05,ease:'power1.in'},.43);
+  /* 1 · after the doors close, the reach stacker drives into the composition */
+  tl.to('#filmStacker',{x:0,duration:.18,ease:'power2.out'},.44);
+  /* 2 · horizontal spreader descends, makes contact, and lifts the sealed reefer */
+  tl.to('#filmSpreader',{y:()=>dropPx(),duration:.10,ease:'power1.inOut'},.60)
+    .to('#filmCable',{height:()=>dropPx()+spreaderLead(),duration:.10,ease:'power1.inOut'},.60);
+  tl.to('#filmSidePayload',{y:()=>-dropPx(),rotation:0,duration:.18,ease:'power1.inOut'},.70)
+    .to('#filmSpreader',{y:0,duration:.18,ease:'power1.inOut'},.70)
+    .to('#filmCable',{height:()=>spreaderLead(),duration:.18,ease:'power1.inOut'},.70);
+  /* 3 · only after the lift, the tractor reverses from the right beneath it */
+  tl.to('#filmSideTruck',{x:()=>vw(loadingTruckX()),duration:.30,ease:'power2.inOut'},.82);
+  /* 4 · load settles onto the chassis; suspension compresses once, then releases */
+  tl.to('#filmSidePayload',{y:()=>-deckRest(),rotation:0,duration:.15,ease:'power2.in'},1.04)
+    .to('#filmSpreader',{y:()=>Math.max(0,dropPx()-deckRest()),duration:.15,ease:'power2.in'},1.04)
+    .to('#filmCable',{height:()=>Math.max(0,dropPx()-deckRest())+spreaderLead(),duration:.15,ease:'power2.in'},1.04)
+    .to('#filmSideTruck',{y:3,duration:.04,ease:'power1.out'},1.185)
+    .to('#filmSideTruck',{y:0,duration:.05,ease:'sine.out'},1.23)
+    .to('#filmSpreader',{y:0,duration:.07,ease:'power1.inOut'},1.23)
+    .to('#filmCable',{height:()=>spreaderLead(),duration:.07,ease:'power1.inOut'},1.23);
+  tl.to('#filmStacker',{x:vw(-28),autoAlpha:0,duration:.20,ease:'power2.in'},1.29)
+    .to('#filmOriginCopy',{autoAlpha:0,y:-24,duration:.22,ease:'power2.in'},1.27);
 
   /* ---- JOINT 1 (no cut): the ground GROWS into the service band while the loaded
      truck rides up with its top edge — one continuous floor ---- */
-  tl.to('#filmGround',{backgroundColor:'#024030',duration:.26,ease:'sine.inOut'},1.30);
-  tl.to('#filmServiceBand',{yPercent:0,duration:.26,ease:'sine.inOut'},1.30)
-    .to('#filmSideTruck',{y:()=>-.40*innerHeight,duration:.26,ease:'sine.inOut'},1.30)
-    .to('#filmSidePayload',{y:()=>-.40*innerHeight-deckRest(),duration:.26,ease:'sine.inOut'},1.30)
-    .to('#filmServiceGhost',{opacity:1,duration:.20},1.36)
-    .to('#filmServiceGhost',{x:'-34vw',duration:2.6},1.36);
+  tl.to('#filmGround',{backgroundColor:'#024030',duration:.26,ease:'sine.inOut'},1.38);
+  tl.to('#filmServiceBand',{yPercent:0,duration:.26,ease:'sine.inOut'},1.38)
+    .to('#filmSideTruck',{y:()=>-.40*innerHeight,duration:.26,ease:'sine.inOut'},1.38)
+    .to('#filmSidePayload',{y:()=>-.40*innerHeight-deckRest(),duration:.26,ease:'sine.inOut'},1.38)
+    .to('#filmServiceGhost',{opacity:1,duration:.20},1.44)
+    .to('#filmServiceGhost',{x:'-34vw',duration:2.52},1.44);
 
   /* ---- SERVICES 1.5–3.55: four slow stops on top of the band, one text each ---- */
   services.forEach((service,i)=>{
-    const at=1.56+i*.52;
+    const at=1.68+i*.48;
     tl.to('#filmSideTruck',{x:()=>vw(serviceStops()[i]),duration:.18,ease:'power2.inOut'},at)
       .to('#filmSidePayload',{x:()=>vw(serviceStops()[i]+payloadOffset()),duration:.18,ease:'power2.inOut'},at)
       .fromTo(service,{autoAlpha:0,y:18,clipPath:'inset(0 100% 0 0)'},{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.13,ease:'power2.out'},at+.15)
@@ -1188,12 +1195,10 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   /* The vehicle stays horizontal and fixed at screen centre while the moving
      lane establishes speed. A scale/dissolve simulates the camera rising; no
      rotation means the truck can never appear to tip or fall into the road. */
-  tl.to(['#filmSideTruck','#filmSidePayload'],{scale:.78,duration:.22,ease:'power1.inOut'},3.92)
-    .to('#filmSideTruck',{filter:'drop-shadow(0 14px 10px rgba(0,0,0,.18)) blur(4px)',duration:.10,ease:'power2.in'},3.98)
-    .to('#filmSidePayload',{filter:'drop-shadow(0 12px 9px rgba(0,0,0,.15)) blur(4px)',duration:.10,ease:'power2.in'},3.98)
-    .to(['#filmSideTruck','#filmSidePayload'],{autoAlpha:0,duration:.05},4.08)
-    .to('#filmGround',{autoAlpha:0,duration:.16},3.98)
-    .fromTo('#hTopRig',{autoAlpha:0,scale:1.28,filter:'blur(4px)'},{autoAlpha:1,scale:1,filter:'blur(0px)',duration:.20,ease:'power2.out',immediateRender:false},4.00);
+  tl.to(['#filmSideTruck','#filmSidePayload'],{scale:.82,duration:.16,ease:'power1.inOut'},3.86)
+    .to(['#filmSideTruck','#filmSidePayload'],{autoAlpha:0,duration:.10,ease:'power1.inOut'},3.96)
+    .to('#filmGround',{autoAlpha:0,duration:.14},3.94)
+    .fromTo('#hTopRig',{autoAlpha:0,scale:1.22,filter:'blur(3px)'},{autoAlpha:1,scale:1,filter:'blur(0px)',duration:.16,ease:'power2.out',immediateRender:false},4.06);
   /* streaming hold — motion without a cut */
   tl.to('#hTopRig',{y:-3,duration:.10,ease:'sine.inOut'},4.18)
     .to('#hTopRig',{y:0,duration:.10,ease:'sine.inOut'},4.28);
