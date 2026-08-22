@@ -139,6 +139,45 @@ nav.main a:hover{color:var(--paper)}
 .mission-crates img:nth-child(2){width:clamp(110px,11vw,180px)}
 @media(max-width:960px){.mission-grid{grid-template-columns:1fr 1fr}.mission-crates{display:none}}
 
+/* ============ PRODUCE PRELUDE — horizontal portfolio into the loading film ============ */
+#producePrelude{height:1000svh;background:var(--ink);color:var(--paper);position:relative}
+.produce-pin{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;background:var(--ink)}
+.produce-track{height:100%;display:flex;width:max-content;will-change:transform}
+.produce-intro,.produce-card,.produce-handoff{position:relative;flex:0 0 100vw;height:100svh;overflow:hidden}
+.produce-intro{display:flex;flex-direction:column;justify-content:center;padding:0 clamp(22px,7vw,110px)}
+.produce-intro::after{content:"";position:absolute;right:-9vw;top:50%;width:38vw;aspect-ratio:1;border:1px solid #17445F;border-radius:50%;transform:translateY(-50%);box-shadow:0 0 0 7vw #031B2E,0 0 0 7.1vw #17445F}
+.produce-intro .kicker{color:var(--mango)}
+.produce-intro h2{font-size:clamp(52px,9vw,132px);max-width:9ch;color:var(--paper);position:relative;z-index:2}
+.produce-intro p{margin-top:20px;color:#9FB2C4;max-width:39ch;font-size:15px;position:relative;z-index:2}
+.produce-index{position:absolute;left:clamp(22px,5vw,72px);bottom:5svh;color:#6D8299}
+.produce-card{display:grid;grid-template-columns:45% 55%;align-items:center;padding:0 clamp(24px,6vw,90px);border-left:1px solid #123B57;background:#052033}
+.produce-card::before{content:attr(data-number);position:absolute;right:3vw;top:0;font-stretch:125%;font-weight:900;font-size:clamp(180px,31vw,470px);line-height:.82;color:#082A43;z-index:0}
+.produce-visual{height:70svh;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;perspective:1100px}
+.produce-visual::after{content:"";position:absolute;left:10%;right:10%;bottom:9%;height:7%;background:#020F1A;border-radius:50%;filter:blur(16px);opacity:.5}
+.produce-visual img{width:min(35vw,520px);max-height:66svh;object-fit:contain;filter:drop-shadow(0 28px 24px rgba(0,0,0,.42));will-change:transform;position:relative;z-index:2}
+.produce-copy{position:relative;z-index:3;max-width:520px}
+.produce-copy .mono{color:var(--mango);display:block;margin-bottom:12px}
+.produce-copy h3{font-size:clamp(42px,6vw,88px);line-height:.88;text-transform:uppercase;font-stretch:125%;font-weight:900;overflow-wrap:anywhere}
+.produce-copy .variety{margin-top:18px;font-size:17px;color:#C5D1DC}
+.produce-copy .season{margin-top:12px;color:var(--lime)}
+.produce-handoff{background:var(--paper);color:var(--ink);display:flex;align-items:flex-start;padding:10svh clamp(22px,5vw,72px)}
+.produce-handoff h2{font-size:clamp(42px,6.8vw,96px);max-width:12ch;position:relative;z-index:3}
+.produce-handoff p{margin-top:18px;color:var(--ink-soft);max-width:40ch;position:relative;z-index:3}
+.produce-floor{position:absolute;left:0;right:0;bottom:0;height:16svh;background:var(--ink)}
+.handoff-crates{position:absolute;left:0;right:0;bottom:16svh;height:32svh}
+.handoff-crates img{position:absolute;bottom:0;width:min(10vw,145px);filter:drop-shadow(0 15px 11px rgba(0,0,0,.2));will-change:transform}
+.handoff-crates img:nth-child(1){left:8vw}.handoff-crates img:nth-child(2){left:21vw}.handoff-crates img:nth-child(3){left:34vw}
+.produce-swipe{display:none}
+@media(max-width:760px){
+  #producePrelude{height:1000svh}.produce-card{grid-template-columns:1fr;padding:7svh 22px 6svh;align-content:center}
+  .produce-visual{height:43svh}.produce-visual img{width:min(74vw,390px);max-height:42svh}
+  .produce-copy{margin-top:1svh}.produce-copy h3{font-size:clamp(38px,12vw,60px)}
+  .produce-copy .variety{font-size:14px;margin-top:12px}.produce-intro::after{width:80vw;right:-48vw}
+  .produce-swipe{display:block;position:absolute;right:22px;bottom:5svh;color:#6D8299}
+  .produce-handoff{padding-top:9svh}.handoff-crates{height:28svh}.handoff-crates img{width:24vw}
+  .handoff-crates img:nth-child(1){left:4vw}.handoff-crates img:nth-child(2){left:30vw}.handoff-crates img:nth-child(3){left:56vw}
+}
+
 /* ============ LOAD SCENE (photo composite) ============ */
 #journeyFilm{height:1400svh;background:var(--paper)}
 #journeyFilm .film-pin{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--paper);isolation:isolate}
@@ -560,6 +599,32 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
   </div>
 </section>
 
+<!-- ================= PRODUCE PRELUDE ================= -->
+<section id="producePrelude" aria-label="Fresh produce available for export">
+  <div class="produce-pin">
+    <div class="produce-track">
+      <article class="produce-intro">
+        <span class="kicker">Fresh from Brazil · eight product lines</span>
+        <h2 class="display">Meet the harvest.</h2>
+        <p>Before the cold chain begins, meet the fruit and vegetables selected from our certified Brazilian growing partners.</p>
+        <span class="mono produce-index">01 / 10 · Scroll to explore</span><span class="mono produce-swipe">Swipe through →</span>
+      </article>
+      <article class="produce-card" data-number="01"><div class="produce-visual"><img src="{{A:crate-mango-cut}}" alt="Crate of Brazilian mangoes"></div><div class="produce-copy"><span class="mono">01 · Fruit</span><h3>Mango</h3><p class="variety">Tommy Atkins · Palmer · Keitt</p><p class="mono season">Peak window · Sep–Dec</p></div></article>
+      <article class="produce-card" data-number="02"><div class="produce-visual"><img src="{{A:crate-lime-cut}}" alt="Crate of Brazilian Tahiti limes"></div><div class="produce-copy"><span class="mono">02 · Citrus</span><h3>Tahiti Lime</h3><p class="variety">Persian lime · calibrated and export packed</p><p class="mono season">Availability · Year-round</p></div></article>
+      <article class="produce-card" data-number="03"><div class="produce-visual"><img src="{{A:crate-papaya-cut}}" alt="Crate of Brazilian papayas"></div><div class="produce-copy"><span class="mono">03 · Fruit</span><h3>Papaya</h3><p class="variety">Formosa · Golden</p><p class="mono season">Availability · Year-round</p></div></article>
+      <article class="produce-card" data-number="04"><div class="produce-visual"><img src="{{A:crate-melon-cut}}" alt="Crate of Brazilian yellow melons"></div><div class="produce-copy"><span class="mono">04 · Melon</span><h3>Yellow Melon</h3><p class="variety">Amarelo · Galia</p><p class="mono season">Peak window · Aug–Mar</p></div></article>
+      <article class="produce-card" data-number="05"><div class="produce-visual"><img src="{{A:crate-avocado-cut}}" alt="Crate of Brazilian avocados"></div><div class="produce-copy"><span class="mono">05 · Fruit</span><h3>Avocado</h3><p class="variety">Hass · Breda</p><p class="mono season">Peak window · Mar–Sep</p></div></article>
+      <article class="produce-card" data-number="06"><div class="produce-visual"><img src="{{A:crate-ginger-cut}}" alt="Crate of Brazilian fresh ginger"></div><div class="produce-copy"><span class="mono">06 · Root</span><h3>Ginger</h3><p class="variety">Fresh root · export graded</p><p class="mono season">Peak window · Jun–Nov</p></div></article>
+      <article class="produce-card" data-number="07"><div class="produce-visual"><img src="{{A:crate-sweetpotato-cut}}" alt="Crate of Brazilian sweet potatoes"></div><div class="produce-copy"><span class="mono">07 · Vegetable</span><h3>Sweet Potato</h3><p class="variety">Beauregard · cured and export packed</p><p class="mono season">Availability · Year-round</p></div></article>
+      <article class="produce-card" data-number="08"><div class="produce-visual"><img src="{{A:crate-passion-cut}}" alt="Crate of Brazilian passion fruit"></div><div class="produce-copy"><span class="mono">08 · Fruit</span><h3>Passion Fruit</h3><p class="variety">Maracujá azedo</p><p class="mono season">Availability · Year-round</p></div></article>
+      <article class="produce-handoff">
+        <div><span class="kicker">Selected · graded · ready for the cold chain</span><h2 class="display">Now follow the shipment.</h2><p>The portfolio becomes one accountable journey. The same crates move directly into the loading scene.</p></div>
+        <div class="handoff-crates" aria-hidden="true"><img src="{{A:crate-mango-cut}}" alt=""><img src="{{A:crate-lime-cut}}" alt=""><img src="{{A:crate-papaya-cut}}" alt=""></div><div class="produce-floor"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ================= ONE CONTINUOUS JOURNEY FILM ================= -->
 <section id="journeyFilm" aria-label="The journey from farm to destination">
   <div class="film-pin">
@@ -794,7 +859,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 </section>
 
 <!-- ================= RANGE ================= -->
-<section id="range">
+<section id="range" hidden>
   <div class="head">
     <div>
       <span class="kicker">What we ship</span>
@@ -961,6 +1026,31 @@ gsap.from('#mission .mstat',{y:22,autoAlpha:0,duration:.7,ease:'power2.out',stag
   scrollTrigger:{trigger:'.mission-grid',start:'top 85%'}});
 gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.12,
   scrollTrigger:{trigger:'#mission',start:'top 60%'}});
+
+/* ---------- produce prelude: one horizontal harvest, then the loading floor ---------- */
+(function(){
+  const section=$('producePrelude'),track=section&&section.querySelector('.produce-track');
+  if(!section||!track)return;
+  const travel=()=>Math.max(0,track.scrollWidth-innerWidth);
+  const move=gsap.to(track,{x:()=>-travel(),ease:'none',
+    /* Finish one viewport before the sticky section releases. The handoff gets a
+       full-screen beat, then yields to the loading floor instead of being clipped. */
+    scrollTrigger:{trigger:section,start:'top top',end:()=>`+=${Math.max(innerHeight,section.offsetHeight-innerHeight*2)}`,scrub:1.15,invalidateOnRefresh:true}
+  });
+  gsap.utils.toArray('.produce-card').forEach((card,i)=>{
+    const image=card.querySelector('.produce-visual img'),copy=card.querySelector('.produce-copy');
+    gsap.fromTo(image,{xPercent:-18,rotation:-7,scale:.82},{xPercent:15,rotation:5,scale:1.08,ease:'none',
+      scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
+    gsap.fromTo(copy,{x:70,autoAlpha:.15},{x:-22,autoAlpha:1,ease:'power1.out',
+      scrollTrigger:{trigger:card,containerAnimation:move,start:'left 78%',end:'center 46%',scrub:true}});
+    gsap.fromTo(card,{backgroundColor:i%2?'#052033':'#031B2E'},{backgroundColor:i%2?'#031B2E':'#052033',ease:'none',
+      scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
+  });
+  gsap.fromTo('.handoff-crates img',{y:90,rotation:-8,autoAlpha:0},{y:0,rotation:0,autoAlpha:1,stagger:.08,ease:'power2.out',
+    scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 72%',end:'center center',scrub:true}});
+  gsap.fromTo('.produce-handoff h2,.produce-handoff p,.produce-handoff .kicker',{y:34,autoAlpha:0},{y:0,autoAlpha:1,stagger:.06,ease:'power2.out',
+    scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 70%',end:'center 52%',scrub:true}});
+})();
 
 /* ---------- hero entrance ---------- */
 gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagger:0.08,delay:0.15});

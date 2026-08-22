@@ -72,11 +72,11 @@ for (const viewport of viewports) {
   // under device emulation. Pin the test height explicitly; production CSS
   // continues to use svh for real browsers.
   await call('Runtime.evaluate', {
-    expression: `document.querySelector('#journeyFilm').style.height='${viewport.height * (viewport.name === 'mobile' ? 12.5 : 14)}px';ScrollTrigger.refresh()`
+    expression: `document.querySelector('#producePrelude').style.height='${viewport.height * 10}px';document.querySelector('#journeyFilm').style.height='${viewport.height * (viewport.name === 'mobile' ? 12.5 : 14)}px';ScrollTrigger.refresh()`
   });
   await delay(250);
   const result = await call('Runtime.evaluate', {
-    expression: `[...document.querySelectorAll('.hero,#journeyFilm')].map(el=>({
+    expression: `[...document.querySelectorAll('.hero,#producePrelude,#journeyFilm')].map(el=>({
       id:el.id||'hero',top:el.offsetTop,height:el.offsetHeight
     }))`, returnByValue: true
   });
@@ -89,6 +89,8 @@ for (const viewport of viewports) {
       ? Array.from({length:19},(_,i)=>[`p${String((i+1)*5).padStart(2,'0')}`,(i+1)*.05])
       : scene.id === 'hero'
       ? [['action', .5], ['handoff', .92]]
+      : scene.id === 'producePrelude'
+      ? [['intro',.03],['mango',.16],['lime',.27],['papaya',.38],['melon',.49],['avocado',.60],['ginger',.71],['sweetpotato',.81],['passion',.90],['handoff',.98]]
       : [['loading', .08], ['services', .25], ['rotation', .40], ['road', .53], ['port', .66], ['contact', .70], ['ship', .77], ['clouds', .88], ['plane', .96]];
     for (const [label, fraction] of checkpoints) {
       const target = Math.round(scene.top + scene.height * fraction - viewport.height / 2);
