@@ -190,7 +190,7 @@ nav.main a:hover{color:var(--paper)}
 #filmGround{position:absolute;left:0;right:0;bottom:0;height:16svh;background:var(--ink)}
 #filmStacker{position:absolute;z-index:7;left:4.6vw;bottom:16svh;width:min(44vw,660px);filter:drop-shadow(0 16px 12px rgba(0,0,0,.18));transform-origin:50% 100%}
 #filmStacker>img:first-child{display:block;width:100%}
-#filmSpreader{position:absolute;left:65.5%;top:21.3%;width:34.5%;will-change:transform}
+#filmSpreader{position:absolute;left:65.5%;top:21.3%;width:34.5%;clip-path:inset(48% 0 13.8% 0);will-change:transform}
 #filmCable{position:absolute;left:82.4%;top:20.6%;width:0.7%;height:0;background:#0A1926;will-change:height}
 .film-crate{position:absolute;z-index:5;bottom:16svh;width:min(7vw,105px);will-change:transform}
 #fc1{left:-8vw}#fc2{left:-15vw}#fc3{left:-22vw}#fc4{left:-29vw}#fc5{left:-36vw}#fc6{left:-43vw}
@@ -680,7 +680,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
     </div>
 
     <div class="film-layer" id="filmOcean">
-      <video id="filmOceanVid" class="oceanvid" muted loop playsinline preload="auto" src="{{V:ocean-loop}}"></video>
+      <video id="filmOceanVid" class="oceanvid" muted loop playsinline preload="auto" src="{{V:ocean-water}}"></video>
       <div id="filmDock"></div>
       <div id="filmShip"><img src="{{A:ship-top}}" alt="Container ship seen from above"><img id="filmShipSlot" src="{{A:ctn-top}}" alt=""><div id="filmWake"></div></div>
       <div id="filmDeckTarget" aria-hidden="true"></div>
@@ -1212,13 +1212,17 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   /* Crane geometry from the real asset ratios. The spreader's lower beam meets
      the container roof exactly; no fixed overshoot and no tilted pickup. */
   const stackerW=()=>mob()?.58*innerWidth:Math.min(.44*innerWidth,660);
-  const spreadBottom=()=>stackerW()*.659;
+  /* The spreader bitmap has 20 transparent pixels below its visible locking
+     beam. Include that alpha padding so the visible beam—not its image box—
+     lands exactly on the container roof. */
+  const spreadBottom=()=>stackerW()*(.659+.345*(20/310));
   const payloadH=()=>Math.min((mob()?.47:.29)*innerWidth,435)*(360/1200);
   const dropPx=()=>Math.max(20,spreadBottom()-payloadH());
-  /* The deck surface is 122 px above the bottom of the 1200 px truck asset.
-     A small optical clearance keeps the container above the wheels at all sizes. */
+  /* The trailer deck is 100 px above the bottom of the 1200 px truck asset.
+     Account for the .3svh difference between the two anchored layers so the
+     container rests on the bed instead of floating or entering the wheel area. */
   const truckW=()=>Math.min((mob()?.76:.47)*innerWidth,700);
-  const deckRest=()=>truckW()*(122/1200)+.006*innerHeight;
+  const deckRest=()=>truckW()*(100/1200)-.003*innerHeight;
   /* wheels turn with real distance travelled — scrub-reversible */
   const wheelSet=gsap.quickSetter('.twheel','rotation','deg');
   gsap.ticker.add(()=>{
@@ -1339,9 +1343,9 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
 
   /* ---- OCEAN 7.5–9.25: cast off and climb in one continuous aerial shot ---- */
   tl.to('#filmDock',{yPercent:-120,duration:.45,ease:'power2.in'},7.48)
-    /* The source footage contains a second vessel, so the continuous shot uses
-       the animated water and wake while keeping one unmistakable hero ship. */
-    .set('#filmOceanVid',{opacity:0},7.60)
+    /* A water-only crop of the original footage restores organic surface motion
+       without introducing the second vessel contained in the source video. */
+    .fromTo('#filmOceanVid',{opacity:0,scale:1.08},{opacity:.72,scale:1.02,duration:.58,ease:'power1.inOut'},7.60)
     .to('#filmOcean',{'--wtr':1,duration:.70,ease:'power1.inOut'},7.62)
     .to('#filmShip',{y:'-7svh',scale:.28,filter:'drop-shadow(0 8px 9px rgba(0,0,0,.38))',duration:1.58,ease:'power1.inOut'},7.54)
     .to('#filmShip',{x:'5vw',y:'-10svh',rotation:.7,duration:.72,ease:'none'},8.38)
