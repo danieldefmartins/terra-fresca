@@ -1215,7 +1215,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   /* The spreader bitmap has 20 transparent pixels below its visible locking
      beam. Include that alpha padding so the visible beam—not its image box—
      lands exactly on the container roof. */
-  const spreadBottom=()=>stackerW()*(.659+.345*(20/310));
+  const spreadBottom=()=>stackerW()*(.671+.345*(20/310));
   const payloadH=()=>Math.min((mob()?.47:.29)*innerWidth,435)*(360/1200);
   const dropPx=()=>Math.max(20,spreadBottom()-payloadH());
   /* The trailer deck is 100 px above the bottom of the 1200 px truck asset.
@@ -1266,14 +1266,15 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to('#filmSideTruck',{y:0,duration:.05,ease:'sine.out'},1.13)
     .to('#filmSpreader',{y:0,duration:.09,ease:'power1.inOut'},1.13)
     .to('#filmCable',{height:0,duration:.09,ease:'power1.inOut'},1.13);
-  tl.to('#filmStacker',{x:vw(-54),autoAlpha:0,duration:.5,ease:'power2.in'},1.18)
+  tl.to('#filmStacker',{x:vw(-24),autoAlpha:0,duration:.24,ease:'power2.in'},1.14)
     .to('#filmOriginCopy',{autoAlpha:0,y:-24,duration:.25,ease:'power2.in'},1.15);
 
   /* ---- JOINT 1 (no cut): the ground GROWS into the service band while the loaded
      truck rides up with its top edge — one continuous floor ---- */
   tl.to('#filmGround',{backgroundColor:'#024030',duration:.26,ease:'sine.inOut'},1.30);
   tl.to('#filmServiceBand',{yPercent:0,duration:.26,ease:'sine.inOut'},1.30)
-    .to(['#filmSideTruck','#filmSidePayload'],{y:'-40svh',duration:.26,ease:'sine.inOut'},1.30)
+    .to('#filmSideTruck',{y:()=>-.40*innerHeight,duration:.26,ease:'sine.inOut'},1.30)
+    .to('#filmSidePayload',{y:()=>-.40*innerHeight-deckRest(),duration:.26,ease:'sine.inOut'},1.30)
     .to('#filmServiceGhost',{opacity:1,duration:.20},1.36)
     .to('#filmServiceGhost',{x:'-34vw',duration:2.6},1.36);
 
