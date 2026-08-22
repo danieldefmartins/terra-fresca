@@ -240,14 +240,19 @@ nav.main a:hover{color:var(--paper)}
 @keyframes filmWater{from{transform:translate3d(-3%,-4%,0)}to{transform:translate3d(4%,6%,0)}}
 @keyframes filmSwell{from{transform:translate3d(0,-2%,0) scale(1);opacity:.28}to{transform:translate3d(-2%,3%,0) scale(1.05);opacity:.58}}
 #filmDock{position:absolute;inset:0 0 auto;height:16svh;background:#123047;border-bottom:6px solid var(--mango)}
-#filmShip{position:absolute;z-index:12;left:50%;top:54%;width:clamp(170px,20vw,300px);transform:translate(-50%,-50%);filter:drop-shadow(0 24px 22px rgba(0,0,0,.45));will-change:transform}
+#filmShip{position:absolute;z-index:12;left:50%;top:54%;width:clamp(170px,20vw,300px);transform:translate(-50%,-50%);filter:drop-shadow(0 24px 22px rgba(0,0,0,.45));will-change:transform,filter,opacity}
 #filmShip img{display:block;width:100%}
 #filmShip img#filmShipSlot{position:absolute;left:46.5%;top:55%;width:6%;opacity:0}
-#filmDeckTarget{position:absolute;z-index:14;left:50%;top:56%;width:clamp(30px,3.8vw,48px);height:clamp(105px,13.5vw,170px);transform:translate(-50%,-4%);border:2px solid var(--mango);opacity:0;will-change:opacity,transform}
+#filmDeckTarget{position:absolute;z-index:14;left:50%;top:56%;width:clamp(30px,3.8vw,48px);height:clamp(105px,13.5vw,170px);transform:translate(-50%,-4%);border:2px solid var(--mango);box-shadow:0 0 0 1px rgba(255,255,255,.5),0 0 24px rgba(182,130,31,.65);opacity:0;will-change:opacity,transform}
+#filmDeckTarget::before{content:"";position:absolute;inset:-8px;border:1px solid rgba(255,255,255,.72);animation:deckPulse 1.2s ease-in-out infinite}
 #filmDeckTarget::after{content:"YOUR REEFER";position:absolute;left:calc(100% + 10px);top:50%;white-space:nowrap;color:var(--paper);font:500 9px/1 var(--mono);letter-spacing:.12em;transform:translateY(-50%)}
+@keyframes deckPulse{0%,100%{opacity:.25;transform:scale(.96)}50%{opacity:.9;transform:scale(1.05)}}
 #filmWake{position:absolute;left:42%;top:96%;width:16%;height:65%;background:repeating-linear-gradient(180deg,rgba(255,255,255,.72) 0 7px,rgba(255,255,255,.18) 7px 18px,transparent 18px 34px);filter:blur(7px);opacity:.78;animation:filmWakeFlow 1.8s linear infinite;transform-origin:50% 0}
 @keyframes filmWakeFlow{from{background-position:0 0;transform:scaleY(.94)}to{background-position:0 34px;transform:scaleY(1.06)}}
-#filmClouds{position:absolute;inset:-15%;z-index:24;pointer-events:none;transform:translateY(115%);background:radial-gradient(55vw 30vh at 18% 72%,#fff,transparent 72%),radial-gradient(65vw 34vh at 80% 82%,#fff,transparent 72%),radial-gradient(85vw 42vh at 50% 98%,#fff,transparent 74%);will-change:transform}
+#filmClouds{position:absolute;inset:-15%;z-index:24;pointer-events:none;transform:translateY(115%);background:radial-gradient(55vw 30vh at 18% 72%,rgba(255,255,255,.98),transparent 72%),radial-gradient(65vw 34vh at 80% 82%,rgba(255,255,255,.96),transparent 72%),radial-gradient(85vw 42vh at 50% 98%,#fff,transparent 74%);filter:blur(3px);will-change:transform,opacity}
+.film-fog{position:absolute;inset:-18%;z-index:23;pointer-events:none;opacity:0;will-change:transform,opacity;mix-blend-mode:screen}
+#filmFogFar{background:radial-gradient(ellipse at 18% 35%,rgba(238,247,250,.82),transparent 42%),radial-gradient(ellipse at 78% 58%,rgba(255,255,255,.75),transparent 45%),linear-gradient(180deg,transparent 18%,rgba(219,235,242,.45) 70%,rgba(255,255,255,.78));filter:blur(18px);transform:translate3d(-8%,22%,0) scale(1.15)}
+#filmFogNear{z-index:25;background:radial-gradient(ellipse at 20% 72%,#fff,transparent 43%),radial-gradient(ellipse at 78% 48%,rgba(255,255,255,.96),transparent 46%);filter:blur(25px);transform:translate3d(10%,38%,0) scale(1.22)}
 #filmOceanCopy{color:var(--paper);text-shadow:0 2px 24px rgba(3,18,32,.55)}
 #filmSky{z-index:11;background:linear-gradient(#eef4f8,#c7dceb);visibility:hidden;opacity:0}
 #filmSky::before,#filmSky::after{content:"";position:absolute;z-index:2;width:78vw;height:34svh;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.98),rgba(255,255,255,.72) 42%,transparent 73%);filter:blur(12px);pointer-events:none;will-change:transform}
@@ -687,7 +692,9 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
       <div class="film-copy" id="filmSkyCopy"><span class="mono">04 / Air · when the window is short</span><h2 class="display">From ocean altitude into the clouds</h2></div>
     </div>
     <canvas id="flipSeq" aria-hidden="true"></canvas>
+    <div class="film-fog" id="filmFogFar"></div>
     <div id="filmClouds"></div>
+    <div class="film-fog" id="filmFogNear"></div>
   </div>
 </section>
 
@@ -1201,13 +1208,17 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
 
   gsap.set('#filmSideTruck',{x:()=>vw(mob()?-82:-58)});
   gsap.set('#filmSidePayload',{x:()=>vw(mob()?30:34),y:0,rotation:0});
-  /* crane geometry in px — spreader rest height vs payload height, any viewport */
+  gsap.set('#filmSpreader',{rotation:0,transformOrigin:'50% 100%'});
+  /* Crane geometry from the real asset ratios. The spreader's lower beam meets
+     the container roof exactly; no fixed overshoot and no tilted pickup. */
   const stackerW=()=>mob()?.58*innerWidth:Math.min(.44*innerWidth,660);
-  const spreadBottom=()=>stackerW()*(939/900)*.645;
-  const dropPx=()=>Math.max(20,spreadBottom()-Math.min((mob()?.47:.29)*innerWidth,435)*(362/1200)+34);
-  /* the trailer deck sits at 34.5% of the truck photo's height — the container rests ON it */
+  const spreadBottom=()=>stackerW()*.659;
+  const payloadH=()=>Math.min((mob()?.47:.29)*innerWidth,435)*(360/1200);
+  const dropPx=()=>Math.max(20,spreadBottom()-payloadH());
+  /* The deck surface is 122 px above the bottom of the 1200 px truck asset.
+     A small optical clearance keeps the container above the wheels at all sizes. */
   const truckW=()=>Math.min((mob()?.76:.47)*innerWidth,700);
-  const deckRest=()=>truckW()*(348/1200)*.345-.003*innerHeight;
+  const deckRest=()=>truckW()*(122/1200)+.006*innerHeight;
   /* wheels turn with real distance travelled — scrub-reversible */
   const wheelSet=gsap.quickSetter('.twheel','rotation','deg');
   gsap.ticker.add(()=>{
@@ -1221,6 +1232,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   gsap.set('#filmServiceGhost',{opacity:0});
   gsap.set([topPayload,topCab],{autoAlpha:0});
   gsap.set('#filmOceanCopy',{autoAlpha:0,y:18,clipPath:'inset(0 100% 0 0)'});
+  gsap.set(['#filmFogFar','#filmFogNear'],{autoAlpha:0});
   gsap.set('#filmPlane',{xPercent:-50,yPercent:-50,x:'-100vw',rotation:3,scale:1.15});
   placeRoad();
 
@@ -1239,11 +1251,9 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   tl.to('#filmFill',{opacity:0,duration:.06,ease:'power1.in'},.44);
   tl.to('#filmSpreader',{y:()=>dropPx(),duration:.10,ease:'power1.inOut'},.50)
     .to('#filmCable',{height:()=>dropPx(),duration:.10,ease:'power1.inOut'},.50);
-  tl.to('#filmSidePayload',{y:()=>-dropPx(),rotation:-1.1,duration:.18,ease:'power1.inOut'},.62)
+  tl.to('#filmSidePayload',{y:()=>-dropPx(),rotation:0,duration:.18,ease:'power1.inOut'},.62)
     .to('#filmSpreader',{y:0,duration:.18,ease:'power1.inOut'},.62)
-    .to('#filmCable',{height:0,duration:.18,ease:'power1.inOut'},.62)
-    .to('#filmSidePayload',{rotation:.8,duration:.05,ease:'sine.inOut'},.80)
-    .to('#filmSidePayload',{rotation:0,duration:.05,ease:'sine.out'},.85);
+    .to('#filmCable',{height:0,duration:.18,ease:'power1.inOut'},.62);
   tl.to('#filmSideTruck',{x:()=>vw(loadingTruckX()),duration:.30,ease:'power2.out'},.62);
   tl.to('#filmSidePayload',{y:()=>-deckRest(),rotation:0,duration:.15,ease:'power2.in'},.94)
     .to('#filmSpreader',{y:()=>Math.max(0,dropPx()-deckRest()),duration:.15,ease:'power2.in'},.94)
@@ -1317,32 +1327,37 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to('#filmDeckTarget',{opacity:1,scale:1.08,duration:.20,ease:'power2.out'},6.68);
   /* hand the sprites from the SVG to the screen layer at the exact same spot */
   tl.set([fCab,fTrail],{autoAlpha:0},6.72)
-    .set([topPayload,topCab],{autoAlpha:1},6.72)
-    .to(topCab,{y:'58svh',autoAlpha:0,duration:.52,ease:'power2.in'},6.74)
-    .to(topPayload,{y:'22svh',x:'0vw',scale:.70,rotation:2,filter:'drop-shadow(0 0 9px rgba(182,130,31,.9))',duration:.58,ease:'power2.inOut'},6.76)
-    .to(topPayload,{y:'23svh',scale:.62,rotation:0,duration:.16,ease:'power2.in'},7.28)
-    .to(topPayload,{autoAlpha:0,duration:.06},7.42)
-    .to('#filmShipSlot',{opacity:1,duration:.06},7.42)
-    .to('#filmDeckTarget',{opacity:0,scale:.92,duration:.15,ease:'power1.in'},7.42)
+    .set(topPayload,{autoAlpha:1},6.72)
+    .set(topCab,{autoAlpha:0},6.72)
+    .to(topPayload,{y:'21.5svh',x:'0vw',scale:.70,rotation:0,filter:'drop-shadow(0 0 9px rgba(182,130,31,.9))',duration:.58,ease:'power2.inOut'},6.76)
+    .to(topPayload,{y:'23svh',scale:.62,rotation:0,duration:.18,ease:'back.in(1.2)'},7.27)
+    .to('#filmDeckTarget',{scale:1.18,opacity:.9,duration:.08,ease:'power2.out'},7.39)
+    .to(topPayload,{autoAlpha:0,duration:.08},7.41)
+    .fromTo('#filmShipSlot',{opacity:0,scale:1.18},{opacity:1,scale:1,duration:.16,ease:'back.out(2)'},7.40)
+    .to('#filmDeckTarget',{opacity:0,scale:.88,duration:.20,ease:'power1.in'},7.44)
     .set('#filmRoad',{autoAlpha:0},7.50);
 
-  /* ---- OCEAN 7.5–9: cast off, camera climbs, live water takes over ---- */
+  /* ---- OCEAN 7.5–9.25: cast off and climb in one continuous aerial shot ---- */
   tl.to('#filmDock',{yPercent:-120,duration:.45,ease:'power2.in'},7.48)
-    .to('#filmShip',{y:'-5svh',scale:.38,duration:1.32,ease:'power1.inOut'},7.54)
-    /* tight dissolve: the still ship blurs away before the footage is fully in,
-       so the two vessels never read as duplicates */
-    .fromTo('#filmOceanVid',{opacity:0,scale:1.12},{opacity:1,scale:1.02,duration:.30,ease:'power1.inOut'},7.86)
-    .to('#filmOcean',{'--wtr':0,duration:.30,ease:'power1.inOut'},7.86)
-    .to('#filmShip',{autoAlpha:0,filter:'blur(8px)',duration:.20,ease:'power1.in'},7.88)
-    .to('#filmOceanCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},8.04)
-    .to('#filmOceanCopy',{autoAlpha:0,y:-18,duration:.20,ease:'power2.in'},8.90);
+    /* The source footage contains a second vessel, so the continuous shot uses
+       the animated water and wake while keeping one unmistakable hero ship. */
+    .set('#filmOceanVid',{opacity:0},7.60)
+    .to('#filmOcean',{'--wtr':1,duration:.70,ease:'power1.inOut'},7.62)
+    .to('#filmShip',{y:'-7svh',scale:.28,filter:'drop-shadow(0 8px 9px rgba(0,0,0,.38))',duration:1.58,ease:'power1.inOut'},7.54)
+    .to('#filmShip',{x:'5vw',y:'-10svh',rotation:.7,duration:.72,ease:'none'},8.38)
+    .to('#filmOceanCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},8.02)
+    .to('#filmOceanCopy',{autoAlpha:0,y:-18,duration:.20,ease:'power2.in'},8.86);
 
-  /* ---- SKY 8.75–10.1: cloud cover is the cut; the big freighter takes the line ---- */
-  tl.set('#filmSky',{autoAlpha:1},8.74)
-    .to('#filmClouds',{yPercent:-9,duration:.72,ease:'power1.inOut'},8.74)
-    .to('#filmOcean',{autoAlpha:0,duration:.42,ease:'power1.inOut'},9.18)
-    .to('#filmPlane',{x:'0vw',rotation:-1,scale:1,duration:.92,ease:'power2.out'},9.10)
-    .to('#filmClouds',{autoAlpha:0,duration:.42},9.60)
+  /* ---- SKY 8.55–10.1: altitude brings mist, then cloud cover reveals air freight ---- */
+  tl.set('#filmSky',{autoAlpha:1},8.52)
+    .fromTo('#filmFogFar',{autoAlpha:0,xPercent:-6,yPercent:18,scale:1.16},{autoAlpha:.82,xPercent:2,yPercent:-5,scale:1,duration:.82,ease:'power1.inOut'},8.54)
+    .to('#filmClouds',{yPercent:-10,duration:.92,ease:'power1.inOut'},8.72)
+    .fromTo('#filmFogNear',{autoAlpha:0,xPercent:8,yPercent:30,scale:1.22},{autoAlpha:.96,xPercent:-3,yPercent:-8,scale:1.02,duration:.72,ease:'power1.inOut'},8.88)
+    .to('#filmShip',{scale:.16,autoAlpha:.16,filter:'blur(5px)',duration:.60,ease:'power1.in'},8.82)
+    .to('#filmOcean',{autoAlpha:0,duration:.46,ease:'power1.inOut'},9.20)
+    .to('#filmPlane',{x:'0vw',rotation:-1,scale:1,duration:.88,ease:'power2.out'},9.34)
+    .to(['#filmClouds','#filmFogNear'],{autoAlpha:0,duration:.46,ease:'power1.out'},9.72)
+    .to('#filmFogFar',{autoAlpha:.28,duration:.50},9.72)
     .to('#filmPlane',{x:'12vw',y:'-5svh',rotation:-2,scale:.92,duration:.72,ease:'none'},9.70)
     .to('#filmSkyCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},9.78);
 
