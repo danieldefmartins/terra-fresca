@@ -294,6 +294,10 @@ nav.main a:hover{color:var(--paper)}
 #filmDeckTarget{position:absolute;z-index:14;left:50%;top:56%;width:clamp(30px,3.8vw,48px);height:clamp(105px,13.5vw,170px);transform:translate(-50%,-4%);border:2px solid var(--mango);box-shadow:0 0 0 1px rgba(255,255,255,.5),0 0 24px rgba(182,130,31,.65);opacity:0;will-change:opacity,transform}
 #filmDeckTarget::before{content:"";position:absolute;inset:-8px;border:1px solid rgba(255,255,255,.72);animation:deckPulse 1.2s ease-in-out infinite}
 #filmDeckTarget::after{content:"YOUR REEFER";position:absolute;left:calc(100% + 10px);top:50%;white-space:nowrap;color:var(--paper);font:500 9px/1 var(--mono);letter-spacing:.12em;transform:translateY(-50%)}
+/* On a phone this 9px label lands on the busy deck photo at low contrast and
+   reads as noise. The marker and the container dropping into it already say
+   what it says, so drop the caption on narrow screens. */
+@media(max-width:760px){#filmDeckTarget::after{display:none}}
 @keyframes deckPulse{0%,100%{opacity:.25;transform:scale(.96)}50%{opacity:.9;transform:scale(1.05)}}
 #filmWake{position:absolute;left:42%;top:96%;width:16%;height:65%;background:repeating-linear-gradient(180deg,rgba(255,255,255,.72) 0 7px,rgba(255,255,255,.18) 7px 18px,transparent 18px 34px);filter:blur(7px);opacity:.78;animation:filmWakeFlow 1.8s linear infinite;transform-origin:50% 0}
 @keyframes filmWakeFlow{from{background-position:0 0;transform:scaleY(.94)}to{background-position:0 34px;transform:scaleY(1.06)}}
