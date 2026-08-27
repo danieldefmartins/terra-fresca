@@ -50,6 +50,9 @@ def parse_args():
     p.add_argument("--az", type=float, nargs=2, default=[4.0, 90.0])
     p.add_argument("--el", type=float, nargs=2, default=[6.0, 6.0])
     p.add_argument("--preview", action="store_true")
+    p.add_argument("--view", choices=["turn", "top", "side"], default="turn")
+    p.add_argument("--ortho", type=float, default=0.0)   # ortho scale, 0 = perspective
+    p.add_argument("--noshadow", action="store_true")    # page draws its own
     return p.parse_args(argv_after_dashes())
 
 
@@ -148,7 +151,7 @@ def make_materials():
         return m
 
     return {
-        "body":  mat("body",  (0.62, 0.63, 0.62, 1), 0.44, 0.06, (140, 0.10)),
+        "body":  mat("body",  (0.80, 0.81, 0.80, 1), 0.44, 0.06, (140, 0.10)),
         "frame": mat("frame", (0.30, 0.32, 0.33, 1), 0.48, 0.30, (90, 0.12)),
         "steel": mat("steel", (0.16, 0.17, 0.18, 1), 0.38, 0.85, (200, 0.16)),
         "reefer": mat("reefer", (0.06, 0.24, 0.16, 1), 0.35, 0.20, (120, 0.08)),
@@ -330,6 +333,29 @@ def main():
     os.makedirs(out, exist_ok=True)
     sc = bpy.context.scene
     sc.cycles.samples = a.samples
+
+    # Single orthographic beauty passes. The page's plan view needs a true
+    # top-down with no convergence, or the roof will not sit flat on the road.
+    if a.view in ("top", "side"):
+        if a.noshadow:
+            # A baked shadow fights the page: in plan the rig's shadow belongs
+            # directly beneath it, and the page already draws a contact shadow
+            # that tracks the camera angle.
+            bpy.data.objects["shadowcatcher"].hide_render = True
+        if a.ortho:
+            cam.data.type = "ORTHO"
+            cam.data.ortho_scale = a.ortho
+        sc.render.resolution_x = a.res
+        sc.render.resolution_y = int(a.res * 0.30)
+        if a.view == "top":
+            aim(cam, 0.0, 89.9, dist=40)
+        else:
+            aim(cam, 0.0, 1.2, dist=40)
+        sc.cycles.samples = max(a.samples, 160)
+        sc.render.filepath = os.path.join(out, f"{a.view}.png")
+        bpy.ops.render.render(write_still=True)
+        print(f"[render] {a.view} done", flush=True)
+        return
 
     frames = [a.frames // 2] if a.preview else range(a.frames)
     for i in frames:

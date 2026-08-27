@@ -1242,9 +1242,9 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   const vw=n=>`${n}vw`;
   const mob=()=>innerWidth<=760;
   const loadingTruckX=()=>mob()?28:32;
-  const serviceStops=()=>mob()?[10,22,34,12]:[30,40,50,26.5];
+  const serviceStops=()=>mob()?[11,12.4,13.8,15.2]:[32,33.6,35.2,36.8];
   /* Keep the rig's visual center locked to the camera during side → top view. */
-  const centerTruckX=()=>mob()?12:26.5;
+  const centerTruckX=()=>mob()?15.2:36.8;   /* == last stop: never doubles back */
   const payloadOffset=()=>2;
   /* The rig rides up until its wheels meet the top edge of the service band —
      the band is the floor it stands on. Derived from the two CSS values that
@@ -1413,8 +1413,12 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   /* wheels turn with real distance travelled — scrub-reversible */
   const wheelSet=gsap.quickSetter('.twheel','rotation','deg');
   gsap.ticker.add(()=>{
-    const x=parseFloat(gsap.getProperty('#filmSideTruck','x'))||0;
-    wheelSet(x/(0.042*truckW())*57.3);
+    /* odometer = how far the rig has moved on screen PLUS how far the scene has
+       slid past it. Both are scroll-derived, so this stays distance-true and
+       reverses correctly when the reader scrolls back up. */
+    const x=(parseFloat(gsap.getProperty('#filmSideTruck','x'))||0)/100*innerWidth;
+    const ghost=parseFloat(gsap.getProperty('#filmServiceGhost','x'))||0;
+    wheelSet((x-ghost)/(0.042*truckW())*57.3);
   });
   gsap.set(['#filmRoad','#filmOcean','#filmSky'],{autoAlpha:0});
   gsap.set('#filmRoad',{autoAlpha:1,backgroundColor:'rgba(248,248,244,0)'});
