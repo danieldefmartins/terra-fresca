@@ -2,3 +2,7 @@ node_modules/
 *.log
 .visual-checkpoints/
 .sweep/
+
+# rendered frame sequences (large; not inlined)
+assets/seq/
+render/out/
