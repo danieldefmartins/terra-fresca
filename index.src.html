@@ -172,11 +172,11 @@ nav.main a:hover{color:var(--paper)}
 .produce-handoff h2{font-size:clamp(42px,6.8vw,96px);max-width:12ch;position:relative;z-index:3}
 .produce-handoff p{margin-top:18px;color:var(--ink-soft);max-width:40ch;position:relative;z-index:3}
 .produce-floor{position:absolute;left:0;right:0;bottom:0;height:16svh;background:var(--ink)}
-.handoff-crates{position:absolute;left:clamp(20px,4vw,64px);right:clamp(20px,4vw,64px);bottom:13svh;height:34svh;
+.handoff-crates{position:absolute;left:clamp(20px,4vw,64px);right:clamp(20px,4vw,64px);bottom:16.5svh;
   display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;
-  gap:clamp(4px,0.8vw,13px) clamp(3px,0.7vw,11px)}
+  gap:clamp(10px,1.6vw,26px) clamp(6px,1vw,16px)}
 .handoff-crates img{position:static;flex:0 0 auto;
-  width:min(88px,calc(100% / 14 - clamp(3px,0.7vw,11px)));
+  width:min(178px,calc(100% / 7 - clamp(6px,1vw,16px)));
   filter:drop-shadow(0 12px 9px rgba(0,0,0,.18));will-change:transform}
 .produce-swipe{display:none}
 @media(max-width:760px){
@@ -186,8 +186,8 @@ nav.main a:hover{color:var(--paper)}
   .produce-copy .variety{font-size:14px;margin-top:12px}.produce-intro::after{width:80vw;right:-48vw}
   .produce-swipe{display:block;position:absolute;right:22px;bottom:5svh;color:#6D8299}
   .produce-handoff{padding-top:9svh}
-  .handoff-crates{height:30svh;bottom:9svh;gap:2vw 1.8vw}
-  .handoff-crates img{width:calc(100% / 7 - 1.6vw)}
+  .handoff-crates{bottom:16svh;gap:1.6vw 1.4vw}
+  .handoff-crates img{width:calc(100% / 5 - 1.2vw)}
 }
 
 /* ============ LOAD SCENE (photo composite) ============ */
@@ -1153,8 +1153,9 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
     gsap.fromTo(card,{backgroundColor:i%2?'#052033':'#031B2E'},{backgroundColor:i%2?'#031B2E':'#052033',ease:'none',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
   });
-  gsap.fromTo('.handoff-crates img',{y:90,rotation:-8,autoAlpha:0},{y:0,rotation:0,autoAlpha:1,stagger:.035,ease:'power2.out',
-    scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 72%',end:'center center',scrub:true}});
+  gsap.fromTo('.handoff-crates img',{autoAlpha:0,scale:.86,transformOrigin:'50% 100%'},
+    {autoAlpha:1,scale:1,stagger:.03,ease:'power2.out',
+     scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 92%',end:'center 72%',scrub:true}});
   gsap.fromTo('.produce-handoff h2,.produce-handoff p,.produce-handoff .kicker',{y:34,autoAlpha:0},{y:0,autoAlpha:1,stagger:.06,ease:'power2.out',
     scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 70%',end:'center 52%',scrub:true}});
 })();

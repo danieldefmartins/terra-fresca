@@ -27,7 +27,7 @@ const vp = vpName === 'mobile' ? { width: 390, height: 844 } : { width: 1440, he
 await call('Emulation.setDeviceMetricsOverride', { ...vp, screenWidth: vp.width, screenHeight: vp.height, deviceScaleFactor: 1, mobile: vpName === 'mobile' });
 await call('Page.navigate', { url });
 await delay(2000);
-await call('Runtime.evaluate', { expression: `document.querySelector('#producePrelude').style.height='${vp.height * 10}px';document.querySelector('#journeyFilm').style.height='${vp.height * (vpName === 'mobile' ? 12.5 : 14)}px';ScrollTrigger.refresh()` });
+await call('Runtime.evaluate', { expression: `document.querySelector('#producePrelude').style.height='${vp.height * 16.2}px';document.querySelector('#journeyFilm').style.height='${vp.height * (vpName === 'mobile' ? 12.5 : 14)}px';ScrollTrigger.refresh()` });
 await delay(300);
 const r = await call('Runtime.evaluate', { expression: `(()=>{const el=document.querySelector('#${scene}');return {top:el.offsetTop,height:el.offsetHeight}})()`, returnByValue: true });
 const { top, height } = r.result.result.value;
@@ -38,7 +38,7 @@ for (let i = 0; i < n; i++) {
   const f = parseFloat(from) + (parseFloat(to) - parseFloat(from)) * (i / (n - 1));
   const y = Math.round(top + height * f - vp.height / 2);
   await call('Runtime.evaluate', { expression: `scrollTo(0,${y})` });
-  await delay(190);
+  await delay(1500);
   const shot = await call('Page.captureScreenshot', { format: 'jpeg', quality: 84 });
   await writeFile(new URL(`${vpName}-${f.toFixed(4)}.jpg`, out), Buffer.from(shot.result.data, 'base64'));
 }

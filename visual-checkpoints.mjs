@@ -72,7 +72,7 @@ for (const viewport of viewports) {
   // under device emulation. Pin the test height explicitly; production CSS
   // continues to use svh for real browsers.
   await call('Runtime.evaluate', {
-    expression: `document.querySelector('#producePrelude').style.height='${viewport.height * 10}px';document.querySelector('#journeyFilm').style.height='${viewport.height * (viewport.name === 'mobile' ? 12.5 : 14)}px';ScrollTrigger.refresh()`
+    expression: `document.querySelector('#producePrelude').style.height='${viewport.height * 16.2}px';document.querySelector('#journeyFilm').style.height='${viewport.height * (viewport.name === 'mobile' ? 12.5 : 14)}px';ScrollTrigger.refresh()`
   });
   await delay(250);
   const result = await call('Runtime.evaluate', {
