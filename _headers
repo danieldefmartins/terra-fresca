@@ -1,0 +1,8 @@
+# Hashed-by-content this is not, so keep index.html fresh and let the assets —
+# which only ever change by being replaced — cache hard.
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
