@@ -121,7 +121,15 @@ nav.main a:hover{color:var(--paper)}
   z-index:5;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;color:#6D8299;
 }
 .hero-foot .mono{font-size:10px}
-@media(max-width:760px){.hero-foot{flex-direction:column;align-items:flex-start;gap:6px}}
+@media(max-width:760px){
+  .hero-foot{flex-direction:column;align-items:flex-start;gap:6px}
+  /* On a phone the globe's dot field and its city labels run straight through
+     the lede and the buttons. Lay a soft scrim under the copy column so the
+     type has something to sit on without hiding the globe behind it. */
+  .hero::before{content:"";position:absolute;z-index:4;inset:0 0 auto 0;height:88svh;pointer-events:none;
+    background:linear-gradient(180deg,rgba(9,26,42,.94) 0%,rgba(9,26,42,.88) 46%,rgba(9,26,42,.55) 74%,rgba(9,26,42,0) 100%)}
+  .hero p.lede{font-size:14.5px;max-width:none}
+}
 
 /* ============ MISSION — what we do, before the film starts ============ */
 #mission{background:var(--paper);padding:clamp(80px,14vh,150px) clamp(20px,5vw,72px) clamp(70px,12vh,130px);position:relative;overflow:hidden}
