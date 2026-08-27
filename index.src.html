@@ -233,23 +233,34 @@ nav.main a:hover{color:var(--paper)}
 #hTopRig .hinner img{display:block;width:100%}
 @media(max-width:760px){#hTopRig .hinner{width:15vw}}
 
-/* ---- SIDE → PLAN HINGE ----------------------------------------------------
-   The camera rises from ground level to directly overhead. Rather than
-   crossfading two bitmaps (which reads as a blur), the rig is a real pair of
-   3D planes hinged along the container roofline: the side elevation folds away
-   from the viewer while the plan view folds toward it. Both extremes are the
-   original artwork at full sharpness, and every intermediate angle is a true
-   perspective projection, so the turn scrubs cleanly in both directions. */
-#flipRig{position:absolute;left:0;top:0;width:0;height:0;z-index:34;visibility:hidden;opacity:0;
-  perspective:1800px;perspective-origin:50% 0;will-change:opacity}
-#flipUnit{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform}
-.fface{position:absolute;left:0;top:0;transform-style:preserve-3d;backface-visibility:hidden}
-/* hangs below the hinge, vertical, facing the viewer */
-.fface.fside{transform-origin:50% 0;transform:rotateX(0deg)}
-/* hinged on the same line but folded away into the screen: edge-on at rest */
-.fface.ftop{transform-origin:50% 0;transform:rotateX(-90deg)}
+/* ---- CAMERA RISE ----------------------------------------------------------
+   The truck does not move: the camera climbs off the shoulder of the road and
+   over the top of it. So the rig and the asphalt live in ONE rigid 3D world
+   pivoting about the wheel line — not about the container roof, which made the
+   truck pivot on its own roof and read as falling over.
+
+   In world-local space the origin is the wheel line at the rig's centre:
+     · the elevation art stands upright on it, unrotated
+     · the road surface and the plan art lie IN it, at rotateX(90deg)
+   Rotating the world to -90deg brings the roof toward the viewer — a camera
+   rise — and lays the road flat. Because the road turns with the truck, the
+   truck stays glued to it and the lane markings converge on a real vanishing
+   point the whole way up. That convergence is the thing that reads as 3D. */
+#flipRig{position:absolute;inset:0;z-index:34;visibility:hidden;opacity:0;
+  perspective:1100px;perspective-origin:50% 50%;will-change:opacity}
+#flipUnit{position:absolute;left:0;top:0;width:0;height:0;
+  transform-origin:0 0;transform-style:preserve-3d;will-change:transform}
+.fface{position:absolute;transform-style:preserve-3d;backface-visibility:hidden}
+.fface.fside{transform:none}                       /* stands on the wheel line */
+.fface.ftop{transform:rotateX(90deg)}              /* lies in the road surface */
 .fface img{position:absolute;display:block}
 #ffTruck{transform:scaleX(-1)}
+/* The road is a real surface lying in the world, not a band whose height is
+   animated. Its depth extent is the width of the carriageway and never
+   changes — the apparent thickness is entirely the camera angle doing its job. */
+#flipGround3d{position:absolute;transform:rotateX(90deg);transform-origin:50% 50%;
+  background-color:#0A1926;background-repeat:repeat,repeat,repeat;
+  will-change:opacity}
 #flipShadow{position:absolute;left:0;top:0;z-index:33;background:rgba(10,25,38,.20);filter:blur(7px);
   border-radius:50%/40%;opacity:0;will-change:opacity,transform}
 .film-service{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;visibility:hidden;opacity:0;clip-path:inset(0 100% 0 0)}
@@ -757,6 +768,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
     <div id="flipShadow" aria-hidden="true"></div>
     <div id="flipRig" aria-hidden="true">
       <div id="flipUnit">
+        <div id="flipGround3d"></div>
         <div class="fface fside">
           <img id="ffTruck" src="{{A:truck-side}}" alt="">
           <img id="ffBox" src="{{A:container-side}}" alt="">
@@ -1187,27 +1199,45 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     /* Europe */
     {name:'ROTTERDAM',lat:51.9,lon:4.4},
     {name:'ANTWERP',lat:51.3,lon:4.4},
+    {name:'HAMBURG',lat:53.5,lon:10.0},
+    {name:'LE HAVRE',lat:49.5,lon:0.1},
     {name:'FELIXSTOWE',lat:52.0,lon:1.4},
     {name:'VIGO',lat:42.2,lon:-8.7},
+    {name:'VALENCIA',lat:39.4,lon:-0.3},
     {name:'ALGECIRAS',lat:36.1,lon:-5.5},
     {name:'LISBOA',lat:38.7,lon:-9.1},
     {name:'GENOVA',lat:44.4,lon:8.9},
-    /* North America */
+    /* North America — east and gulf */
     {name:'PHILADELPHIA',lat:39.9,lon:-75.2},
     {name:'NEW YORK',lat:40.7,lon:-74.0},
     {name:'MIAMI',lat:25.8,lon:-80.2},
     {name:'HOUSTON',lat:29.7,lon:-95.3},
+    /* California */
+    {name:'LONG BEACH',lat:33.8,lon:-118.2},
+    {name:'LOS ANGELES',lat:33.7,lon:-118.3},
+    {name:'OAKLAND',lat:37.8,lon:-122.3},
+    /* Mexico */
+    {name:'ENSENADA',lat:31.9,lon:-116.6},
+    {name:'MANZANILLO',lat:19.1,lon:-104.3},
+    {name:'VERACRUZ',lat:19.2,lon:-96.1},
+    /* Hawaii */
+    {name:'HONOLULU',lat:21.3,lon:-157.9},
     /* Africa & Middle East */
     {name:'CASABLANCA',lat:33.6,lon:-7.6},
     {name:'JEBEL ALI',lat:25.0,lon:55.1},
     {name:'DURBAN',lat:-29.9,lon:31.0},
-    /* Asia */
-    {name:'SINGAPORE',lat:1.3,lon:103.9},
+    /* China */
+    {name:'SHENZHEN',lat:22.6,lon:114.3},
     {name:'HONG KONG',lat:22.3,lon:114.2},
+    {name:'NINGBO',lat:29.9,lon:121.6},
     {name:'SHANGHAI',lat:31.2,lon:121.5},
+    {name:'QINGDAO',lat:36.1,lon:120.3},
+    /* Rest of Asia */
+    {name:'SINGAPORE',lat:1.3,lon:103.9},
     {name:'BUSAN',lat:35.1,lon:129.0},
     {name:'TOKYO',lat:35.6,lon:139.7},
   ];
+
   const DESTS=PORTS.map(d=>[d.lat*deg,d.lon*deg]);
   const ORIG_PTS=ORIGINS.map(d=>[d.lat*deg,d.lon*deg]);
   const slerpPt=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t)];
@@ -1259,10 +1289,10 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
         if(z>-0.15){ if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y); }
         else started=false;
       }
-      ctx.strokeStyle='rgba(182,130,31,.28)';ctx.lineWidth=.9;ctx.stroke();
+      ctx.strokeStyle='rgba(182,130,31,.20)';ctx.lineWidth=.8;ctx.stroke();
       /* Only a third of the lanes carry a running vessel at once — nineteen
          moving dots reads as noise rather than a network. */
-      if(i%3===0){
+      if(i%5===0){
         const q=((reduced?0.5:t*0.11)+i*0.17)%1,[la,lo]=slerpPt(SANTOS,d,q);
         const rad=R*(1+0.28*Math.sin(Math.PI*q));
         const [x,y,z]=project(la,lo,rot,rad);
@@ -1366,7 +1396,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
      first frame of the turn is pixel-identical to the frame before it and the
      handoff is invisible. Measured once per flip and again on refresh. */
   const flipState={a:0};
-  const flipRig=$('flipRig'),flipUnit=$('flipUnit'),flipShadow=$('flipShadow');
+  const flipRig=$('flipRig'),flipUnit=$('flipUnit'),flipShadow=$('flipShadow'),ground=$('flipGround3d');
   const fSide=flipRig.querySelector('.fside'),fTop=flipRig.querySelector('.ftop');
   const ffTruck=$('ffTruck'),ffBox=$('ffBox'),ffCabTop=$('ffCabTop'),ffBoxTop=$('ffBoxTop');
   /* Plan-view width of the rig, expressed as a fraction of container length.
@@ -1381,83 +1411,91 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     const t=$('filmSideTruck').getBoundingClientRect();
     const b=$('filmSidePayload').getBoundingClientRect();
     if(!t.width||!b.width) return;
-    /* hinge = the container roofline: the plane we rotate about */
-    const hingeY=b.top-pin.top;
     const left=Math.min(t.left,b.left)-pin.left;
     const right=Math.max(t.right,b.right)-pin.left;
-    const W=right-left, botY=Math.max(t.bottom,b.bottom)-pin.top;
-    const planH=b.width/PLAN_AR;          /* how wide the rig reads from above */
-    /* Where the turn has to end. placeRoad() always parks the road rig's mid
-       point at (50vw, 41svh) and draws the container 164 viewBox units long, so
-       the hinge is aimed at exactly that spot and size. The SVG then takes over
-       without anything moving — the handoff is invisible rather than a cut. */
-    const svgScale=roadSvg.getBoundingClientRect().width/VB_W;
-    const endScale=(273*svgScale)/b.width;
-    /* the asphalt the SVG will draw, in screen px — the band is narrowed to
-       exactly this so the ribbon does not pop into a different width */
-    const ribbon=366*svgScale;
-    /* placeRoad() always parks the rig's mid point at (50vw, 41svh); the
-       container itself rides 62 units behind that. Aim the hinge at the
-       container's landing spot, not the rig's, or the swap shows a jump. */
-    /* Rather than model where the SVG will draw the container, put the road on
-       its mark and measure it. Exact by construction, and it stays exact if the
-       path or the viewBox is ever retuned. */
+    const W=right-left;
+    /* The pivot is the WHEEL LINE, not the roof: the camera climbs over a truck
+       that is standing still. Local (0,0) is that line at the rig's centre. */
+    const wheelY=Math.max(t.bottom,b.bottom)-pin.top;
+    const topY=Math.min(t.top,b.top)-pin.top;
+    const sideH=wheelY-topY;
+    const cx=left+W/2;
+    const planH=b.width/PLAN_AR;      /* how wide the rig reads from above */
+
     roadState.p=0; placeRoad();
     const tr=fTrail.getBoundingClientRect();
     const tx=tr.left+tr.width/2-pin.left, ty=tr.top+tr.height/2-pin.top;
-    const boxL=b.left-pin.left-left;
-    flipGeom={left,hingeY,W,sideH:botY-hingeY,planH,endScale,ribbon,tx,ty,
-              boxL,boxW:b.width,boxH:b.height,
-              truckL:t.left-pin.left-left,truckW:t.width,truckH:t.height,
-              truckTop:t.top-pin.top-hingeY};
-    gsap.set(flipRig,{x:left,y:hingeY,rotation:0});
-    flipRig.style.perspective=Math.round(Math.max(900,W*1.9))+'px';
-    /* elevation faces, positioned exactly where the side rig already is */
-    fSide.style.cssText+=`;width:${W}px;height:${flipGeom.sideH}px`;
-    ffTruck.style.cssText+=`;left:${flipGeom.truckL}px;top:${flipGeom.truckTop}px;width:${t.width}px`;
-    ffBox.style.cssText+=`;left:${flipGeom.boxL}px;top:0px;width:${b.width}px`;
-    /* plan faces: same length, true overhead width, cab tucked at the nose */
-    fTop.style.cssText+=`;width:${W}px;height:${planH}px`;
-    ffBoxTop.style.cssText+=`;left:${flipGeom.boxL}px;top:0px;width:${b.width}px`;
+    const svgScale=roadSvg.getBoundingClientRect().width/VB_W;
+    const endScale=(273*svgScale)/b.width;
+    const ribbon=366*svgScale;
+    /* The carriageway's depth extent is fixed in world units and chosen so that
+       overhead it measures exactly the ribbon the SVG draws. It never changes —
+       the road looks like a sliver from the shoulder and full width from above
+       purely because the camera moved. */
+    const roadD=ribbon/endScale;
+
+    flipGeom={left,cx,wheelY,W,sideH,planH,endScale,ribbon,roadD,tx,ty,
+              boxL:b.left-pin.left-cx,boxW:b.width,
+              truckL:t.left-pin.left-cx,truckW:t.width,truckTop:t.top-pin.top-wheelY};
+
+    /* elevation: standing on the wheel line, centred on the pivot */
+    fSide.style.cssText+=`;left:${-W/2}px;top:${-sideH}px;width:${W}px;height:${sideH}px`;
+    ffTruck.style.cssText+=`;left:${flipGeom.truckL+W/2}px;top:${(t.top-pin.top)-topY}px;width:${t.width}px`;
+    ffBox.style.cssText+=`;left:${flipGeom.boxL+W/2}px;top:${(b.top-pin.top)-topY}px;width:${b.width}px`;
+    /* plan art: lying in the road surface, centred on the pivot */
+    fTop.style.cssText+=`;left:${-W/2}px;top:${-planH/2}px;width:${W}px;height:${planH}px`;
+    ffBoxTop.style.cssText+=`;left:${flipGeom.boxL+W/2}px;top:0px;width:${b.width}px`;
     const cabW=planH*CAB_AR;
-    ffCabTop.style.cssText+=`;left:${flipGeom.boxL+b.width-cabW*.06}px;top:0px;width:${cabW}px`;
+    ffCabTop.style.cssText+=`;left:${flipGeom.boxL+W/2+b.width-cabW*.06}px;top:0px;width:${cabW}px`;
+    /* the road surface itself */
+    const GW=Math.max(innerWidth*14,14000);
+    ground.style.cssText+=`;left:${-GW/2}px;top:${-roadD/2}px;width:${GW}px;height:${roadD}px`;
+    ground.style.backgroundImage=
+      `linear-gradient(to bottom, rgba(255,255,255,.035), rgba(0,0,0,.10)),`+
+      `repeating-linear-gradient(to right, transparent 0 ${roadD*.30}px, #0A1926 ${roadD*.30}px ${roadD*.78}px),`+
+      `repeating-linear-gradient(to bottom, transparent 0 ${roadD*.487}px, rgba(245,242,233,.5) ${roadD*.487}px ${roadD*.513}px, transparent ${roadD*.513}px ${roadD}px)`;
     applyFlip();
   }
 
-  /* a=0 side elevation · a=1 plan view. One rotation drives everything else so
-     the shadow, scale and articulation can never drift out of sync with it. */
+  /* a=0 elevation from the shoulder · a=1 plan view. One camera angle drives
+     the world, the road and the handoff, so they cannot drift apart. */
   function applyFlip(){
     if(!flipGeom) return;
-    const g=flipGeom, a=flipState.a, deg=90*a;
-    /* the camera is climbing, so the rig shrinks toward its road-view size */
-    const s=lerp(1,g.endScale,a);
-    gsap.set(flipUnit,{rotationX:deg,scale:s,transformOrigin:'0px 0px'});
-    /* and travels so the container lands exactly on its road-view mark */
-    const endX=g.tx-(g.boxL+g.boxW/2)*s;
-    const endY=g.ty-(g.planH/2)*s;
-    gsap.set(flipRig,{x:lerp(g.left,endX,a),y:lerp(g.hingeY,endY,a)});
-    /* the cab breaks against the trailer through the turn, the way a rig does
-       when it swings — it settles square again by the time the road appears */
+    const g=flipGeom, a=flipState.a;
+    /* The camera angle eases; the pull-back does not follow it one for one.
+       Holding the rig near full size until the climb is nearly over keeps it
+       readable through the interesting part of the move — shrinking on a linear
+       ramp made it a speck by the halfway point. */
+    const rot=gsap.parseEase('power1.inOut')(a);
+    const pull=gsap.parseEase('power3.in')(a);
+    const deg=-90*rot;                            /* negative: roof toward viewer */
+    const s=lerp(1,g.endScale,pull);
+    /* the pivot travels from where the truck stands to where the road hands off */
+    const px=lerp(g.cx,g.tx,pull), py=lerp(g.wheelY,g.ty,pull);
+        /* scale3d, not scale: the 2D form leaves Z at 1, and the carriageway's
+       width lives in Z until the world rotates it into view — so the road
+       stayed full size while everything else shrank. */
+    flipUnit.style.transform=`translate3d(${px}px,${py}px,0) rotateX(${deg}deg) scale3d(${s},${s},${s})`;
+    /* Eye height above the road. Low to begin with, so the surface is the
+       grazing sliver the side view already reads as ground. */
+    const eye=lerp(g.wheelY-innerHeight*(mob()?.24:.135),innerHeight*.5,rot);
+    flipRig.style.perspectiveOrigin=`50% ${eye}px`;
+    flipRig.style.perspective=lerp(mob()?820:1050,2600,rot)+'px';
+    /* The flat band hands over to the real surface right at the start of the
+       move, while the two still read the same, so the swap is not the moment
+       anyone notices. */
+    /* Two flat planes at 45 degrees fight each other. Hand the description over
+       across the middle of the climb: the elevation goes as it becomes edge-on,
+       the roof arrives as it opens out. */
+    gsap.set(fSide,{opacity:1-clamp((rot-.40)/.15,0,1)});
+    gsap.set(fTop,{opacity:clamp((rot-.45)/.15,0,1)});
+    /* the cab breaks against the trailer through the turn and settles square */
     const art=Math.sin(a*Math.PI)*(mob()?7:9);
     gsap.set(ffCabTop,{rotation:art,transformOrigin:'12% 50%'});
     gsap.set(ffBoxTop,{rotation:-art*.34,transformOrigin:'88% 50%'});
-    /* Contact shadow. On the ground it is a tight smear under the wheels; from
-       above it spreads and softens, which is what sells the change of altitude. */
-    const rx=lerp(g.left,g.cx-g.W*s/2,a);
-    const sy=lerp(g.hingeY+g.sideH*.99,g.cy+g.planH*s*.30,a);
-    gsap.set(flipShadow,{x:rx+g.W*s*.04,y:sy,width:g.W*s*.92,
-      height:Math.max(5,g.planH*s*(a?.62:.16)),opacity:lerp(.34,.13,a)});
-    /* The ground the truck stands on is the same ground it will drive on. Seen
-       edge-on it is a band at the foot of the frame; as the camera lifts it
-       opens out to fill the view, then closes to the width of the ribbon the
-       road SVG draws. Driving it from `a` keeps it exactly in step with the
-       turn — a separate tween drifts and the two roads swap at odd widths. */
-    const ease=gsap.parseEase('power2.inOut');
-    const open=ease(clamp(a/.82,0,1)), close=ease(clamp((a-.82)/.18,0,1));
-    const grown=lerp(.56*innerHeight,innerHeight,open);
-    const bh=lerp(grown,g.ribbon,close);
-    const bb=lerp(0,innerHeight-(innerHeight*.41+g.ribbon/2),close);
-    gsap.set(['#filmServiceBand','#laneDashes'],{height:bh+'px',bottom:bb+'px'});
+    /* contact shadow only makes sense while we can still see the side of the rig */
+    gsap.set(flipShadow,{x:px-g.W*s*.5,y:py-4,width:g.W*s,
+      height:Math.max(4,g.planH*s*.22),opacity:.34*(1-Math.min(1,a*2.2))});
   }
   /* inspection hook for the headless visual checks */
   window.__film=()=>({a:flipState.a,g:flipGeom,t:tl.time?tl.time():null});
@@ -1579,6 +1617,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   tl.call(layoutFlipRig,null,3.82)
     .to(['#filmSideTruck','#filmSidePayload'],{autoAlpha:0,duration:0,ease:'none'},3.86)
     .set('#flipRig',{autoAlpha:1},3.86)
+    .set(['#filmServiceBand','#laneDashes'],{opacity:0},3.86)
     .fromTo(flipState,{a:0},{a:1,duration:.34,ease:'power1.inOut',onUpdate:applyFlip,immediateRender:false},3.86)
     ;
   /* The rig holds its plan pose while the asphalt arrives beneath it — the road
