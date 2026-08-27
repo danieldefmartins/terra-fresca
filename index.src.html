@@ -183,6 +183,11 @@ nav.main a:hover{color:var(--paper)}
 #journeyFilm .film-pin{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--paper);isolation:isolate}
 .film-layer{position:absolute;inset:0;will-change:transform,opacity,clip-path}
 .film-copy{position:absolute;z-index:22;left:clamp(20px,5vw,72px);top:10svh;max-width:520px;will-change:transform,opacity,clip-path}
+.film-copy-r{left:auto;right:clamp(20px,5vw,72px);text-align:right;max-width:440px}
+.film-copy-r p{margin-left:auto}
+@media(max-width:760px){
+  .film-copy-r{left:clamp(20px,5vw,72px);right:clamp(20px,5vw,72px);text-align:left;max-width:none}
+  .film-copy-r p{margin-left:0}}
 .film-copy .mono{display:block;color:var(--mango);margin-bottom:12px}
 .film-copy h2{font-size:clamp(30px,4.7vw,68px)}
 .film-copy p{margin-top:14px;max-width:42ch;color:var(--ink-soft);font-size:14px}
@@ -219,6 +224,26 @@ nav.main a:hover{color:var(--paper)}
 #hTopRig .hinner{position:absolute;left:0;top:0;width:min(8vw,120px);transform:translate(-50%,-50%) rotate(-90deg);filter:drop-shadow(6px 0 8px rgba(0,0,0,.25))}
 #hTopRig .hinner img{display:block;width:100%}
 @media(max-width:760px){#hTopRig .hinner{width:15vw}}
+
+/* ---- SIDE → PLAN HINGE ----------------------------------------------------
+   The camera rises from ground level to directly overhead. Rather than
+   crossfading two bitmaps (which reads as a blur), the rig is a real pair of
+   3D planes hinged along the container roofline: the side elevation folds away
+   from the viewer while the plan view folds toward it. Both extremes are the
+   original artwork at full sharpness, and every intermediate angle is a true
+   perspective projection, so the turn scrubs cleanly in both directions. */
+#flipRig{position:absolute;left:0;top:0;width:0;height:0;z-index:34;visibility:hidden;opacity:0;
+  perspective:1800px;perspective-origin:50% 0;will-change:opacity}
+#flipUnit{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform}
+.fface{position:absolute;left:0;top:0;transform-style:preserve-3d;backface-visibility:hidden}
+/* hangs below the hinge, vertical, facing the viewer */
+.fface.fside{transform-origin:50% 0;transform:rotateX(0deg)}
+/* hinged on the same line but folded away into the screen: edge-on at rest */
+.fface.ftop{transform-origin:50% 0;transform:rotateX(-90deg)}
+.fface img{position:absolute;display:block}
+#ffTruck{transform:scaleX(-1)}
+#flipShadow{position:absolute;left:0;top:0;z-index:33;background:rgba(10,25,38,.20);filter:blur(7px);
+  border-radius:50%/40%;opacity:0;will-change:opacity,transform}
 .film-service{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;visibility:hidden;opacity:0;clip-path:inset(0 100% 0 0)}
 .film-service .mono{color:var(--mango);display:block;margin-bottom:12px}
 .film-service h3{font-size:clamp(28px,4vw,58px);line-height:.95;text-transform:uppercase;max-width:12ch}
@@ -230,9 +255,9 @@ nav.main a:hover{color:var(--paper)}
 #filmTopPayload{top:33%;}
 #filmTopCab{top:49%;}
 #filmTopPayload img,#filmTopCab img{display:block;width:100%}
-.film-milestone{position:absolute;z-index:18;left:clamp(20px,5vw,72px);bottom:8svh;width:min(480px,76vw);background:rgba(248,248,244,.97);border-left:4px solid var(--mango);padding:22px 24px;visibility:hidden;opacity:0;clip-path:inset(0 100% 0 0)}
+.film-milestone{position:absolute;z-index:18;left:clamp(20px,5vw,72px);bottom:8svh;width:min(560px,86vw);background:rgba(248,248,244,.97);border-left:4px solid var(--mango);padding:22px 24px;visibility:hidden;opacity:0;clip-path:inset(0 100% 0 0)}
 .film-milestone .mono{color:var(--mango);display:block;margin-bottom:10px}
-.film-milestone h3{font-size:clamp(27px,3.6vw,50px);line-height:.96}
+.film-milestone h3{font-size:clamp(25px,3.1vw,44px);line-height:.98;text-wrap:balance}
 .film-milestone p{margin-top:10px;color:var(--ink-soft);font-size:13px}
 #filmOcean{z-index:20;background:linear-gradient(180deg,#0A3355 0%,#072A47 45%,#041B2E 100%);visibility:hidden;opacity:0}
 #filmOcean::before{content:"";position:absolute;inset:-24%;background:radial-gradient(ellipse at 30% 20%,rgba(120,190,225,.25),transparent 38%),radial-gradient(ellipse at 72% 68%,rgba(30,115,165,.28),transparent 42%),repeating-linear-gradient(102deg,rgba(255,255,255,.09) 0 2px,transparent 2px 18px);background-size:auto,auto,150px 150px;animation:filmWater 7s linear infinite;will-change:transform;opacity:var(--wtr,1)}
@@ -254,6 +279,24 @@ nav.main a:hover{color:var(--paper)}
 #filmFogFar{background:radial-gradient(ellipse at 18% 35%,rgba(238,247,250,.82),transparent 42%),radial-gradient(ellipse at 78% 58%,rgba(255,255,255,.75),transparent 45%),linear-gradient(180deg,transparent 18%,rgba(219,235,242,.45) 70%,rgba(255,255,255,.78));filter:blur(18px);transform:translate3d(-8%,22%,0) scale(1.15)}
 #filmFogNear{z-index:25;background:radial-gradient(ellipse at 20% 72%,#fff,transparent 43%),radial-gradient(ellipse at 78% 48%,rgba(255,255,255,.96),transparent 46%);filter:blur(25px);transform:translate3d(10%,38%,0) scale(1.22)}
 #filmOceanCopy{color:var(--paper);text-shadow:0 2px 24px rgba(3,18,32,.55)}
+/* ---- WHO WE ARE ----------------------------------------------------------
+   The long aerial stretch used to be dead scroll: the ship simply got smaller.
+   It is now where the company introduces itself, so the story is told while
+   something is still moving rather than parked in a block of text later. */
+.film-story{position:absolute;z-index:38;left:clamp(20px,5vw,72px);top:50svh;transform:translateY(-50%);
+  width:min(620px,86vw);color:var(--paper);visibility:hidden;opacity:0;
+  background:rgba(7,24,39,.86);border-left:4px solid var(--mango);
+  padding:clamp(22px,2.6vw,34px) clamp(24px,2.8vw,38px);
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  will-change:transform,opacity,clip-path}
+.film-story .mono{display:block;color:var(--mango);margin-bottom:14px}
+.film-story h3{font-size:clamp(28px,4.1vw,58px);line-height:.97;text-wrap:balance}
+.film-story p{margin-top:16px;font-size:clamp(14px,1.15vw,17px);line-height:1.55;color:#D9E4EC;max-width:46ch}
+.film-story .fs-rule{width:56px;height:3px;background:var(--mango);margin-bottom:20px}
+@media(max-width:760px){
+  .film-story{top:auto;bottom:9svh;transform:none;width:min(560px,90vw)}
+  .film-story p{font-size:14px;max-width:38ch}
+}
 #filmSky{z-index:11;background:linear-gradient(#eef4f8,#c7dceb);visibility:hidden;opacity:0}
 #filmSky::before,#filmSky::after{content:"";position:absolute;z-index:2;width:78vw;height:34svh;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.98),rgba(255,255,255,.72) 42%,transparent 73%);filter:blur(12px);pointer-events:none;will-change:transform}
 #filmSky::before{left:-24vw;top:12svh;animation:filmCloudDrift 18s ease-in-out infinite alternate}
@@ -267,9 +310,14 @@ nav.main a:hover{color:var(--paper)}
 #load,#services,#road,#ocean,#sky{display:none}
 @media(max-width:760px){
   #journeyFilm{height:1250svh}
-  #filmStacker{width:58vw;left:-10vw}
-  #filmSideTruck{width:76vw}
-  #filmSidePayload{width:47vw}
+  /* A phone frame is tall: with the floor down at 16svh the machinery sat in
+     the bottom sixth and the middle of the screen was dead. Raise the ground so
+     the rig plays at eye level and the copy above it has something to sit on. */
+  #filmGround{height:30svh}
+  #filmStacker{width:54vw;left:-8vw;bottom:30svh}
+  #filmSideTruck{width:76vw;bottom:29.7svh}
+  #filmSidePayload{width:47vw;bottom:30svh}
+  .film-crate{bottom:30svh}
   #filmServiceBand{height:60svh}
   #filmServiceStage{height:38svh;bottom:8svh}
   #filmShip{width:34vw}
@@ -635,6 +683,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
   <div class="film-pin">
     <div class="film-layer" id="filmOrigin">
       <div class="film-copy" id="filmOriginCopy"><span class="mono">01 / Origin · São Francisco Valley</span><h2 class="display">Picked, packed, and sealed at origin</h2><p>One container remains in view from the packing floor to the vessel.</p></div>
+      <div class="film-copy film-copy-r" id="filmOriginCopy2"><span class="mono">02 / Origin · we take title here</span><h2 class="display">Ours the moment it is sealed</h2><p>Terra Fresca buys the fruit at the farm gate and owns the box from this lift onward — so the grower is paid and the buyer has one counterparty, not a chain of them.</p></div>
       <div id="filmGround"></div>
       <img class="film-crate" id="fc1" src="{{A:crate-mango-cut}}" alt="Crate of mangoes">
       <img class="film-crate" id="fc2" src="{{A:crate-lime-cut}}" alt="Crate of Tahiti limes">
@@ -666,11 +715,11 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 
     <div class="film-layer" id="filmRoad">
       <div id="filmRoadCamera">
-        <svg id="filmRoadSvg" viewBox="0 0 1200 3400" aria-hidden="true">
-          <path id="filmRoadPath" d="M600,-150 L600,560 C600,760 910,760 910,980 L910,1450 C910,1660 600,1660 600,1870 L600,2470" fill="none" stroke="#0A1926" stroke-width="220"/>
-          <path d="M600,-150 L600,560 C600,760 910,760 910,980 L910,1450 C910,1660 600,1660 600,1870 L600,2470" fill="none" stroke="#F5F2E9" stroke-width="4" stroke-dasharray="42 52" opacity=".48"/>
-          <g id="fTrail" opacity="0"><image href="{{A:ctn-top}}" x="-23" y="-82" width="46" height="164"/></g>
-          <g id="fCab" opacity="0"><image href="{{A:cab-top}}" x="-23" y="-39" width="46" height="79"/></g>
+        <svg id="filmRoadSvg" viewBox="-1600 0 3700 3900" aria-hidden="true">
+          <path id="filmRoadPath" d="M-1500,430 L1000,430 C1360,430 1470,610 1470,900 C1470,1230 1000,1300 1000,1620 L1000,2120 C1000,2450 1470,2510 1470,2840 L1470,3760" fill="none" stroke="#0A1926" stroke-width="366"/>
+          <path d="M-1500,430 L1000,430 C1360,430 1470,610 1470,900 C1470,1230 1000,1300 1000,1620 L1000,2120 C1000,2450 1470,2510 1470,2840 L1470,3760" fill="none" stroke="#F5F2E9" stroke-width="7" stroke-dasharray="70 87" opacity=".48"/>
+          <g id="fTrail" opacity="0"><image href="{{A:ctn-top}}" x="-38" y="-137" width="77" height="273"/></g>
+          <g id="fCab" opacity="0"><image href="{{A:cab-top}}" x="-38" y="-66" width="77" height="132"/></g>
         </svg>
       </div>
       <div id="filmTopPayload"><img src="{{A:ctn-top}}" alt="Container seen from above"></div>
@@ -690,7 +739,25 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 
     <div class="film-layer" id="filmSky">
       <div id="filmPlane"><img src="{{A:plane-top}}" alt="Cargo plane seen from above"></div>
-      <div class="film-copy" id="filmSkyCopy"><span class="mono">04 / Air · when the window is short</span><h2 class="display">From ocean altitude into the clouds</h2></div>
+      <div class="film-copy" id="filmSkyCopy"><span class="mono">04 / Air · when the window is short</span><h2 class="display">From ocean altitude into the clouds</h2><p style="color:var(--ink-soft);margin-top:12px">Air lift out of GRU for the fruit that cannot wait for a vessel.</p></div>
+    </div>
+
+
+    <div class="film-story" id="story1"><div class="fs-rule"></div><span class="mono">Who we are</span><h3 class="display">A trading house, not a middleman</h3><p>Terra Fresca buys at the farm gate and takes ownership of every container it moves. The grower is paid for the fruit. The importer buys from one seller. Nobody in between is guessing at quality, price, or timing.</p></div>
+    <div class="film-story" id="story2"><div class="fs-rule"></div><span class="mono">How we started</span><h3 class="display">Two people who know this fruit</h3><p>Terra Fresca was built by Daniel and Edgard — one side in Brazil among the growers, packhouses and ports, one side in the United States with the buyers. Every shipment still passes through those same two pairs of hands.</p></div>
+    <div class="film-story" id="story3"><div class="fs-rule"></div><span class="mono">What we control</span><h3 class="display">Origin to dock, on one invoice</h3><p>Sourcing, pre-cooling, packing, reefer booking, MAPA phytosanitary paperwork and destination compliance all sit with the same team. One point of contact from the grove to your door — and one company answerable for it.</p></div>
+    <div id="flipShadow" aria-hidden="true"></div>
+    <div id="flipRig" aria-hidden="true">
+      <div id="flipUnit">
+        <div class="fface fside">
+          <img id="ffTruck" src="{{A:truck-side}}" alt="">
+          <img id="ffBox" src="{{A:container-side}}" alt="">
+        </div>
+        <div class="fface ftop">
+          <img id="ffBoxTop" src="{{A:ctn-top-h}}" alt="">
+          <img id="ffCabTop" src="{{A:cab-top-h}}" alt="">
+        </div>
+      </div>
     </div>
     <canvas id="flipSeq" aria-hidden="true"></canvas>
     <div class="film-fog" id="filmFogFar"></div>
@@ -760,9 +827,9 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
   <div class="pin">
     <div class="telemetry mono">02 / Inland — farm to port · <b><span id="kmh">0</span> km/h</b> · reefer 7.0°C</div>
     <div id="roadPersp">
-    <svg id="roadSvg" viewBox="0 0 1200 3400" aria-hidden="true">
+    <svg id="roadSvg" viewBox="-1600 0 3700 3900" aria-hidden="true">
       <path id="roadPath" d="M600,-100 L600,560 C600,740 900,740 900,920 L900,1480 C900,1660 600,1660 600,1840 L600,2450"
-            fill="none" stroke="#0A1926" stroke-width="220"/>
+            fill="none" stroke="#0A1926" stroke-width="366"/>
       <path d="M600,-100 L600,560 C600,740 900,740 900,920 L900,1480 C900,1660 600,1660 600,1840 L600,2450"
             fill="none" stroke="#F5F2E9" stroke-width="4" stroke-dasharray="44 52" opacity=".5"/>
       <rect x="0" y="2450" width="1200" height="130" fill="#123047"/>
@@ -773,10 +840,10 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
       <image id="roadShip" href="{{A:ship-top}}" x="350" y="2575" width="500" height="825" preserveAspectRatio="xMidYMin meet"/>
       <!-- articulated rig: the cab steers through curves independently of the trailer -->
       <g id="tdTrail">
-        <image href="{{A:ctn-top}}" x="-23" y="-82" width="46" height="164"/>
+        <image href="{{A:ctn-top}}" x="-38" y="-137" width="77" height="273"/>
       </g>
       <g id="tdCab">
-        <image href="{{A:cab-top}}" x="-23" y="-39" width="46" height="79"/>
+        <image href="{{A:cab-top}}" x="-38" y="-66" width="77" height="132"/>
       </g>
     </svg>
     </div>
@@ -1178,6 +1245,14 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
 {
   const film=$('journeyFilm'),roadSvg=$('filmRoadSvg'),roadPath=$('filmRoadPath');
   const roadLength=roadPath.getTotalLength(),roadState={p:0};
+  const VB_W=3700,VB_CX=-1600+VB_W/2;   /* road viewBox: width and centre x */
+  const CAB_OFF=97,TRAIL_OFF=103;       /* cab / container spacing along the path */
+  /* Start the run where the approach is already a full screen wide, so the
+     hinge lands on asphalt that extends past both edges of the frame. */
+  const ROAD_START=(()=>{const want=roadPath.getPointAtLength(0).x+2300;
+    let lo=0,hi=roadLength;for(let i=0;i<40;i++){const m=(lo+hi)/2;
+      (roadPath.getPointAtLength(m).x<want)?lo=m:hi=m;}
+    return lo/roadLength;})();
   const topPayload=$('filmTopPayload'),topCab=$('filmTopCab');
   const fCab=$('fCab'),fTrail=$('fTrail');
   const services=gsap.utils.toArray('.film-service');
@@ -1188,6 +1263,14 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   /* Keep the rig's visual center locked to the camera during side → top view. */
   const centerTruckX=()=>mob()?12:26.5;
   const payloadOffset=()=>2;
+  /* The rig rides up until its wheels meet the top edge of the service band —
+     the band is the floor it stands on. Derived from the two CSS values that
+     define it, so the phone layout (which sits the rig higher, on a taller
+     band) lands on the floor rather than floating inside it. */
+  const TRUCK_FOOT=()=>mob()?29.7:15.7;   /* #filmSideTruck bottom, in svh */
+  const BAND_TOP=()=>mob()?60:56;         /* #filmServiceBand height, in svh */
+  const serviceRise=()=>(BAND_TOP()-TRUCK_FOOT())/100*innerHeight;
+
 
   function roadPose(distance){
     const a=roadPath.getPointAtLength(clamp(distance,0,roadLength));
@@ -1195,18 +1278,121 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     return {x:a.x,y:a.y,angle:Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI};
   }
   function placeRoad(){
-    const d=lerp(.025,.985,roadState.p)*roadLength;
+    const d=lerp(ROAD_START,.985,roadState.p)*roadLength;
     /* the rig is drawn INTO the road: cab and trailer each follow the path, so the
        truck can never leave the asphalt through a curve */
-    const cab=roadPose(d+58),trail=roadPose(d-62),mid=roadPose(d);
+    const cab=roadPose(d+CAB_OFF),trail=roadPose(d-TRAIL_OFF),mid=roadPose(d);
     fCab.setAttribute('transform',`translate(${cab.x},${cab.y}) rotate(${cab.angle+90})`);
     fTrail.setAttribute('transform',`translate(${trail.x},${trail.y}) rotate(${trail.angle+90})`);
-    const scale=roadSvg.getBoundingClientRect().width/1200;
-    const xFollow=(mid.x-600)*scale;
+    const scale=roadSvg.getBoundingClientRect().width/VB_W;
+    const xFollow=(mid.x-VB_CX)*scale;
     const yFollow=mid.y*scale-innerHeight*.41;
     const roll=clamp((mid.angle-90)*-.06,-3.2,3.2);
     roadSvg.style.transform=`translate(calc(-50% - ${xFollow}px),${-yFollow}px) rotate(${roll}deg)`;
   }
+
+  /* ---- SIDE → PLAN HINGE ---------------------------------------------------
+     The rig is laid out from the live geometry of the side elevation, so the
+     first frame of the turn is pixel-identical to the frame before it and the
+     handoff is invisible. Measured once per flip and again on refresh. */
+  const flipState={a:0};
+  const flipRig=$('flipRig'),flipUnit=$('flipUnit'),flipShadow=$('flipShadow');
+  const fSide=flipRig.querySelector('.fside'),fTop=flipRig.querySelector('.ftop');
+  const ffTruck=$('ffTruck'),ffBox=$('ffBox'),ffCabTop=$('ffCabTop'),ffBoxTop=$('ffBoxTop');
+  /* Plan-view width of the rig, expressed as a fraction of container length.
+     Taken straight from the top-view artwork so the vehicle keeps its real
+     proportions the moment it lands flat. */
+  const PLAN_AR=750/211;         /* ctn-top-h  */
+  const CAB_AR=361/211;          /* cab-top-h  */
+  let flipGeom=null;
+
+  function layoutFlipRig(){
+    const pin=film.querySelector('.film-pin').getBoundingClientRect();
+    const t=$('filmSideTruck').getBoundingClientRect();
+    const b=$('filmSidePayload').getBoundingClientRect();
+    if(!t.width||!b.width) return;
+    /* hinge = the container roofline: the plane we rotate about */
+    const hingeY=b.top-pin.top;
+    const left=Math.min(t.left,b.left)-pin.left;
+    const right=Math.max(t.right,b.right)-pin.left;
+    const W=right-left, botY=Math.max(t.bottom,b.bottom)-pin.top;
+    const planH=b.width/PLAN_AR;          /* how wide the rig reads from above */
+    /* Where the turn has to end. placeRoad() always parks the road rig's mid
+       point at (50vw, 41svh) and draws the container 164 viewBox units long, so
+       the hinge is aimed at exactly that spot and size. The SVG then takes over
+       without anything moving — the handoff is invisible rather than a cut. */
+    const svgScale=roadSvg.getBoundingClientRect().width/VB_W;
+    const endScale=(273*svgScale)/b.width;
+    /* the asphalt the SVG will draw, in screen px — the band is narrowed to
+       exactly this so the ribbon does not pop into a different width */
+    const ribbon=366*svgScale;
+    /* placeRoad() always parks the rig's mid point at (50vw, 41svh); the
+       container itself rides 62 units behind that. Aim the hinge at the
+       container's landing spot, not the rig's, or the swap shows a jump. */
+    /* Rather than model where the SVG will draw the container, put the road on
+       its mark and measure it. Exact by construction, and it stays exact if the
+       path or the viewBox is ever retuned. */
+    roadState.p=0; placeRoad();
+    const tr=fTrail.getBoundingClientRect();
+    const tx=tr.left+tr.width/2-pin.left, ty=tr.top+tr.height/2-pin.top;
+    const boxL=b.left-pin.left-left;
+    flipGeom={left,hingeY,W,sideH:botY-hingeY,planH,endScale,ribbon,tx,ty,
+              boxL,boxW:b.width,boxH:b.height,
+              truckL:t.left-pin.left-left,truckW:t.width,truckH:t.height,
+              truckTop:t.top-pin.top-hingeY};
+    gsap.set(flipRig,{x:left,y:hingeY,rotation:0});
+    flipRig.style.perspective=Math.round(Math.max(900,W*1.9))+'px';
+    /* elevation faces, positioned exactly where the side rig already is */
+    fSide.style.cssText+=`;width:${W}px;height:${flipGeom.sideH}px`;
+    ffTruck.style.cssText+=`;left:${flipGeom.truckL}px;top:${flipGeom.truckTop}px;width:${t.width}px`;
+    ffBox.style.cssText+=`;left:${flipGeom.boxL}px;top:0px;width:${b.width}px`;
+    /* plan faces: same length, true overhead width, cab tucked at the nose */
+    fTop.style.cssText+=`;width:${W}px;height:${planH}px`;
+    ffBoxTop.style.cssText+=`;left:${flipGeom.boxL}px;top:0px;width:${b.width}px`;
+    const cabW=planH*CAB_AR;
+    ffCabTop.style.cssText+=`;left:${flipGeom.boxL+b.width-cabW*.06}px;top:0px;width:${cabW}px`;
+    applyFlip();
+  }
+
+  /* a=0 side elevation · a=1 plan view. One rotation drives everything else so
+     the shadow, scale and articulation can never drift out of sync with it. */
+  function applyFlip(){
+    if(!flipGeom) return;
+    const g=flipGeom, a=flipState.a, deg=90*a;
+    /* the camera is climbing, so the rig shrinks toward its road-view size */
+    const s=lerp(1,g.endScale,a);
+    gsap.set(flipUnit,{rotationX:deg,scale:s,transformOrigin:'0px 0px'});
+    /* and travels so the container lands exactly on its road-view mark */
+    const endX=g.tx-(g.boxL+g.boxW/2)*s;
+    const endY=g.ty-(g.planH/2)*s;
+    gsap.set(flipRig,{x:lerp(g.left,endX,a),y:lerp(g.hingeY,endY,a)});
+    /* the cab breaks against the trailer through the turn, the way a rig does
+       when it swings — it settles square again by the time the road appears */
+    const art=Math.sin(a*Math.PI)*(mob()?7:9);
+    gsap.set(ffCabTop,{rotation:art,transformOrigin:'12% 50%'});
+    gsap.set(ffBoxTop,{rotation:-art*.34,transformOrigin:'88% 50%'});
+    /* Contact shadow. On the ground it is a tight smear under the wheels; from
+       above it spreads and softens, which is what sells the change of altitude. */
+    const rx=lerp(g.left,g.cx-g.W*s/2,a);
+    const sy=lerp(g.hingeY+g.sideH*.99,g.cy+g.planH*s*.30,a);
+    gsap.set(flipShadow,{x:rx+g.W*s*.04,y:sy,width:g.W*s*.92,
+      height:Math.max(5,g.planH*s*(a?.62:.16)),opacity:lerp(.34,.13,a)});
+    /* The ground the truck stands on is the same ground it will drive on. Seen
+       edge-on it is a band at the foot of the frame; as the camera lifts it
+       opens out to fill the view, then closes to the width of the ribbon the
+       road SVG draws. Driving it from `a` keeps it exactly in step with the
+       turn — a separate tween drifts and the two roads swap at odd widths. */
+    const ease=gsap.parseEase('power2.inOut');
+    const open=ease(clamp(a/.82,0,1)), close=ease(clamp((a-.82)/.18,0,1));
+    const grown=lerp(.56*innerHeight,innerHeight,open);
+    const bh=lerp(grown,g.ribbon,close);
+    const bb=lerp(0,innerHeight-(innerHeight*.41+g.ribbon/2),close);
+    gsap.set(['#filmServiceBand','#laneDashes'],{height:bh+'px',bottom:bb+'px'});
+  }
+  /* inspection hook for the headless visual checks */
+  window.__film=()=>({a:flipState.a,g:flipGeom,t:tl.time?tl.time():null});
+  ScrollTrigger.addEventListener('refreshInit',()=>{flipGeom=null});
+  ScrollTrigger.addEventListener('refresh',()=>{if(flipState.a>0)layoutFlipRig()});
 
   /* The truck begins beyond the right edge and later reverses left under the
      suspended container; decreasing x also turns its wheels backward. */
@@ -1246,6 +1432,8 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   gsap.set('#filmServiceGhost',{opacity:0});
   gsap.set([topPayload,topCab],{autoAlpha:0});
   gsap.set('#filmOceanCopy',{autoAlpha:0,y:18,clipPath:'inset(0 100% 0 0)'});
+  gsap.set('.film-story',{autoAlpha:0,y:22,clipPath:'inset(0 100% 0 0)'});
+  gsap.set('#filmOriginCopy2',{autoAlpha:0,y:22,clipPath:'inset(0 100% 0 0)'});
   gsap.set(['#filmFogFar','#filmFogNear'],{autoAlpha:0});
   gsap.set('#filmPlane',{xPercent:-50,yPercent:-50,x:'-100vw',rotation:3,scale:1.15});
   placeRoad();
@@ -1282,14 +1470,19 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to('#filmSpreader',{y:0,duration:.07,ease:'power1.inOut'},1.23)
     .to('#filmCable',{height:()=>spreaderLead(),duration:.07,ease:'power1.inOut'},1.23);
   tl.to('#filmStacker',{x:vw(-28),autoAlpha:0,duration:.20,ease:'power2.in'},1.29)
-    .to('#filmOriginCopy',{autoAlpha:0,y:-24,duration:.22,ease:'power2.in'},1.27);
+    .to('#filmOriginCopy',{autoAlpha:0,y:-24,duration:.20,ease:'power2.in'},.36);
+  /* the lift keeps talking, but from the side the boom does not reach */
+  tl.fromTo('#filmOriginCopy2',{autoAlpha:0,y:22,clipPath:'inset(0 100% 0 0)'},
+      {autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.20,ease:'power2.out',immediateRender:false},.66)
+    .to('#filmOriginCopy2',{autoAlpha:0,y:-18,duration:.18,ease:'power2.in'},1.30);
 
   /* ---- JOINT 1 (no cut): the ground GROWS into the service band while the loaded
      truck rides up with its top edge — one continuous floor ---- */
-  tl.to('#filmGround',{backgroundColor:'#024030',duration:.26,ease:'sine.inOut'},1.38);
+  tl.to('#filmGround',{backgroundColor:'#024030',duration:.26,ease:'sine.inOut'},1.38)
+    .to('#filmGround',{autoAlpha:0,duration:.10,ease:'none'},1.66);
   tl.to('#filmServiceBand',{yPercent:0,duration:.26,ease:'sine.inOut'},1.38)
-    .to('#filmSideTruck',{y:()=>-.40*innerHeight,duration:.26,ease:'sine.inOut'},1.38)
-    .to('#filmSidePayload',{y:()=>-.40*innerHeight-deckRest(),duration:.26,ease:'sine.inOut'},1.38)
+    .to('#filmSideTruck',{y:()=>-serviceRise(),duration:.26,ease:'sine.inOut'},1.38)
+    .to('#filmSidePayload',{y:()=>-serviceRise()-deckRest(),duration:.26,ease:'sine.inOut'},1.38)
     .to('#filmServiceGhost',{opacity:1,duration:.20},1.44)
     .to('#filmServiceGhost',{x:'-34vw',duration:2.52},1.44);
 
@@ -1309,24 +1502,31 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   tl.to('#laneDashes',{opacity:1,duration:.16},3.68)
     .fromTo('#laneDashes',{xPercent:0},{xPercent:-38,duration:1.25,ease:'none'},3.68)
     .to('#filmServiceBand',{backgroundColor:'#0A1926',duration:.42,ease:'power1.inOut'},3.70);
-  /* The vehicle stays horizontal and fixed at screen centre while the moving
-     lane establishes speed. A scale/dissolve simulates the camera rising; no
-     rotation means the truck can never appear to tip or fall into the road. */
-  tl.to(['#filmSideTruck','#filmSidePayload'],{scale:.82,duration:.16,ease:'power1.inOut'},3.86)
-    .to(['#filmSideTruck','#filmSidePayload'],{autoAlpha:0,duration:.10,ease:'power1.inOut'},3.96)
-    .to('#filmGround',{autoAlpha:0,duration:.14},3.94)
-    .fromTo('#hTopRig',{autoAlpha:0,scale:1.22,filter:'blur(3px)'},{autoAlpha:1,scale:1,filter:'blur(0px)',duration:.16,ease:'power2.out',immediateRender:false},4.06);
-  /* streaming hold — motion without a cut */
-  tl.to('#hTopRig',{y:-3,duration:.10,ease:'sine.inOut'},4.18)
-    .to('#hTopRig',{y:0,duration:.10,ease:'sine.inOut'},4.28);
+  /* The camera rises from the shoulder of the road to directly overhead. The rig
+     is a real 3D hinge (see #flipRig): the side elevation folds away from the
+     viewer about the container roofline while the plan view folds toward it.
+     Both ends of the turn are the untouched artwork, so nothing ever blurs. */
+  tl.call(layoutFlipRig,null,3.82)
+    .to(['#filmSideTruck','#filmSidePayload'],{autoAlpha:0,duration:0,ease:'none'},3.86)
+    .set('#flipRig',{autoAlpha:1},3.86)
+    .fromTo(flipState,{a:0},{a:1,duration:.34,ease:'power1.inOut',onUpdate:applyFlip,immediateRender:false},3.86)
+    ;
+  /* The rig holds its plan pose while the asphalt arrives beneath it — the road
+     SVG fades up at the identical position and size, so nothing appears to move. */
   /* The vertical road grows outward from the truck—there is no panel rotation or
      downward fall. The road sprite takes over at the same screen coordinates. */
   tl.to('#filmServiceGhost',{opacity:0,duration:.18},3.78);
-  tl.fromTo('#filmRoadSvg',{autoAlpha:0},{autoAlpha:1,duration:.28,ease:'power1.inOut'},4.24)
-    .to([fCab,fTrail],{autoAlpha:1,duration:.10},4.30)
-    .to('#hTopRig',{autoAlpha:0,duration:.12},4.30)
-    .to('#filmRoad',{backgroundColor:'rgba(248,248,244,1)',duration:.28},4.24)
-    .to('#filmServices',{autoAlpha:0,duration:.28},4.24);
+  /* Park the road rig on its mark BEFORE it is ever shown; without this the
+     SVG truck sits at the viewBox origin and the frame reads as empty. */
+  tl.call(()=>{roadState.p=0;placeRoad();},null,4.26)
+    /* Both roads are now the same ribbon at the same place, and both trucks the
+       same size in the same pose — so this is a cut with nothing to see. A
+       crossfade here would only show two half-opacity roads blended to grey. */
+    .set('#filmRoadSvg',{autoAlpha:1},4.30)
+    .set([fCab,fTrail],{autoAlpha:1},4.30)
+    .set('#flipRig',{autoAlpha:0},4.30)
+    .set('#flipShadow',{opacity:0},4.30)
+    .set('#filmServices',{autoAlpha:0},4.30);
 
   /* ---- ROAD 4.75–6.75: one camera, truck drawn into the asphalt ---- */
   tl.to(roadState,{p:1,duration:2.0,onUpdate:placeRoad},4.75);
@@ -1369,8 +1569,16 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to('#filmOceanWakeVid',{opacity:0,scale:1.12,duration:.48,ease:'power1.inOut'},8.02)
     .to('#filmShip',{autoAlpha:1,duration:.28,ease:'power1.inOut'},8.04)
     .to('#filmShip',{x:'5vw',y:'-10svh',rotation:.7,duration:.72,ease:'none'},8.38)
-    .to('#filmOceanCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},8.02)
-    .to('#filmOceanCopy',{autoAlpha:0,y:-18,duration:.20,ease:'power2.in'},8.86);
+    .to('#filmOceanCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.26,ease:'power2.out'},7.62)
+    .to('#filmOceanCopy',{autoAlpha:0,y:-18,duration:.18,ease:'power2.in'},7.92);
+  /* The company introduces itself across the aerial pull-back. Each beat is
+     tied to the ship still shrinking, so the reader is never asked to stop. */
+  [['#story1',8.22,8.82],['#story2',8.96,9.56],['#story3',9.70,10.30]].forEach(([sel,a,b])=>{
+    tl.fromTo(sel,{autoAlpha:0,y:22,clipPath:'inset(0 100% 0 0)'},
+                  {autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.26,ease:'power2.out',
+                   immediateRender:false},a)
+      .to(sel,{autoAlpha:0,y:-16,duration:.20,ease:'power2.in'},b);
+  });
 
   /* ---- SKY 8.18–10.1: mist begins while the shrinking ship is still legible;
      dense cloud cover arrives before the aircraft, preserving one camera rise. ---- */
@@ -1384,7 +1592,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to(['#filmClouds','#filmFogNear'],{autoAlpha:0,duration:.46,ease:'power1.out'},9.72)
     .to('#filmFogFar',{autoAlpha:.28,duration:.50},9.72)
     .to('#filmPlane',{x:'12vw',y:'-5svh',rotation:-2,scale:.92,duration:.72,ease:'none'},9.70)
-    .to('#filmSkyCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},9.78);
+    .to('#filmSkyCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},10.46);
 
   addEventListener('resize',placeRoad);
   const filmVids=[$('filmOceanVid'),$('filmOceanWakeVid')].filter(Boolean);
@@ -1544,7 +1752,7 @@ if(false){
     tdCab.setAttribute('transform',`translate(${cab.x},${cab.y}) rotate(${cab.ang+90})`);
     tdTrail.setAttribute('transform',`translate(${trail.x},${trail.y}) rotate(${trail.ang+90})`);
     const mid=poseAt(d);
-    const scale=roadSvg.getBoundingClientRect().width/1200;
+    const scale=roadSvg.getBoundingClientRect().width/VB_W;
     const yOff=mid.y*scale-innerHeight*0.42;
     /* on narrow screens the camera also follows the truck horizontally */
     const xOff=innerWidth<=760?(mid.x-600)*scale:0;
