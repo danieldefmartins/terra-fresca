@@ -1046,40 +1046,75 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     const jlon=lon+(Math.random()-.5)*0.9,jlat=lat+(Math.random()-.5)*0.9;
     if(land(jlon,jlat))pts.push([jlat*Math.PI/180,jlon*Math.PI/180]);
   }
+  /* Tilt is no longer a constant: the second drag axis feeds it, so the globe
+     turns freely in both directions rather than only spinning about its axis. */
   const TILT=0.22;
-  function project(lat,lon,rot,rad){
+  let userTilt=0;
+  function project(lat,lon,rot,rad,tilt){
+    const T=tilt===undefined?TILT+userTilt:tilt;
     const x0=Math.cos(lat)*Math.sin(lon+rot),y0=Math.sin(lat),z0=Math.cos(lat)*Math.cos(lon+rot);
-    const y=y0*Math.cos(TILT)-z0*Math.sin(TILT),z=y0*Math.sin(TILT)+z0*Math.cos(TILT);
+    const y=y0*Math.cos(T)-z0*Math.sin(T),z=y0*Math.sin(T)+z0*Math.cos(T);
     return [CX+x0*rad,CY-y*rad,z];
   }
   const deg=Math.PI/180;
   const SANTOS=[-23.9*deg,-46.3*deg];
+  /* The four Brazilian load ports the copy names, so the origin side of the
+     network is as real as the destination side. */
+  const ORIGINS=[
+    {name:'SANTOS · BR',lat:-23.9,lon:-46.3},
+    {name:'ITAJAÍ · BR',lat:-26.9,lon:-48.7},
+    {name:'PECÉM · BR',lat:-3.5,lon:-38.8},
+    {name:'NATAL · BR',lat:-5.8,lon:-35.2},
+  ];
   const PORTS=[
+    /* Europe */
     {name:'ROTTERDAM',lat:51.9,lon:4.4},
-    {name:'JEBEL ALI',lat:25.0,lon:55.1},
-    {name:'SHANGHAI',lat:31.2,lon:121.5},
-    {name:'NEW YORK',lat:40.7,lon:-74.0},
+    {name:'ANTWERP',lat:51.3,lon:4.4},
+    {name:'FELIXSTOWE',lat:52.0,lon:1.4},
+    {name:'VIGO',lat:42.2,lon:-8.7},
+    {name:'ALGECIRAS',lat:36.1,lon:-5.5},
     {name:'LISBOA',lat:38.7,lon:-9.1},
+    {name:'GENOVA',lat:44.4,lon:8.9},
+    /* North America */
+    {name:'PHILADELPHIA',lat:39.9,lon:-75.2},
+    {name:'NEW YORK',lat:40.7,lon:-74.0},
+    {name:'MIAMI',lat:25.8,lon:-80.2},
+    {name:'HOUSTON',lat:29.7,lon:-95.3},
+    /* Africa & Middle East */
+    {name:'CASABLANCA',lat:33.6,lon:-7.6},
+    {name:'JEBEL ALI',lat:25.0,lon:55.1},
+    {name:'DURBAN',lat:-29.9,lon:31.0},
+    /* Asia */
+    {name:'SINGAPORE',lat:1.3,lon:103.9},
+    {name:'HONG KONG',lat:22.3,lon:114.2},
+    {name:'SHANGHAI',lat:31.2,lon:121.5},
+    {name:'BUSAN',lat:35.1,lon:129.0},
     {name:'TOKYO',lat:35.6,lon:139.7},
   ];
   const DESTS=PORTS.map(d=>[d.lat*deg,d.lon*deg]);
+  const ORIG_PTS=ORIGINS.map(d=>[d.lat*deg,d.lon*deg]);
   const slerpPt=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t)];
   let heroVisible=true;
   ScrollTrigger.create({trigger:'.hero',start:'top bottom',end:'bottom top',
     onToggle:s=>{heroVisible=s.isActive}});
   /* the globe is touchable — drag to spin it, with inertia */
-  let userRot=0,spinVel=0,dragging=false,lastX=0;
-  cv.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;spinVel=0;cv.classList.add('dragging');cv.setPointerCapture(e.pointerId);});
+  let userRot=0,spinVel=0,tiltVel=0,dragging=false,lastX=0,lastY=0;
+  cv.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;
+    spinVel=0;tiltVel=0;cv.classList.add('dragging');cv.setPointerCapture(e.pointerId);});
   cv.addEventListener('pointermove',e=>{
     if(!dragging)return;
-    const dx=e.clientX-lastX;lastX=e.clientX;
+    const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
     userRot+=dx*0.005;spinVel=dx*0.005;
+    /* Vertical drag tilts the globe. touch-action:pan-y means the browser keeps
+       vertical-initiated gestures for page scrolling, but once a drag has been
+       claimed horizontally the events are ours and both axes work. */
+    userTilt+=dy*0.005;tiltVel=dy*0.005;
   });
   const endDrag=()=>{dragging=false;cv.classList.remove('dragging');};
   cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
   gsap.ticker.add(()=>{
     if(!heroVisible)return;
-    if(!dragging){userRot+=spinVel;spinVel*=0.95;}
+    if(!dragging){userRot+=spinVel;spinVel*=0.95;userTilt+=tiltVel;tiltVel*=0.95;}
     const t=gsap.ticker.time;
     ctx.clearRect(0,0,W,H);
     const g=ctx.createRadialGradient(CX-R*.45,CY-R*.75,R*.1,CX,CY,R*1.45);
@@ -1107,27 +1142,54 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
         if(z>-0.15){ if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y); }
         else started=false;
       }
-      ctx.strokeStyle='rgba(182,130,31,.4)';ctx.lineWidth=1;ctx.stroke();
-      const q=((reduced?0.5:t*0.11)+i*0.17)%1,[la,lo]=slerpPt(SANTOS,d,q);
-      const rad=R*(1+0.28*Math.sin(Math.PI*q));
-      const [x,y,z]=project(la,lo,rot,rad);
-      if(z>-0.15){ctx.beginPath();ctx.arc(x,y,2.4,0,7);ctx.fillStyle='#B6821F';ctx.fill();}
+      ctx.strokeStyle='rgba(182,130,31,.28)';ctx.lineWidth=.9;ctx.stroke();
+      /* Only a third of the lanes carry a running vessel at once — nineteen
+         moving dots reads as noise rather than a network. */
+      if(i%3===0){
+        const q=((reduced?0.5:t*0.11)+i*0.17)%1,[la,lo]=slerpPt(SANTOS,d,q);
+        const rad=R*(1+0.28*Math.sin(Math.PI*q));
+        const [x,y,z]=project(la,lo,rot,rad);
+        if(z>-0.15){ctx.beginPath();ctx.arc(x,y,2.4,0,7);ctx.fillStyle='#B6821F';ctx.fill();}
+      }
     }
-    /* destination port markers + names, fading with the horizon */
+    /* Destination markers. Every port gets a dot; only those well inside the
+       near face get a name, which keeps the labels from stacking up as the
+       globe turns. */
     ctx.font='8px IBM Plex Mono,monospace';
-    for(let i=0;i<DESTS.length;i++){
-      const [x,y,z]=project(DESTS[i][0],DESTS[i][1],rot,R);
-      if(z<=0.05)continue;
-      const a=Math.min(1,(z-0.05)*2.2);
-      ctx.beginPath();ctx.arc(x,y,2.2,0,7);ctx.fillStyle=`rgba(245,242,233,${0.85*a})`;ctx.fill();
-      ctx.fillStyle=`rgba(245,242,233,${0.55*a})`;
-      ctx.fillText(PORTS[i].name,x+7,y+3);
+    /* Ports cluster — Rotterdam, Antwerp and Felixstowe land within a few
+       pixels of each other. Place the most front-facing label first and drop
+       any that would collide, so the ring of names stays readable as it turns. */
+    const placed=[];
+    const fits=(x,y,w)=>{
+      for(const b of placed) if(x<b.x+b.w&&x+w>b.x&&y<b.y+11&&y+11>b.y) return false;
+      placed.push({x,y,w});return true;
+    };
+    const order=DESTS.map((d,i)=>{const q=project(d[0],d[1],rot,R);return {i,x:q[0],y:q[1],z:q[2]};})
+                     .filter(o=>o.z>0.05).sort((a,b)=>b.z-a.z);
+    for(const o of order){
+      const a=Math.min(1,(o.z-0.05)*2.2);
+      ctx.beginPath();ctx.arc(o.x,o.y,2,0,7);ctx.fillStyle=`rgba(245,242,233,${0.85*a})`;ctx.fill();
+      if(o.z>0.30){
+        const nm=PORTS[o.i].name,w=ctx.measureText(nm).width;
+        if(fits(o.x+7,o.y-5,w)){
+          ctx.fillStyle=`rgba(245,242,233,${0.6*Math.min(1,(o.z-0.30)*3.4)})`;
+          ctx.fillText(nm,o.x+7,o.y+3);
+        }
+      }
     }
-    const [x,y,z]=project(SANTOS[0],SANTOS[1],rot,R);
-    if(z>0){
-      ctx.beginPath();ctx.arc(x,y,3.4,0,7);ctx.fillStyle='#B6821F';ctx.fill();
-      ctx.font='9px IBM Plex Mono,monospace';ctx.fillStyle='rgba(245,242,233,.9)';
-      ctx.fillText('SANTOS · BR',x+8,y+3);
+    /* Brazilian load ports, in the brand gold so origin reads apart from destination */
+    ctx.font='9px IBM Plex Mono,monospace';
+    for(let i=0;i<ORIG_PTS.length;i++){
+      const [x,y,z]=project(ORIG_PTS[i][0],ORIG_PTS[i][1],rot,R);
+      if(z<=0.02)continue;
+      const a=Math.min(1,(z-0.02)*2.4);
+      ctx.beginPath();ctx.arc(x,y,i===0?3.4:2.4,0,7);
+      ctx.fillStyle=`rgba(182,130,31,${a})`;ctx.fill();
+      if(z>0.3){
+        ctx.fillStyle=`rgba(245,242,233,${0.9*Math.min(1,(z-0.3)*3.4)})`;
+        ctx.fillText(ORIGINS[i].name,x+8,y+3);
+        placed.push({x:x+8,y:y-5,w:ctx.measureText(ORIGINS[i].name).width});
+      }
     }
   });
 })();
