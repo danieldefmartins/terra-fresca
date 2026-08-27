@@ -172,9 +172,12 @@ nav.main a:hover{color:var(--paper)}
 .produce-handoff h2{font-size:clamp(42px,6.8vw,96px);max-width:12ch;position:relative;z-index:3}
 .produce-handoff p{margin-top:18px;color:var(--ink-soft);max-width:40ch;position:relative;z-index:3}
 .produce-floor{position:absolute;left:0;right:0;bottom:0;height:16svh;background:var(--ink)}
-.handoff-crates{position:absolute;left:0;right:0;bottom:16svh;height:32svh}
-.handoff-crates img{position:absolute;bottom:0;width:min(10vw,145px);filter:drop-shadow(0 15px 11px rgba(0,0,0,.2));will-change:transform}
-.handoff-crates img:nth-child(1){left:8vw}.handoff-crates img:nth-child(2){left:21vw}.handoff-crates img:nth-child(3){left:34vw}
+.handoff-crates{position:absolute;left:clamp(20px,4vw,64px);right:clamp(20px,4vw,64px);bottom:13svh;height:34svh;
+  display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;
+  gap:clamp(4px,0.8vw,13px) clamp(3px,0.7vw,11px)}
+.handoff-crates img{position:static;flex:0 0 auto;
+  width:min(88px,calc(100% / 14 - clamp(3px,0.7vw,11px)));
+  filter:drop-shadow(0 12px 9px rgba(0,0,0,.18));will-change:transform}
 .produce-swipe{display:none}
 @media(max-width:760px){
   #producePrelude{height:1620svh}.produce-card{grid-template-columns:1fr;padding:7svh 22px 6svh;align-content:center}
@@ -182,8 +185,9 @@ nav.main a:hover{color:var(--paper)}
   .produce-copy{margin-top:1svh}.produce-copy h3{font-size:clamp(38px,12vw,60px)}
   .produce-copy .variety{font-size:14px;margin-top:12px}.produce-intro::after{width:80vw;right:-48vw}
   .produce-swipe{display:block;position:absolute;right:22px;bottom:5svh;color:#6D8299}
-  .produce-handoff{padding-top:9svh}.handoff-crates{height:28svh}.handoff-crates img{width:24vw}
-  .handoff-crates img:nth-child(1){left:4vw}.handoff-crates img:nth-child(2){left:30vw}.handoff-crates img:nth-child(3){left:56vw}
+  .produce-handoff{padding-top:9svh}
+  .handoff-crates{height:30svh;bottom:9svh;gap:2vw 1.8vw}
+  .handoff-crates img{width:calc(100% / 7 - 1.6vw)}
 }
 
 /* ============ LOAD SCENE (photo composite) ============ */
@@ -696,8 +700,8 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
       <article class="produce-card" data-number="13"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-grapeblack-cut.webp" alt="Crate of black seedless grapes"></div><div class="produce-copy"><span class="mono">13 · Grape</span><h3>Black Grape</h3><p class="variety">Seedless · Midnight Beauty · Autumn Royal</p><p class="mono season">Peak window · Oct–Dec</p></div></article>
       <article class="produce-card" data-number="14"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-banana-cut.webp" alt="Crate of Brazilian bananas"></div><div class="produce-copy"><span class="mono">14 · Fruit</span><h3>Banana</h3><p class="variety">Prata · Nanica</p><p class="mono season">Availability · Year-round</p></div></article>
       <article class="produce-handoff">
-        <div><span class="kicker">Selected · graded · ready for the cold chain</span><h2 class="display">Now follow the shipment.</h2><p>The portfolio becomes one accountable journey. The same crates move directly into the loading scene.</p></div>
-        <div class="handoff-crates" aria-hidden="true"><img src="assets/crate-mango-cut.webp" alt=""><img src="assets/crate-lime-cut.webp" alt=""><img src="assets/crate-papaya-cut.webp" alt=""></div><div class="produce-floor"></div>
+        <div><span class="kicker">Selected · graded · ready for the cold chain</span><h2 class="display">Now follow the shipment.</h2><p>The portfolio becomes one accountable journey. All fourteen lines, and the same crates move directly into the loading scene.</p></div>
+        <div class="handoff-crates" aria-hidden="true"><img src="assets/crate-mango-cut.webp" alt=""><img src="assets/crate-lime-cut.webp" alt=""><img src="assets/crate-papaya-cut.webp" alt=""><img src="assets/crate-melon-cut.webp" alt=""><img src="assets/crate-avocado-cut.webp" alt=""><img src="assets/crate-ginger-cut.webp" alt=""><img src="assets/crate-sweetpotato-cut.webp" alt=""><img src="assets/crate-passion-cut.webp" alt=""><img src="assets/crate-pineapple-cut.webp" alt=""><img src="assets/crate-watermelon-cut.webp" alt=""><img src="assets/crate-grapegreen-cut.webp" alt=""><img src="assets/crate-grapered-cut.webp" alt=""><img src="assets/crate-grapeblack-cut.webp" alt=""><img src="assets/crate-banana-cut.webp" alt=""></div><div class="produce-floor"></div>
       </article>
     </div>
   </div>
@@ -1032,7 +1036,7 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
     gsap.fromTo(card,{backgroundColor:i%2?'#052033':'#031B2E'},{backgroundColor:i%2?'#031B2E':'#052033',ease:'none',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
   });
-  gsap.fromTo('.handoff-crates img',{y:90,rotation:-8,autoAlpha:0},{y:0,rotation:0,autoAlpha:1,stagger:.08,ease:'power2.out',
+  gsap.fromTo('.handoff-crates img',{y:90,rotation:-8,autoAlpha:0},{y:0,rotation:0,autoAlpha:1,stagger:.035,ease:'power2.out',
     scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 72%',end:'center center',scrub:true}});
   gsap.fromTo('.produce-handoff h2,.produce-handoff p,.produce-handoff .kicker',{y:34,autoAlpha:0},{y:0,autoAlpha:1,stagger:.06,ease:'power2.out',
     scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 70%',end:'center 52%',scrub:true}});

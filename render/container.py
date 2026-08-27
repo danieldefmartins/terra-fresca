@@ -114,7 +114,7 @@ def box(name, cx, cy, cz, sx, sy, sz, bevel=0.006):
     ob = bpy.context.object
     ob.name = name
     ob.scale = (sx, sy, sz)
-    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     if bevel:
         m = ob.modifiers.new("bev", "BEVEL")
         m.width, m.segments = bevel, 2

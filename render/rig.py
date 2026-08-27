@@ -46,9 +46,9 @@ CTN_REAR = TR_REAR + 0.20
 CTN_X = CTN_REAR + CTN_L / 2        # container centre on the deck
 
 CAB_REAR = 4.55
-CAB_L, CAB_H = 2.40, 2.35
+CAB_L, CAB_H = 2.40, 2.48
 CAB_X = CAB_REAR + CAB_L / 2
-CAB_Z = 1.15
+CAB_Z = 1.02
 FRONT_AXLE = 6.20
 DRIVE_AXLE = 2.35
 BUMPER_X = CAB_REAR + CAB_L + 0.12
@@ -89,11 +89,12 @@ def extra_materials(M):
 
     M["tyre"] = mat("tyre", (0.022, 0.023, 0.025, 1), 0.72, 0.0, (420, 0.30))
     M["rim"] = mat("rim", (0.52, 0.53, 0.55, 1), 0.30, 0.90, (260, 0.10))
-    M["paint"] = mat("paint", (0.045, 0.048, 0.052, 1), 0.26, 0.35, (180, 0.05))
-    M["glass"] = mat("glass", (0.020, 0.024, 0.030, 1), 0.08, 0.55)
+    M["paint"] = mat("paint", (0.052, 0.056, 0.062, 1), 0.17, 0.30, (180, 0.04))
+    M["glass"] = mat("glass", (0.055, 0.085, 0.115, 1), 0.045, 0.30)
     M["chrome"] = mat("chrome", (0.78, 0.79, 0.80, 1), 0.10, 1.00)
     M["alum"] = mat("alum", (0.56, 0.57, 0.58, 1), 0.28, 0.85, (300, 0.10))
     M["amber"] = mat("amber", (0.62, 0.28, 0.03, 1), 0.25, 0.10)
+    M["trim"] = mat("trim", (0.30, 0.32, 0.34, 1), 0.34, 0.55, (240, 0.08))
     return M
 
 
@@ -133,6 +134,33 @@ def wheel(name, x, y, M, dual=False):
                       TYRE_R + math.sin(ang) * 0.196)
         bpy.ops.object.transform_apply(rotation=True)
         parts.append(C.assign(b, M["chrome"]))
+    return parts
+
+
+def arch(name, x, y, r, M, segs=9, width=0.05, thick=0.075):
+    """Top-half wheel arch built from short chords.
+
+    Without one the cab reads as a box on stilts: real cab-overs cut an arch
+    into the lower panel and the wheel tucks up into it. Blender has no partial
+    cylinder primitive, so the arc is approximated by boxes along it.
+
+    Each chord is scaled and rotated AT THE ORIGIN and only then moved into
+    place. transform_apply defaults location/rotation/scale all to True, so
+    baking the position first leaves the origin at (0,0,0) and the rotation
+    then swings the chord around the world origin instead of its own centre.
+    """
+    parts = []
+    for i in range(segs):
+        am = math.pi * ((i + 0.5) / segs)
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))
+        ob = bpy.context.object
+        ob.name = f"{name}{i}"
+        ob.scale = (r * math.pi / segs * 1.15, width, thick)
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        ob.rotation_euler = (0, -(am - math.pi / 2), 0)
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        ob.location = (x + math.cos(am) * r, y, TYRE_R + math.sin(am) * r)
+        parts.append(C.assign(ob, M["paint"]))
     return parts
 
 
@@ -255,9 +283,12 @@ def build_tractor(M):
                             CAB_Z + CAB_H * 0.70, 0.06, CAB_W - 0.22, 0.86,
                             bevel=0.02), M["glass"]))
     for sy in (+1, -1):
+        p.append(C.assign(C.box(f"winsur{sy}", CAB_X + 0.12,
+                                sy * (CAB_W / 2 + 0.002), CAB_Z + CAB_H * 0.70,
+                                1.16, 0.02, 0.72, bevel=0.02), M["trim"]))
         p.append(C.assign(C.box(f"sidewin{sy}", CAB_X + 0.12,
-                                sy * (CAB_W / 2 + 0.004), CAB_Z + CAB_H * 0.70,
-                                1.05, 0.05, 0.62, bevel=0.02), M["glass"]))
+                                sy * (CAB_W / 2 + 0.012), CAB_Z + CAB_H * 0.70,
+                                1.05, 0.03, 0.62, bevel=0.02), M["glass"]))
         # door shut line and handle: cheap, and they stop the cab reading as a block
         p.append(C.assign(C.box(f"doorline{sy}", CAB_X - 0.30,
                                 sy * (CAB_W / 2 + 0.003), CAB_Z + CAB_H * 0.42,
@@ -274,6 +305,16 @@ def build_tractor(M):
         p.append(C.assign(C.box(f"step{sy}", CAB_X - 0.55,
                                 sy * (CAB_W / 2 - 0.06), 0.62, 0.44, 0.14, 0.05),
                           M["alum"]))
+    p.append(C.assign(C.box("visor", CAB_X + CAB_L / 2 - 0.06, 0,
+                            CAB_Z + CAB_H - 0.06, 0.30, CAB_W + 0.03, 0.10,
+                            bevel=0.02), M["paint"]))
+    for i in range(5):
+        p.append(C.assign(C.box(f"marker{i}", CAB_X + CAB_L / 2 - 0.16,
+                                (i - 2) * 0.42, CAB_Z + CAB_H + 0.02,
+                                0.09, 0.11, 0.05, bevel=0.01), M["amber"]))
+    p.append(C.assign(C.box("windsurround", CAB_X + CAB_L / 2 - 0.045, 0,
+                            CAB_Z + CAB_H * 0.70, 0.02, CAB_W - 0.16, 0.94,
+                            bevel=0.02), M["trim"]))
     p.append(C.assign(C.box("grille", CAB_X + CAB_L / 2 + 0.01, 0,
                             CAB_Z + CAB_H * 0.24, 0.05, CAB_W - 0.42, 0.62,
                             bevel=0.02), M["frame"]))
@@ -300,10 +341,11 @@ def build_tractor(M):
     p.append(C.assign(af, M["frame"]))
 
     p += axle_group(FRONT_AXLE, M, dual=False, susp=False)
+    for sy in (+1, -1):
+        p += arch(f"farch{sy}", FRONT_AXLE, sy * (CAB_W / 2 + 0.010),
+                  TYRE_R + 0.105, M)
     p += axle_group(DRIVE_AXLE, M, dual=True, susp=True)
     for sy in (+1, -1):
-        p.append(C.assign(C.box(f"fguard{sy}", FRONT_AXLE, sy * 1.00,
-                                TYRE_R + 0.42, 1.45, 0.60, 0.05), M["paint"]))
         p.append(C.assign(C.box(f"rguard{sy}", DRIVE_AXLE, sy * 1.02,
                                 TYRE_R + 0.52, 1.70, 0.62, 0.05), M["paint"]))
         p.append(C.assign(C.box(f"flap{sy}", DRIVE_AXLE - 0.92, sy * 1.02, 0.34,
