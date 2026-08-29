@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+# source and build artefacts are served by the host but are not content
+Disallow: /render/
+Disallow: /build.py
+Disallow: /index.src.html
+Disallow: /*.mjs$
+
+Sitemap: https://terra-fresca.danieldefmartins.workers.dev/sitemap.xml
