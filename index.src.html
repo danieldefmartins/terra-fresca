@@ -35,6 +35,27 @@ body{
   font-size:16px;line-height:1.55;
   overflow-x:hidden;
 }
+/* The harvest is a horizontal track driven by vertical scroll. Readers who see
+   it move sideways naturally try to scroll sideways — so let them. pan-y keeps
+   the browser's vertical panning and hands us the horizontal gesture. */
+#producePrelude{touch-action:pan-y}
+/* Shown only when a reader is scrolling BACK through the pinned harvest, which
+   is the moment they have lost the thread. */
+.scroll-nudge{position:fixed;left:50%;bottom:26px;z-index:95;transform:translate(-50%,14px);
+  display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;
+  background:rgba(2,31,54,.9);color:var(--paper);border:1px solid rgba(245,242,233,.22);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;visibility:hidden;transition:opacity .28s ease,transform .28s ease;pointer-events:none}
+.scroll-nudge.on{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.scroll-nudge .mono{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.scroll-nudge svg{width:16px;height:16px;animation:nudgeArrow 1.5s ease-in-out infinite}
+@keyframes nudgeArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.wa-fab{position:fixed;right:18px;bottom:74px;z-index:91;width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;background:#25D366;color:#08301B;
+  box-shadow:0 10px 24px rgba(2,31,54,.28);transition:transform .2s ease}
+.wa-fab:hover,.wa-fab:focus-visible{transform:scale(1.07)}
+.wa-fab svg{width:28px;height:28px}
+@media(max-width:760px){.wa-fab{width:48px;height:48px;bottom:70px}.scroll-nudge{bottom:20px;padding:9px 15px}}
 .sound-toggle{
   position:fixed;right:18px;bottom:18px;z-index:90;width:44px;height:44px;border-radius:50%;
   border:1px solid rgba(248,248,244,.35);background:rgba(10,10,10,.78);color:var(--paper);
@@ -599,7 +620,7 @@ nav.main a:hover{color:var(--paper)}
   display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap;
 }
 #cta h2{font-size:clamp(28px,4.6vw,62px);max-width:17ch}
-footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top:clamp(48px,8vh,80px)}
+footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top:clamp(48px,8vh,80px);padding-bottom:clamp(96px,14vh,150px)}
 .foot-grid{padding:0 clamp(18px,4vw,52px);display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:clamp(22px,3vw,44px)}
 .foot-lockup{width:min(300px,86%);height:auto;display:block;margin-bottom:18px}
 .foot-grid .tag{max-width:24ch;font-size:18px}
@@ -625,8 +646,9 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 </style>
 
 <div class="journey-progress" id="journeyProgress" aria-hidden="true"></div>
+<a class="wa-fab" href="https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to%20talk%20about%20sourcing%20fruit%20from%20Brazil." target="_blank" rel="noopener" aria-label="Message Terra Fresca on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.22 8.22 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.84-.85 2.03s.87 2.35 1 2.51c.12.16 1.72 2.62 4.16 3.67.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z"/></svg></a>
+<div class="scroll-nudge" id="scrollNudge" aria-hidden="true"><span class="mono">Keep scrolling</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
 <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="Turn journey ambience on">Sound</button>
-
 <div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
 
 <header class="site">
@@ -652,6 +674,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
     <p class="lede">Fruits and vegetables sourced direct from certified Brazilian growers — packed at origin, shipped in our cold chain, and delivered fresh to any port in the world by one accountable team.</p>
     <div class="hero-ctas">
       <a class="btn solid" href="#cta">Talk with us</a>
+      <a class="btn" href="https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to%20talk%20about%20sourcing%20fruit%20from%20Brazil." target="_blank" rel="noopener">WhatsApp us</a>
       <a class="btn" href="#services">Our services</a>
     </div>
   </div>
@@ -1019,6 +1042,8 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 <section id="cta">
   <h2 class="display">Ready to put Brazil on your shelves?</h2>
   <a class="btn dark" href="mailto:trade@terrafrescatrading.com">Request a quote</a>
+  <a class="btn dark" href="https://wa.me/5531987770220?text=Ol%C3%A1%20Terra%20Fresca%20%E2%80%94%20gostaria%20de%20falar%20sobre%20exporta%C3%A7%C3%A3o%20de%20frutas." target="_blank" rel="noopener">WhatsApp Brazil</a>
+  <a class="btn dark" href="https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to%20talk%20about%20sourcing%20fruit%20from%20Brazil." target="_blank" rel="noopener">WhatsApp US</a>
 </section>
 
 <footer class="site">
@@ -1034,12 +1059,17 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
     <div class="foot-col">
       <h4>Corridors</h4>
       <span>Europe — Rotterdam · Lisbon</span><span>Middle East — Jebel Ali</span><span>North America — Newark · Miami</span><span>Asia — Shanghai · Tokyo</span>
+      <h4 style="margin-top:18px">Origin ports</h4>
+      <span>Santos · Itajaí · Pecém · Natal</span><span>Air — São Paulo GRU · Fortaleza</span>
     </div>
     <div class="foot-col">
-      <h4>Origin ports</h4>
-      <span>Santos · Itajaí · Pecém · Natal</span><span>Air — São Paulo GRU · Fortaleza</span>
-      <h4 style="margin-top:18px">Contact</h4>
-      <span>trade@terrafrescatrading.com</span><span>Mon–Fri · 8:00–18:00 BRT</span>
+      <h4>Contact</h4>
+      <a href="mailto:trade@terrafrescatrading.com">trade@terrafrescatrading.com</a>
+      <span>Mon–Fri · 8:00–18:00 BRT</span>
+      <h4 style="margin-top:18px">Brazil</h4>
+      <span>Av. Pres. Antônio Carlos, 4048</span><span>Pampulha, Belo Horizonte — MG</span><span>31270-000</span><a href="https://wa.me/5531987770220?text=Ol%C3%A1%20Terra%20Fresca%20%E2%80%94%20gostaria%20de%20falar%20sobre%20exporta%C3%A7%C3%A3o%20de%20frutas." target="_blank" rel="noopener">WhatsApp · +55 31 98777-0220</a>
+      <h4 style="margin-top:18px">United States</h4>
+      <span>433 Plaza Real, Suite 275</span><span>Boca Raton, FL 33432</span><a href="https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to%20talk%20about%20sourcing%20fruit%20from%20Brazil." target="_blank" rel="noopener">WhatsApp · +1 954 352 3599</a>
     </div>
   </div>
   <div class="smallprint">
@@ -1137,6 +1167,58 @@ gsap.from('#mission .mstat',{y:22,autoAlpha:0,duration:.7,ease:'power2.out',stag
   scrollTrigger:{trigger:'.mission-grid',start:'top 85%'}});
 gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.12,
   scrollTrigger:{trigger:'#mission',start:'top 60%'}});
+
+/* ---------- sideways input, and a nudge when someone loses the thread ----------
+   The harvest is a horizontal track driven by VERTICAL scroll. A reader who
+   sees the page moving sideways reasonably tries to scroll sideways, gets
+   nothing, and concludes the page is stuck. So horizontal intent — trackpad
+   swipe or finger drag — is folded back into the same scroll that drives it,
+   which means the animation simply continues either way.
+
+   Lenis owns the scroll position, so the push goes through lenis rather than
+   window.scrollBy, which would fight it. */
+(function(){
+  const sec=$('producePrelude'); if(!sec) return;
+  const nudge=$('scrollNudge');
+  let live=false, back=0, lastY=0, shown=false;
+  /* declared before the trigger: onToggle can fire during create() if the page
+     is restored already scrolled into this section */
+  const show=on=>{ if(on!==shown){ shown=on; nudge&&nudge.classList.toggle('on',on); } };
+  ScrollTrigger.create({trigger:sec,start:'top top',end:'bottom bottom',
+    onToggle:s=>{ live=s.isActive; if(!live){ back=0; show(false); } }});
+
+  const push=d=>{ if(d) lenis.scrollTo(lenis.targetScroll+d,
+    {duration:.30,easing:t=>1-Math.pow(1-t,3),lock:false}); };
+
+  addEventListener('wheel',e=>{
+    if(!live || Math.abs(e.deltaX)<=Math.abs(e.deltaY)) return;  /* vertical intent: leave it */
+    e.preventDefault();
+    push(e.deltaX*1.45);
+  },{passive:false});
+
+  let px=0,py=0,horiz=null;
+  addEventListener('touchstart',e=>{
+    if(!live) return; const t=e.touches[0]; px=t.clientX; py=t.clientY; horiz=null;
+  },{passive:true});
+  addEventListener('touchmove',e=>{
+    if(!live) return;
+    const t=e.touches[0], dx=px-t.clientX, dy=py-t.clientY;
+    if(horiz===null && (Math.abs(dx)>6||Math.abs(dy)>6)) horiz=Math.abs(dx)>Math.abs(dy);
+    if(!horiz) return;
+    e.preventDefault();
+    push(dx*1.8); px=t.clientX; py=t.clientY;
+  },{passive:false});
+
+  /* Scrolling BACK through a pinned section is what someone does when they have
+     lost the thread. Forward motion clears it twice as fast as back builds it,
+     so a small correction never trips the prompt. */
+  lenis.on('scroll',({scroll})=>{
+    if(!live){ lastY=scroll; if(back){back=0;show(false);} return; }
+    const d=scroll-lastY; lastY=scroll;
+    if(d<0) back-=d; else back=Math.max(0,back-d*2);
+    show(back>430);
+  });
+})();
 
 /* ---------- produce prelude: one horizontal harvest, then the loading floor ---------- */
 (function(){
