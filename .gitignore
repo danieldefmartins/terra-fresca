@@ -6,3 +6,5 @@ node_modules/
 # rendered frame sequences (large; not inlined)
 assets/seq/
 render/out/
+
+__pycache__/

@@ -245,7 +245,17 @@ def main():
               "set-points, phytosanitary paperwork, load ports and import requirements.",
               f"{SITE}/blog/", idx_body), encoding="utf-8")
 
-    urls = [(f"{SITE}/", "1.0", None), (f"{SITE}/blog/", "0.8", None)]
+    urls = [(f"{SITE}/", "1.0", None), (f"{SITE}/produce/", "0.9", None),
+            (f"{SITE}/blog/", "0.8", None)]
+    # the produce portal is generated separately; read its slugs so one sitemap
+    # covers the whole site rather than only the blog
+    try:
+        import sys as _s
+        _s.path.insert(0, str(ROOT / "produce"))
+        import data as _pd
+        urls += [(f"{SITE}/produce/{x['slug']}/", "0.8", None) for x in _pd.PRODUCTS]
+    except Exception as e:
+        print(f"blog: produce data unavailable for sitemap ({e})")
     urls += [(f"{SITE}/blog/{p['slug']}/", "0.7", p["date"]) for p in posts]
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9">'.replace("sitemap.org", "sitemaps.org")]
