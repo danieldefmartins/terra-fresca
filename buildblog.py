@@ -126,7 +126,7 @@ def shell(title, desc, canonical, body, extra_ld=""):
 <body>
 <header class="bhead">
   <a class="blogo" href="/"><b>TERRA FRESCA</b><i>Global Produce Trading</i></a>
-  <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/#cta">Contact</a></nav>
+  <nav><a href="/">Home</a><a href="/produce/">Produce</a><a href="/services/">Services</a><a href="/about/">About</a><a href="/blog/">Blog</a><a href="/contact/">Contact</a></nav>
 </header>
 {body}
 <footer class="bfoot">
@@ -138,8 +138,8 @@ def shell(title, desc, canonical, body, extra_ld=""):
     </div>
     <div class="fcol">
       <h4>Company</h4>
-      <a href="/">Home</a><a href="/#services">Services</a><a href="/#range">Produce</a>
-      <a href="/blog/">Blog</a><a href="/#voices">Buyers</a><a href="/#cta">Contact</a>
+      <a href="/">Home</a><a href="/produce/">Produce</a><a href="/services/">Services</a>
+      <a href="/about/">About</a><a href="/blog/">Blog</a><a href="/contact/">Contact</a>
     </div>
     <div class="fcol">
       <h4>Blog</h4>
@@ -246,7 +246,8 @@ def main():
               f"{SITE}/blog/", idx_body), encoding="utf-8")
 
     urls = [(f"{SITE}/", "1.0", None), (f"{SITE}/produce/", "0.9", None),
-            (f"{SITE}/blog/", "0.8", None)]
+            (f"{SITE}/services/", "0.9", None), (f"{SITE}/about/", "0.8", None),
+            (f"{SITE}/contact/", "0.8", None), (f"{SITE}/blog/", "0.8", None)]
     # the produce portal is generated separately; read its slugs so one sitemap
     # covers the whole site rather than only the blog
     try:
@@ -254,6 +255,8 @@ def main():
         _s.path.insert(0, str(ROOT / "produce"))
         import data as _pd
         urls += [(f"{SITE}/produce/{x['slug']}/", "0.8", None) for x in _pd.PRODUCTS]
+        urls += [(f"{SITE}/produce/{x['slug']}/{v['slug']}/", "0.7", None)
+                 for x in _pd.PRODUCTS for v in x.get("variants", [])]
     except Exception as e:
         print(f"blog: produce data unavailable for sitemap ({e})")
     urls += [(f"{SITE}/blog/{p['slug']}/", "0.7", p["date"]) for p in posts]

@@ -56,6 +56,20 @@ PRODUCTS = [
         peak=[10, 11, 12], available=[4, 5, 6, 10, 11, 12],
         second_window="A second, smaller harvest runs in autumn.",
         organic="TBC",
+        variants=[
+            dict(slug="green", name="Green Seedless Grape", crate="crate-grapegreen-cut",
+                 varieties=["Sugraone", "Thompson Seedless", "Arra 15"],
+                 blurb="Pale translucent green with a soft natural bloom — the volume colour.",
+                 notes="The largest of the three colours by volume and the most widely listed."),
+            dict(slug="red", name="Red Seedless Grape", crate="crate-grapered-cut",
+                 varieties=["Crimson Seedless", "Flame Seedless", "Sweet Celebration"],
+                 blurb="Deep crimson and translucent, firm berry, strong shelf presence.",
+                 notes="Crimson holds condition well and is the workhorse of the red programmes."),
+            dict(slug="black", name="Black Seedless Grape", crate="crate-grapeblack-cut",
+                 varieties=["Midnight Beauty", "Autumn Royal", "Sable"],
+                 blurb="Glossy purple-black with a dusty bloom and a large berry.",
+                 notes="The premium colour in most markets, and the one most sensitive to rachis condition."),
+        ],
         notes=("The valley's advantage is timing: it fills the gap between the end of "
                "northern-hemisphere supply and full southern-hemisphere volume. Allocation for the "
                "October window closes well before harvest. Ask about SO2 regime and rachis "
@@ -157,16 +171,37 @@ PRODUCTS = [
                "size and freedom from sprouting are the grading criteria buyers argue about."),
     ),
     dict(
-        slug="sweet-potato", name="Sweet Potato", latin="Ipomoea batatas",
+        slug="potato", name="Potato & Roots", latin="Solanum · Ipomoea · Arracacia",
         crate="crate-sweetpotato-cut", tag="Vegetable",
-        blurb="Cured and export-packed, with a long window and good transit tolerance.",
-        varieties=["Beauregard", "Brazlândia Roxa", "Uruguaiana"],
-        states=["Rio Grande do Sul", "São Paulo", "Minas Gerais", "Paraná"],
+        blurb="Sweet potato, table potato and mandioquinha — three different crops that buyers usually source together.",
+        varieties=["Beauregard", "Asterix", "Ágata", "Mandioquinha"],
+        states=["Rio Grande do Sul", "Minas Gerais", "São Paulo", "Paraná", "Espírito Santo"],
         peak=list(range(1, 13)), available=list(range(1, 13)),
         organic="TBC",
-        notes=("Curing is the whole game: properly cured roots heal wounds, hold sugar and travel "
-               "well. Beauregard is the orange-fleshed variety most European and North American "
-               "retail expects."),
+        variants=[
+            dict(slug="sweet-potato", name="Sweet Potato", crate="crate-sweetpotato-cut",
+                 varieties=["Beauregard", "Brazlândia Roxa", "Uruguaiana"],
+                 blurb="Orange and purple-skinned batata doce, cured and export packed.",
+                 notes=("Curing is the whole game: properly cured roots heal wounds, hold sugar and "
+                        "travel well. Beauregard is the orange-fleshed variety most European and "
+                        "North American retail expects.")),
+            dict(slug="table-potato", name="Table Potato", crate="crate-potato-cut",
+                 varieties=["Asterix", "Ágata", "Markies", "Cupido"],
+                 blurb="Batata inglesa from the southern and south-eastern highlands.",
+                 notes=("Ágata is the pale-skinned washing potato that dominates Brazilian retail; "
+                        "Asterix is red-skinned and holds up better to processing and transport. "
+                        "Dry matter drives cooking behaviour and should be specified.")),
+            dict(slug="mandioquinha", name="Mandioquinha", crate="crate-baroa-cut",
+                 varieties=["Amarela de Senador Amaral", "Branca"],
+                 blurb="Arracacha, also called batata baroa or Peruvian carrot — a Brazilian staple.",
+                 notes=("Distinctive deep-yellow flesh and a short shelf life, which makes cold "
+                        "chain discipline decisive. A specialist line rather than a volume one, "
+                        "and strong in Brazilian diaspora retail.")),
+        ],
+        notes=("Three botanically unrelated crops that share a shelf and a buyer. Sweet potato "
+               "travels best of the three; mandioquinha is the most perishable and the most "
+               "specialised. All are cured or conditioned after harvest, and how well that was done "
+               "predicts arrival condition better than anything that happens in transit."),
     ),
     dict(
         slug="passion-fruit", name="Passion Fruit", latin="Passiflora edulis",

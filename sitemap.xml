@@ -2,6 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://terrafrescatrading.com/</loc><priority>1.0</priority></url>
   <url><loc>https://terrafrescatrading.com/produce/</loc><priority>0.9</priority></url>
+  <url><loc>https://terrafrescatrading.com/services/</loc><priority>0.9</priority></url>
+  <url><loc>https://terrafrescatrading.com/about/</loc><priority>0.8</priority></url>
+  <url><loc>https://terrafrescatrading.com/contact/</loc><priority>0.8</priority></url>
   <url><loc>https://terrafrescatrading.com/blog/</loc><priority>0.8</priority></url>
   <url><loc>https://terrafrescatrading.com/produce/mango/</loc><priority>0.8</priority></url>
   <url><loc>https://terrafrescatrading.com/produce/seedless-grape/</loc><priority>0.8</priority></url>
@@ -13,8 +16,14 @@
   <url><loc>https://terrafrescatrading.com/produce/watermelon/</loc><priority>0.8</priority></url>
   <url><loc>https://terrafrescatrading.com/produce/avocado/</loc><priority>0.8</priority></url>
   <url><loc>https://terrafrescatrading.com/produce/ginger/</loc><priority>0.8</priority></url>
-  <url><loc>https://terrafrescatrading.com/produce/sweet-potato/</loc><priority>0.8</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/potato/</loc><priority>0.8</priority></url>
   <url><loc>https://terrafrescatrading.com/produce/passion-fruit/</loc><priority>0.8</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/seedless-grape/green/</loc><priority>0.7</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/seedless-grape/red/</loc><priority>0.7</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/seedless-grape/black/</loc><priority>0.7</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/potato/sweet-potato/</loc><priority>0.7</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/potato/table-potato/</loc><priority>0.7</priority></url>
+  <url><loc>https://terrafrescatrading.com/produce/potato/mandioquinha/</loc><priority>0.7</priority></url>
   <url><loc>https://terrafrescatrading.com/blog/brazil-fresh-produce-export-calendar/</loc><lastmod>2026-08-28</lastmod><priority>0.7</priority></url>
   <url><loc>https://terrafrescatrading.com/blog/reefer-set-points-for-tropical-fruit/</loc><lastmod>2026-08-26</lastmod><priority>0.7</priority></url>
   <url><loc>https://terrafrescatrading.com/blog/mapa-phytosanitary-certificate/</loc><lastmod>2026-08-24</lastmod><priority>0.7</priority></url>

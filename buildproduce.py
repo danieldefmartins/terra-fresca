@@ -54,7 +54,7 @@ def shell(title, desc, canonical, body):
 <body>
 <header class="bhead">
   <a class="blogo" href="/"><b>TERRA FRESCA</b><i>Global Produce Trading</i></a>
-  <nav><a href="/">Home</a><a href="/produce/">Produce</a><a href="/blog/">Blog</a><a href="/#cta">Contact</a></nav>
+  <nav><a href="/">Home</a><a href="/produce/">Produce</a><a href="/services/">Services</a><a href="/about/">About</a><a href="/blog/">Blog</a><a href="/contact/">Contact</a></nav>
 </header>
 {body}
 <footer class="bfoot">
@@ -71,8 +71,8 @@ def shell(title, desc, canonical, body):
     </div>
     <div class="fcol">
       <h4>Company</h4>
-      <a href="/">Home</a><a href="/#services">Services</a><a href="/blog/">Blog</a>
-      <a href="/#voices">Buyers</a><a href="/#cta">Contact</a>
+      <a href="/">Home</a><a href="/services/">Services</a><a href="/about/">About</a>
+      <a href="/blog/">Blog</a><a href="/contact/">Contact</a>
     </div>
     <div class="fcol">
       <h4>Contact</h4>
@@ -105,12 +105,16 @@ def product_page(p):
                   if p.get("organic") == "TBC" else
                   f"<p>{html.escape(p.get('organic',''))}</p>"))
 
-    grapes = ""
-    if p["slug"] == "seedless-grape":
-        grapes = ("<h2>The three colours</h2><div class='colours'>" + "".join(
-            f"<div class='colour'><img src='/assets/{img}.webp' alt='Crate of {c.lower()} seedless grapes' loading='lazy'>"
-            f"<h3>{c}</h3><p class='sm'>{v}</p></div>"
-            for c, img, v in D.GRAPE_COLOURS) + "</div>")
+    variants = ""
+    if p.get("variants"):
+        variants = ("<section class='pblock'><h2>Types we trade</h2>"
+                    "<div class='colours'>" + "".join(
+            f"<a class='colour' href='/produce/{p['slug']}/{v['slug']}/'>"
+            f"<img src='/assets/{v['crate']}.webp' alt='Crate of {html.escape(v['name'].lower())}' loading='lazy'>"
+            f"<h3>{html.escape(v['name'])}</h3>"
+            f"<p class='sm'>{html.escape(v['blurb'])}</p>"
+            f"<span class='go'>See this type &#8594;</span></a>"
+            for v in p["variants"]) + "</div></section>")
 
     body = f"""<main class='prod'>
 <div class='phero'>
@@ -151,7 +155,7 @@ def product_page(p):
   {f"<p><a href='{p['link']}'>Read more &#8594;</a></p>" if p.get('link') else ""}
 </section>
 
-{grapes}
+{variants}
 
 <section class='pblock'>
   <h2>Organic</h2>
@@ -184,6 +188,48 @@ def product_page(p):
               desc[:300], url, body), encoding="utf-8")
 
 
+def variant_page(parent, v):
+    url = f"{SITE}/produce/{parent['slug']}/{v['slug']}/"
+    body = f"""<main class='prod'>
+<p class='crumb'><a href='/produce/'>Produce</a> &#8250; <a href='/produce/{parent['slug']}/'>{html.escape(parent['name'])}</a> &#8250; <span>{html.escape(v['name'])}</span></p>
+<div class='phero'>
+  <div>
+    <p class='kick'>{html.escape(parent['tag'])} &#183; Brazil</p>
+    <h1>{html.escape(v['name'])}</h1>
+    <p class='lede'>{html.escape(v['blurb'])}</p>
+    <div class='bcta'>
+      <a class='bbtn solid' href='{WA_US}' target='_blank' rel='noopener'>Ask about {html.escape(v['name'].lower())}</a>
+      <a class='bbtn' href='mailto:trade@terrafrescatrading.com'>Request a quote</a>
+    </div>
+  </div>
+  <img class='pcrate' src='/assets/{v['crate']}.webp' alt='Crate of {html.escape(v['name'].lower())}'>
+</div>
+<section class='pblock'><h2>Varieties</h2>
+  <ul class='pills'>{"".join(f"<li>{html.escape(x)}</li>" for x in v['varieties'])}</ul></section>
+<section class='pblock'><h2>Availability through the year</h2>
+  {calendar(parent['peak'], parent['available'])}</section>
+<section class='pblock'><h2>Where it grows</h2>
+  <ul class='pills alt'>{"".join(f"<li>{html.escape(x)}</li>" for x in parent['states'])}</ul>
+  <p class='sm'>{html.escape(D.REACH_NOTE)}</p></section>
+<section class='pblock'><h2>What matters on this type</h2><p>{html.escape(v['notes'])}</p></section>
+<section class='pblock volume'><h2>Volume and packing</h2>
+  <p>Volume is agreed per programme rather than quoted from a list. Tell us the weekly quantity,
+  the calibre and the format you need, and the window you need it in.</p>
+  <div class='bcta'><a class='bbtn solid' href='{WA_US}' target='_blank' rel='noopener'>Tell us your programme</a></div>
+</section>
+<nav class='pnext'><h2>Other {html.escape(parent['name'].lower())} types</h2><div class='cards'>{"".join(
+  f"<a class='card' href='/produce/{parent['slug']}/{o['slug']}/'><span class='kick'>{html.escape(parent['tag'])}</span>"
+  f"<h2>{html.escape(o['name'])}</h2><p>{html.escape(o['blurb'])}</p></a>"
+  for o in parent['variants'] if o['slug'] != v['slug'])}</div></nav>
+</main>"""
+    desc = f"{v['name']} from Brazil — {', '.join(v['varieties'][:3])}. {v['blurb']}"
+    d = ROOT / "produce" / parent["slug"] / v["slug"]
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "index.html").write_text(
+        shell(f"{v['name']} from Brazil — varieties and season | Terra Fresca",
+              desc[:300], url, body), encoding="utf-8")
+
+
 def index_page():
     cards = "".join(
         f"<a class='pcard' href='/produce/{p['slug']}/'>"
@@ -212,11 +258,121 @@ def index_page():
               f"{SITE}/produce/", body), encoding="utf-8")
 
 
+
+# ---------------------------------------------------------------- standalone
+SERVICES = [('Fresh sourcing', 'We buy at the farm gate, not on the open market.', "We represent farms across Brazil and build the supply base around the programme rather than around one estate's capacity. That means naming the farms supplying you, giving you their GLOBALG.A.P. number so you can verify it yourself, and agreeing variety, calibre and brix as a specification rather than a hope."), ('Cold chain', 'Pre-cooling is the job, not an optimisation.', 'A reefer circulates air at a set temperature; it does not pull heat out of warm fruit. Pulp temperature is logged at loading and set-point through the voyage, and the download comes with the shipment rather than on request. Set-points are specified per programme — variety, maturity and transit time all move the right number.'), ('Ocean and air freight', 'Weekly reefer capacity, and air when the window is short.', 'We ship out of Santos, Itajai, Pecem and Natal and choose the port against the packhouse, not against habit — northeastern fruit going to Europe should not spend two days on a truck to Santos first. Same-week air lift via GRU for the lines and windows where a vessel will not make it.'), ('Customs and documentation', 'MAPA certification handled in-house, checked against the destination.', "Phytosanitary certification, additional declaration wording, certificate of origin and destination compliance sit with the same team that sourced the fruit. The document set is reviewed against your broker's requirements before the container loads rather than after it arrives.")]
+
+
+def simple(slug, title, desc, body):
+    d = ROOT / slug
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "index.html").write_text(
+        shell(title, desc, f"{SITE}/{slug}/", body), encoding="utf-8")
+
+
+def services_page():
+    blocks = "".join(
+        f"<section class='pblock srv'><p class='kick'>0{i+1} / 04</p><h2>{html.escape(n)}</h2>"
+        f"<p class='lede'>{html.escape(t)}</p><p>{html.escape(b)}</p></section>"
+        for i, (n, t, b) in enumerate(SERVICES))
+    body = ("<div class='masthead'><div class='mwrap'><p class='kick'>Terra Fresca &#183; Services</p>"
+            "<h1>One accountable team, farm gate to your dock</h1>"
+            "<p class='lede'>We are a trading house, not a carrier and not a broker. We buy the fruit, "
+            "own the container, run the cold chain and the paperwork, and sell to you on one invoice.</p>"
+            "</div></div>"
+            f"<main class='prod'>{blocks}"
+            "<section class='pblock volume'><h2>Who owns the fruit while it is on the water?</h2>"
+            "<p>That one question separates a trading house from a broker. If the answer is "
+            "&#8216;the grower&#8217; or &#8216;it depends&#8217;, you are carrying the risk. "
+            "We buy at the farm gate, so we are not indifferent to how it arrives.</p>"
+            "<div class='bcta'><a class='bbtn solid' href='/contact/'>Talk to us</a>"
+            "<a class='bbtn' href='/blog/what-a-trading-house-actually-does/'>Read more</a></div>"
+            "</section></main>")
+    simple("services", "Services — sourcing, cold chain, freight and customs | Terra Fresca",
+           "Fresh sourcing from named Brazilian farms, a logged cold chain, weekly reefer capacity "
+           "out of four ports plus air freight, and MAPA certification handled in-house.", body)
+
+
+def about_page():
+    body = ("<div class='masthead'><div class='mwrap'><p class='kick'>Terra Fresca &#183; About</p>"
+            "<h1>Fifteen years in the same valleys</h1>"
+            "<p class='lede'>Terra Fresca Trading has been buying and moving Brazilian produce for "
+            "over fifteen years, with more than thirty partner farms and retail operations across "
+            "Minas Gerais and S&#227;o Paulo.</p></div></div>"
+            "<main class='prod'>"
+            "<div class='pgrid'>"
+            "<section class='pblock'><h2>What we are</h2>"
+            "<p>A produce trading house. We buy fruit and vegetables directly from certified "
+            "Brazilian growers, take ownership of every container we move, run the cold chain and "
+            "the export paperwork ourselves, and sell wholesale to importers, distributors and "
+            "retail chains worldwide.</p>"
+            "<p>The grower is paid for the fruit. You buy from one seller, on one invoice, with one "
+            "team answerable for it.</p></section>"
+            "<section class='pblock'><h2>What that changes</h2>"
+            "<p>A broker introduces you to a grower and takes a commission. When the container "
+            "arrives warm, they are not a party to the sale.</p>"
+            "<p>Because we have already paid for the fruit, there is no version of this where we are "
+            "indifferent to how it arrives. That is the whole argument for the model.</p></section>"
+            "</div>"
+            "<section class='pblock'><h2>Where we are</h2>"
+            "<div class='pgrid'>"
+            "<div><p class='kick'>Brazil</p><p>Av. Pres. Ant&#244;nio Carlos, 4048 &#8212; Pampulha<br>"
+            "Belo Horizonte &#8212; MG, 31270-000<br><a href='https://wa.me/5531987770220' "
+            "target='_blank' rel='noopener'>WhatsApp +55 31 98777-0220</a></p></div>"
+            "<div><p class='kick'>United States</p><p>433 Plaza Real, Suite 275<br>"
+            "Boca Raton, FL 33432<br><a href='https://wa.me/19543523599' target='_blank' "
+            "rel='noopener'>WhatsApp +1 954 352 3599</a></p></div></div></section>"
+            "<section class='pblock volume'><h2>Start a programme</h2>"
+            "<p>Tell us the line, the weekly volume, the format and the window. We will tell you "
+            "what Brazil can actually deliver against it.</p>"
+            "<div class='bcta'><a class='bbtn solid' href='/contact/'>Contact us</a>"
+            "<a class='bbtn' href='/produce/'>See the produce</a></div></section></main>")
+    simple("about", "About Terra Fresca Trading — a Brazilian produce trading house",
+           "Over fifteen years trading Brazilian fresh produce, with more than thirty partner farms "
+           "and retail across Minas Gerais and Sao Paulo. Offices in Belo Horizonte and Boca Raton.", body)
+
+
+def contact_page():
+    body = ("<div class='masthead'><div class='mwrap'><p class='kick'>Terra Fresca &#183; Contact</p>"
+            "<h1>Tell us what you need and when</h1>"
+            "<p class='lede'>The fastest route is WhatsApp. If you can include the line, the weekly "
+            "volume, the format and the window you need it in, we can usually answer the same day.</p>"
+            "</div></div>"
+            "<main class='prod'>"
+            "<div class='pgrid'>"
+            "<section class='pblock'><h2>Brazil</h2>"
+            "<p>Av. Pres. Ant&#244;nio Carlos, 4048 &#8212; Pampulha<br>Belo Horizonte &#8212; MG<br>31270-000</p>"
+            "<div class='bcta'><a class='bbtn solid' href='https://wa.me/5531987770220' target='_blank' "
+            "rel='noopener'>WhatsApp +55 31 98777-0220</a></div></section>"
+            "<section class='pblock'><h2>United States</h2>"
+            "<p>433 Plaza Real, Suite 275<br>Boca Raton, FL 33432</p>"
+            "<div class='bcta'><a class='bbtn solid' href='" + WA_US + "' target='_blank' "
+            "rel='noopener'>WhatsApp +1 954 352 3599</a></div></section></div>"
+            "<section class='pblock'><h2>By email</h2>"
+            "<p><a href='mailto:trade@terrafrescatrading.com'>trade@terrafrescatrading.com</a><br>"
+            "Monday to Friday, 8:00&#8211;18:00 BRT</p></section>"
+            "<section class='pblock volume'><h2>What to include</h2>"
+            "<p>An enquiry we can answer immediately usually has four things in it:</p>"
+            "<ul class='pills alt'><li>The line and variety</li><li>Weekly volume</li>"
+            "<li>Pack format and calibre</li><li>The window and destination port</li></ul>"
+            "<p class='sm'>If you are not sure on format or calibre, say so &#8212; that is a "
+            "conversation, not a blocker.</p></section></main>")
+    simple("contact", "Contact Terra Fresca Trading — Brazil and United States",
+           "Talk to Terra Fresca on WhatsApp or by email. Offices in Belo Horizonte, Minas Gerais "
+           "and Boca Raton, Florida.", body)
+
+
 def main():
+    n = 0
     for p in D.PRODUCTS:
         product_page(p)
+        for v in p.get("variants", []):
+            variant_page(p, v); n += 1
     index_page()
-    print(f"produce: {len(D.PRODUCTS)} product pages + index")
+    services_page()
+    about_page()
+    contact_page()
+    print(f"produce: {len(D.PRODUCTS)} product pages, {n} type pages, + index")
 
 
 if __name__ == "__main__":
