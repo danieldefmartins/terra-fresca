@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <title>Terra Fresca Trading — Brazilian Fresh Fruit &amp; Vegetable Exporter</title>
 <meta name="description" content="Terra Fresca Trading is a Brazilian produce trading house. We buy mango, melon, seedless grape, lime, papaya, banana and more direct from GLOBALG.A.P.-certified growers, own the cold chain and the paperwork, and sell wholesale to importers worldwide. One seller, one invoice, one accountable team.">
-<link rel="canonical" href="https://terra-fresca.danieldefmartins.workers.dev/">
+<link rel="canonical" href="https://terrafrescatrading.com/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#021F36">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Terra Fresca Trading">
 <meta property="og:title" content="Terra Fresca Trading — Brazilian Fresh Fruit &amp; Vegetable Exporter">
 <meta property="og:description" content="Terra Fresca Trading is a Brazilian produce trading house. We buy mango, melon, seedless grape, lime, papaya, banana and more direct from GLOBALG.A.P.-certified growers, own the cold chain and the paperwork, and sell wholesale to importers worldwide. One seller, one invoice, one accountable team.">
-<meta property="og:url" content="https://terra-fresca.danieldefmartins.workers.dev/">
+<meta property="og:url" content="https://terrafrescatrading.com/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Terra Fresca Trading — Brazilian Fresh Fruit &amp; Vegetable Exporter">
@@ -20,7 +20,7 @@
 {"@context":"https://schema.org","@type":"Organization",
  "name":"Terra Fresca Trading",
  "alternateName":"Terra Fresca",
- "url":"https://terra-fresca.danieldefmartins.workers.dev/",
+ "url":"https://terrafrescatrading.com/",
  "slogan":"Global Produce Trading",
  "description":"Brazilian produce trading house with over 15 years in the trade and more than 30 partner farms. Buys fruit and vegetables direct from certified Brazilian growers, owns the cold chain and the export paperwork, and sells wholesale to importers, distributors and retail chains worldwide. Retail operations across Minas Gerais and São Paulo.",
  "numberOfEmployees":{"@type":"QuantitativeValue","minValue":10},
@@ -85,6 +85,18 @@ body{
 .scroll-nudge .mono{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 .scroll-nudge svg{width:16px;height:16px;animation:nudgeArrow 1.5s ease-in-out infinite}
 @keyframes nudgeArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+/* Stacks above the WhatsApp button, which stacks above the sound toggle.
+   Hidden until there is enough page behind you for it to be worth offering. */
+.to-top{position:fixed;right:18px;bottom:136px;z-index:91;width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(2,31,54,.22);background:rgba(245,242,233,.92);color:var(--ink);
+  display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);box-shadow:0 8px 20px rgba(2,31,54,.14);
+  opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .25s ease,transform .25s ease,visibility .25s}
+.to-top.on{opacity:1;visibility:visible;transform:translateY(0)}
+.to-top:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.to-top svg{width:18px;height:18px}
+@media(max-width:760px){.to-top{width:42px;height:42px;bottom:126px}}
 .wa-fab{position:fixed;right:18px;bottom:74px;z-index:91;width:52px;height:52px;border-radius:50%;
   display:grid;place-items:center;background:#25D366;color:#08301B;
   box-shadow:0 10px 24px rgba(2,31,54,.28);transition:transform .2s ease}
@@ -151,12 +163,13 @@ header.site{
 .logo-txt b{font-stretch:118%;font-weight:900;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
 .logo-txt i{font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-top:4px}
 @media(max-width:760px){.logo img{height:30px}.logo-txt b{font-size:14px}.logo-txt i{font-size:7px;letter-spacing:.16em}}
-nav.main{display:flex;flex-direction:column;gap:9px}
+nav.main{display:flex;flex-direction:row;align-items:center;gap:clamp(16px,2.1vw,34px)}
 nav.main a{
-  color:#A3B6C6;text-decoration:none;
+  color:#A3B6C6;text-decoration:none;white-space:nowrap;
   font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  padding-bottom:3px;border-bottom:1px solid transparent;transition:color .18s,border-color .18s;
 }
-nav.main a:hover{color:var(--paper)}
+nav.main a:hover{color:var(--paper);border-bottom-color:var(--mango)}
 @media(max-width:760px){nav.main{display:none}}
 
 /* ============ HERO ============ */
@@ -684,6 +697,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 
 <div class="journey-progress" id="journeyProgress" aria-hidden="true"></div>
 <a class="wa-fab" href="https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to%20talk%20about%20sourcing%20fruit%20from%20Brazil." target="_blank" rel="noopener" aria-label="Message Terra Fresca on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.22 8.22 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.84-.85 2.03s.87 2.35 1 2.51c.12.16 1.72 2.62 4.16 3.67.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z"/></svg></a>
+<button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 <div class="scroll-nudge" id="scrollNudge" aria-hidden="true"><span class="mono">Keep scrolling</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
 <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="Turn journey ambience on">Sound</button>
 <div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
@@ -696,7 +710,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
   <nav class="main" aria-label="Main">
     <a href="#services">Services</a>
     <a href="#range">Produce</a>
-    <a href="/blog/">Journal</a>
+    <a href="/blog/">Blog</a>
     <a href="#voices">Buyers</a>
     <a href="#cta">Contact</a>
   </nav>
@@ -1093,7 +1107,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
     </div>
     <div class="foot-col">
       <h4>Company</h4>
-      <a href="#services">Services</a><a href="#range">Produce</a><a href="/blog/">Journal</a><a href="#voices">Buyers</a><a href="#cta">Contact</a>
+      <a href="#services">Services</a><a href="#range">Produce</a><a href="/blog/">Blog</a><a href="#voices">Buyers</a><a href="#cta">Contact</a>
     </div>
     <div class="foot-col">
       <h4>Corridors</h4>
@@ -1206,6 +1220,15 @@ gsap.from('#mission .mstat',{y:22,autoAlpha:0,duration:.7,ease:'power2.out',stag
   scrollTrigger:{trigger:'.mission-grid',start:'top 85%'}});
 gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.12,
   scrollTrigger:{trigger:'#mission',start:'top 60%'}});
+
+/* ---------- back to top ---------- */
+(function(){
+  const b=$('toTop'); if(!b) return;
+  b.addEventListener('click',()=>lenis.scrollTo(0,{duration:1.1}));
+  /* Appears only once there is real distance behind you; on a page this long a
+     button that shows at 200px would be on screen almost permanently. */
+  lenis.on('scroll',({scroll})=>b.classList.toggle('on',scroll>innerHeight*1.6));
+})();
 
 /* ---------- sideways input, and a nudge when someone loses the thread ----------
    The harvest is a horizontal track driven by VERTICAL scroll. A reader who

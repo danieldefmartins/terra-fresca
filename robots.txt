@@ -6,4 +6,4 @@ Disallow: /build.py
 Disallow: /index.src.html
 Disallow: /*.mjs$
 
-Sitemap: https://terra-fresca.danieldefmartins.workers.dev/sitemap.xml
+Sitemap: https://terrafrescatrading.com/sitemap.xml

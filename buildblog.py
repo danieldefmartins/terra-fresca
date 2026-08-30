@@ -23,7 +23,7 @@ import html, pathlib, re, datetime
 
 ROOT = pathlib.Path(__file__).parent
 POSTS = ROOT / "blog" / "posts"
-SITE = "https://terra-fresca.danieldefmartins.workers.dev"
+SITE = "https://terrafrescatrading.com"
 WA_US = ("https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to"
          "%20talk%20about%20sourcing%20fruit%20from%20Brazil.")
 
@@ -93,6 +93,7 @@ def read_post(path):
             meta[k.strip()] = v.strip()
     meta["slug"] = path.stem
     meta["body"] = m.group(2).strip()
+    meta["mins"] = max(2, round(len(re.findall(r"\w+", meta["body"])) / 200))
     for need in ("title", "description", "date"):
         if need not in meta:
             raise SystemExit(f"blog: {path.name} is missing '{need}'")
@@ -125,19 +126,51 @@ def shell(title, desc, canonical, body, extra_ld=""):
 <body>
 <header class="bhead">
   <a class="blogo" href="/"><b>TERRA FRESCA</b><i>Global Produce Trading</i></a>
-  <nav><a href="/">Home</a><a href="/blog/">Journal</a><a href="/#cta">Contact</a></nav>
+  <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/#cta">Contact</a></nav>
 </header>
 {body}
 <footer class="bfoot">
-  <div>
-    <p class="tag">From Brazilian soil. To tables worldwide.</p>
-    <p class="sm">Terra Fresca Trading — Belo Horizonte, MG · Boca Raton, FL</p>
+  <div class="fgrid">
+    <div class="fcol wide">
+      <p class="tag">From Brazilian soil.<br>To tables worldwide.</p>
+      <p class="sm">Over fifteen years trading Brazilian produce, with more than thirty partner
+      farms and retail across Minas Gerais and S&#227;o Paulo.</p>
+    </div>
+    <div class="fcol">
+      <h4>Company</h4>
+      <a href="/">Home</a><a href="/#services">Services</a><a href="/#range">Produce</a>
+      <a href="/blog/">Blog</a><a href="/#voices">Buyers</a><a href="/#cta">Contact</a>
+    </div>
+    <div class="fcol">
+      <h4>Blog</h4>
+      <a href="/blog/brazil-fresh-produce-export-calendar/">Export calendar</a>
+      <a href="/blog/reefer-set-points-for-tropical-fruit/">Reefer set-points</a>
+      <a href="/blog/mapa-phytosanitary-certificate/">MAPA certificates</a>
+      <a href="/blog/choosing-a-brazilian-load-port/">Choosing a load port</a>
+      <a href="/blog/">All articles &#8594;</a>
+    </div>
+    <div class="fcol">
+      <h4>Contact</h4>
+      <a href="mailto:trade@terrafrescatrading.com">trade@terrafrescatrading.com</a>
+      <span class="off">Brazil</span>
+      <span>Av. Pres. Ant&#244;nio Carlos, 4048<br>Pampulha, Belo Horizonte &#8212; MG<br>31270-000</span>
+      <a href="https://wa.me/5531987770220?text=Ol%C3%A1%20Terra%20Fresca%20%E2%80%94%20gostaria%20de%20falar%20sobre%20exporta%C3%A7%C3%A3o%20de%20frutas." target="_blank" rel="noopener">WhatsApp &#183; +55 31 98777-0220</a>
+      <span class="off">United States</span>
+      <span>433 Plaza Real, Suite 275<br>Boca Raton, FL 33432</span>
+      <a href="{WA_US}" target="_blank" rel="noopener">WhatsApp &#183; +1 954 352 3599</a>
+    </div>
   </div>
-  <div class="bcta">
-    <a class="bbtn solid" href="{WA_US}" target="_blank" rel="noopener">WhatsApp us</a>
-    <a class="bbtn" href="mailto:trade@terrafrescatrading.com">Request a quote</a>
+  <div class="fbot">
+    <span>&#169; 2026 Terra Fresca Trading</span>
+    <span>Global produce trading &#183; Brazil</span>
   </div>
 </footer>
+<button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+<script>
+(function(){{var b=document.getElementById("toTop");if(!b)return;
+b.addEventListener("click",function(){{window.scrollTo({{top:0,behavior:"smooth"}})}});
+addEventListener("scroll",function(){{b.classList.toggle("on",scrollY>innerHeight*0.9)}},{{passive:true}});}})();
+</script>
 </body>
 </html>
 """
@@ -158,7 +191,7 @@ def main():
               '"author":{"@type":"Organization","name":"Terra Fresca Trading"},'
               '"publisher":{"@type":"Organization","name":"Terra Fresca Trading"}}</script>')
         body = (f"<main class='post'><article>"
-                f"<p class='kick'>{html.escape(p.get('tag','Journal'))} · "
+                f"<p class='kick'>{html.escape(p.get('tag','Blog'))} · "
                 f"{datetime.date.fromisoformat(p['date']).strftime('%d %B %Y')}</p>"
                 f"<h1>{html.escape(p['title'])}</h1>"
                 f"<p class='lede'>{html.escape(p['description'])}</p>"
@@ -176,19 +209,38 @@ def main():
         (d / "index.html").write_text(shell(p["title"] + " — Terra Fresca Trading",
                                             p["description"], url, body, ld), encoding="utf-8")
 
-    cards = "".join(
-        f"<a class='card' href='/blog/{p['slug']}/'>"
-        f"<span class='kick'>{html.escape(p.get('tag','Journal'))}</span>"
-        f"<h2>{html.escape(p['title'])}</h2><p>{html.escape(p['description'])}</p>"
-        f"<span class='sm'>{datetime.date.fromisoformat(p['date']).strftime('%d %B %Y')}</span></a>"
-        for p in posts)
-    idx_body = ("<main class='index'><p class='kick'>Journal</p>"
+    def card(p, feat=False):
+        return (f"<a class='card{' feat' if feat else ''}' href='/blog/{p['slug']}/'>"
+                f"<span class='kick'>{html.escape(p.get('tag','Blog'))}</span>"
+                f"<h2>{html.escape(p['title'])}</h2>"
+                f"<p>{html.escape(p['description'])}</p>"
+                f"<span class='meta'>{datetime.date.fromisoformat(p['date']).strftime('%d %b %Y')}"
+                f"<i></i>{p['mins']} min read</span></a>")
+
+    tags = []
+    for p in posts:
+        t = p.get("tag", "Blog")
+        if t not in tags:
+            tags.append(t)
+
+    # A masthead and one featured piece, rather than eleven equal cards that give
+    # a reader no way in.
+    idx_body = ("<div class='masthead'><div class='mwrap'>"
+                "<p class='kick'>Terra Fresca &#183; Blog</p>"
                 "<h1>Notes from the cold chain</h1>"
-                "<p class='lede'>What we have learned buying fruit at the farm gate in Brazil and "
-                "landing it on docks around the world — seasons, temperatures, paperwork and ports.</p>"
-                f"<div class='cards'>{cards}</div></main>")
+                "<p class='lede'>What fifteen years of buying fruit at the farm gate in Brazil and "
+                "landing it on docks around the world has taught us &#8212; seasons, temperatures, "
+                "paperwork and ports.</p>"
+                "<div class='tags'>" +
+                "".join(f"<span>{html.escape(t)}</span>" for t in tags) +
+                "</div></div></div>"
+                "<main class='index'>"
+                f"<div class='featured'>{card(posts[0], True)}</div>"
+                "<h2 class='sect'>More from the blog</h2>"
+                f"<div class='cards'>{''.join(card(p) for p in posts[1:])}</div>"
+                "</main>")
     (ROOT / "blog" / "index.html").write_text(
-        shell("Journal — Terra Fresca Trading",
+        shell("Blog — Terra Fresca Trading",
               "Practical notes on exporting Brazilian fruit and vegetables: harvest calendars, reefer "
               "set-points, phytosanitary paperwork, load ports and import requirements.",
               f"{SITE}/blog/", idx_body), encoding="utf-8")
