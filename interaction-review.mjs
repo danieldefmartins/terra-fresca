@@ -68,6 +68,17 @@ await call('Page.navigate',{url});await delay(1500);await evaluate(`document.que
 console.log('Pointer target',await evaluate(`({href:document.elementFromPoint(900,500)?.closest('a')?.getAttribute('href'),active:document.activeElement?.getAttribute('href'),x:document.querySelector('a.produce-card').getBoundingClientRect().left,y:scrollY})`));
 await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:900,y:500});await delay(100);await call('Input.dispatchMouseEvent',{type:'mousePressed',x:900,y:500,button:'left',buttons:1,clickCount:1});await delay(100);await call('Input.dispatchMouseEvent',{type:'mouseReleased',x:900,y:500,button:'left',buttons:0,clickCount:1});await delay(1000);
 if(await evaluate(`location.pathname`)!=='/produce/mango/')failures.push('Mango pointer navigation: '+await evaluate('location.pathname'));
+for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
+  await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:name==='mobile'});
+  await call('Page.navigate',{url});await delay(1700);
+  await evaluate(`lenis.scrollTo(document.querySelector('#producePrelude'),{immediate:true})`);await delay(600);
+  await evaluate(`document.querySelector('[data-produce-step="1"]').click()`);await delay(1400);
+  const geometry=await evaluate(`(()=>{const card=document.querySelector('.produce-card'),button=card.querySelector('.produce-details'),r=button.getBoundingClientRect(),nav=document.querySelector('.produce-navigation').getBoundingClientRect();return {left:card.getBoundingClientRect().left,height:r.height,weight:getComputedStyle(button).fontWeight,clear:r.bottom<nav.top}})()`);
+  if(Math.abs(geometry.left)>30||geometry.height<48||Number(geometry.weight)<700||!geometry.clear)failures.push(name+' produce controls: '+JSON.stringify(geometry));
+  const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:85});await writeFile(new URL(name+'-produce-controls.jpg',output),Buffer.from(shot.result.data,'base64'));
+  await evaluate(`document.querySelector('#produceContinue').click()`);await delay(600);
+  if(await evaluate(`Math.abs(document.querySelector('#journeyFilm').getBoundingClientRect().top)>5||document.activeElement!==document.querySelector('#journeyFilm h2')`))failures.push(name+' continue navigation');
+}
 await call('Network.enable');await call('Network.setBlockedURLs',{urls:['*terra-fleet.glb*']});
 await call('Page.navigate',{url});await delay(1800);
 await evaluate(`(()=>{const st=ScrollTrigger.getAll().find(s=>s.trigger?.id==='journeyFilm'&&s.animation?.duration()>10);lenis.scrollTo(st.start+100,{immediate:true})})()`);

@@ -725,7 +725,14 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 
 .produce-card{color:inherit;text-decoration:none;cursor:pointer}
 .produce-card:focus-visible{outline:3px solid var(--lime);outline-offset:-8px}
-.produce-details{display:inline-flex;align-items:center;gap:18px;margin-top:24px;padding-bottom:7px;border-bottom:1px solid #b6821f70;color:var(--lime);font:11px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.produce-details{display:inline-flex;align-items:center;justify-content:center;gap:22px;margin-top:24px;min-height:54px;padding:14px 24px;border:2px solid var(--mango);border-radius:8px;background:var(--mango);color:var(--ink);font-size:18px;font-weight:800;line-height:1.2;letter-spacing:.02em;box-shadow:0 5px 16px #0003;transition:background .2s,transform .2s}
+.produce-card:hover .produce-details,.produce-card:focus-visible .produce-details{background:#f1bd52;transform:translateY(-2px)}
+.produce-navigation{position:absolute;z-index:10;left:clamp(22px,5vw,72px);bottom:24px;display:flex;align-items:center;gap:8px;padding:6px;border:1px solid #ffffff35;border-radius:14px;background:#031b2ef5;box-shadow:0 4px 18px #0003}
+.produce-navigation button,.produce-navigation a{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:8px;border:0;background:#ffffff12;color:#fff;font:700 14px/1.2 var(--sans);cursor:pointer;text-decoration:none}
+.produce-navigation button{width:46px;font-size:24px}.produce-navigation a{padding:10px 16px;margin-left:4px;gap:10px}
+.produce-navigation button:hover,.produce-navigation a:hover{background:#ffffff29}.produce-navigation :focus-visible{outline:3px solid var(--mango);outline-offset:2px}
+.produce-index,.produce-swipe{display:none}
+@media(max-width:760px){.produce-navigation{left:16px;right:80px;bottom:22px;gap:4px;padding:4px}.produce-navigation button{width:38px;flex-shrink:0}.produce-navigation a{font-size:12px;padding:8px;margin-left:0;flex:1}.produce-navigation .journey-label{display:none}.produce-card{padding-bottom:112px}.produce-visual{height:35svh}.produce-visual img{max-height:34svh}.produce-details{margin-top:16px}.produce-swipe{display:none}}
 .produce-details span{display:inline-block;transition:transform .2s}
 .produce-card:hover .produce-details span,.produce-card:focus-visible .produce-details span{transform:translate(3px,-3px)}
 </style>
@@ -796,6 +803,11 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 <!-- ================= PRODUCE PRELUDE ================= -->
 <section id="producePrelude" aria-label="Fresh produce available for export">
   <div class="produce-pin">
+    <nav class="produce-navigation" aria-label="Browse produce or continue down">
+      <button type="button" data-produce-step="-1" aria-label="Previous produce">←</button>
+      <button type="button" data-produce-step="1" aria-label="Next produce">→</button>
+      <a href="#journeyFilm" id="produceContinue">Continue <span class="journey-label">to our journey</span><span aria-hidden="true">↓</span></a>
+    </nav>
     <div class="produce-track">
       <article class="produce-intro">
         <span class="kicker">Fresh from Brazil · fourteen product lines</span>
@@ -1337,6 +1349,17 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
        full-screen beat, then yields to the loading floor instead of being clipped. */
     scrollTrigger:{trigger:section,start:'top top',end:()=>`+=${Math.max(innerHeight,section.offsetHeight-innerHeight*2)}`,scrub:SCRUB,invalidateOnRefresh:true}
   });
+  section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{
+    const st=move.scrollTrigger,panels=track.children.length-1;
+    const current=Math.round(st.progress*panels),next=clamp(current+Number(button.dataset.produceStep),0,panels);
+    lenis.scrollTo(st.start+(st.end-st.start)*next/panels,{immediate:reduced,duration:.65});
+  }));
+  $('produceContinue').addEventListener('click',event=>{
+    event.preventDefault();
+    const journey=$('journeyFilm');
+    lenis.scrollTo(journey,{immediate:true});ScrollTrigger.update();
+    const heading=journey.querySelector('h2');heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});
+  });
   gsap.utils.toArray('.produce-card').forEach((card,i)=>{
     const image=card.querySelector('.produce-visual img'),copy=card.querySelector('.produce-copy');
     card.addEventListener('focus',()=>{
@@ -1347,7 +1370,7 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
     });
     gsap.fromTo(image,{xPercent:-10,rotationY:reduced?0:-16,rotation:reduced?0:-3,scale:.90},{xPercent:10,rotationY:reduced?0:16,rotation:reduced?0:3,scale:1.04,ease:'none',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
-    gsap.fromTo(copy,{x:70,autoAlpha:.15},{x:-22,autoAlpha:1,ease:'power1.out',
+    gsap.fromTo(copy,{x:70,autoAlpha:.15},{x:()=>innerWidth<=760?0:-22,autoAlpha:1,ease:'power1.out',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left 78%',end:'center 46%',scrub:true}});
     gsap.fromTo(card,{backgroundColor:i%2?'#052033':'#031B2E'},{backgroundColor:i%2?'#031B2E':'#052033',ease:'none',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
