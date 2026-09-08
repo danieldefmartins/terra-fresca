@@ -67,6 +67,8 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
   const state=await evaluate('JSON.stringify(window.__fleet3d)');
   const drift=await evaluate('window.__fleet3d?.checkAxles?.()');
   if(drift===undefined||drift>.05)errors.push(name+' axle drift at '+t+': '+drift);
+  if(t>=.88&&t<=1.1&&await evaluate('window.__fleet3d.boomClearance<.15'))errors.push(name+' boom intersects container');
+  if(t>=6.96&&t<=7.4&&await evaluate('window.__fleet3d.port.gantryClearance<20||window.__fleet3d.port.trolleyScreenClearance<12'))errors.push(name+' crane clearance insufficient');
   if(t===7.40 && await evaluate('window.__fleet3d?.port?.landingError>1'))errors.push(name+' port landing misaligned');
   console.log(name,t,state,'axle drift',drift);await capture(String(t));
  }

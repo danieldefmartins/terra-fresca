@@ -127,11 +127,11 @@ try {
       payload.position.x=payloadBase.x-truck.position.x;
       const recoil=Math.sin(phase(time,1.18,1.32)*Math.PI)*.08;
       if(time>=1.18&&time<=1.32)truck.position.y=-recoil;
-      crane.position.set(-10-24*(1-smooth(time,.44,.64))-25*smooth(time,1.3,1.66),0,3);
+      crane.position.set(-10-24*(1-smooth(time,.44,.64))-25*smooth(time,1.3,1.66),0,5.4);
       crane.rotation.y=.35;
       spreader.position.set(payloadBase.x+crane.position.x+10,payload.position.y+2.91,0);
       if(time>1.24)spreader.position.y+=2*smooth(time,1.24,1.35);
-      boomJoint.rotation.z=Math.atan2(spreader.position.y-2.35,8.6)-.52;
+      boomJoint.rotation.z=Math.atan2(spreader.position.y+2.6-2.35,8.6)-.52;
       extension.scale.z=.84+.16*smooth(time,.62,.92);
       crane.updateMatrixWorld(true);
       for(let side=0;side<2;side++){
@@ -143,6 +143,8 @@ try {
       }
       const boomTip=new THREE.Vector3(7.6,7.67,-.4).sub(new THREE.Vector3(-1.6,2.35,-.4));
       boomTip.applyAxisAngle(new THREE.Vector3(0,0,1),boomJoint.rotation.z).add(new THREE.Vector3(-1.6,2.35,-.4));crane.localToWorld(boomTip);
+      model.updateMatrixWorld(true);
+      status.boomClearance=new THREE.Box3().setFromObject(boomJoint).min.z-new THREE.Box3().setFromObject(payload).max.z;
       links.forEach((link,i)=>{a.copy(boomTip);a.x+=(i<2?-.25:.25);a.z+=i%2?.2:-.2;b.copy(spreader.position);b.x+=i<2?-4.3:4.3;b.z+=i%2?1:-1;setLink(link,a,b)});
       const travel=truck.position.x+Math.max(0,time-1.32)*14;
       truckWheels.forEach(w=>w.rotation.z=-travel/.525);
