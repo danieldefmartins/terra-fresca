@@ -176,6 +176,7 @@ nav.main a:hover{color:var(--paper);border-bottom-color:var(--mango)}
 .hero{position:relative;background:var(--ink);color:var(--paper);min-height:100svh;overflow:hidden}
 #globeCv{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
 #globeCv.dragging{cursor:grabbing}
+#globeCv:focus-visible{outline:2px solid var(--lime);outline-offset:-5px}
 .hero-copy{
   position:relative;z-index:5;
   padding:clamp(120px,19vh,190px) clamp(18px,4vw,52px) 70px;
@@ -691,6 +692,41 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 @media (prefers-reduced-motion:reduce){
   .ticker-track,.range-marquee div,#filmOcean::before,#filmOcean::after,#filmWake,#filmSky::before,#filmSky::after,#shipWrap .hull,.water,.mist,.cloudfield i,.wake,.sidefoam{animation:none!important}
 }
+
+/* Depth and navigation refinements: retain the brand, make the journey easier to explore. */
+.hero{background:radial-gradient(ellipse at 75% 40%,#0b3445 0%,#021f36 62%)}
+.hero-copy{max-width:760px}
+.hero h1{font-size:clamp(36px,5.1vw,74px)}
+.globe-caption{position:absolute;right:8%;bottom:12%;display:grid;gap:7px;color:#8daeb6;font:9px/1.5 var(--mono);letter-spacing:.13em;text-transform:uppercase;pointer-events:none}
+.globe-caption b{color:#D8A93F;font-weight:400}
+.produce-visual{perspective:1000px}
+.produce-visual img{backface-visibility:hidden;transform-style:preserve-3d}
+.journey-chapters{position:absolute;z-index:60;bottom:22px;left:clamp(18px,4vw,52px);display:flex;gap:4px;padding:6px;border:1px solid #ffffff25;border-radius:30px;background:#021f36e8;backdrop-filter:blur(12px)}
+.journey-chapters button{font:10px/1.4 var(--mono);color:#b2c2d0;background:none;border:0;padding:10px 14px;border-radius:22px;cursor:pointer;transition:background .2s,color .2s}
+.journey-chapters button[aria-current="step"]{color:#021f36;background:#d8a93f}
+.journey-chapters button:focus-visible{outline:2px solid #f5f2e9;outline-offset:2px}
+@media(max-width:760px){
+ .hero{min-height:1060px}
+ .hero-copy{padding-top:135px;padding-bottom:360px}
+ .hero::before{height:660px;background:linear-gradient(#021f36 65%,#021f3600)}
+ .globe-caption{left:22px;right:auto;bottom:95px;font-size:8px}
+ .journey-chapters{bottom:22px;left:12px;right:78px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:4px}
+ .journey-chapters button{font-size:9px;padding:9px 3px}
+}
+
+
+/* The GLB scene replaces image sprites only after its first successful load. */
+.fleet-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;z-index:2}
+.fleet-canvas.dragging{cursor:grabbing}
+.fleet-canvas:focus-visible{outline:2px solid var(--lime);outline-offset:-4px}
+.film-pin>.fleet-canvas{z-index:36;pointer-events:none;cursor:auto}
+.fleet-active #filmSideTruck,.fleet-active #filmSidePayload,.fleet-active #filmStacker,.fleet-active .fface,.fleet-active #flipSeq,.fleet-active #fCab,.fleet-active #fTrail{visibility:hidden!important}
+
+.produce-card{color:inherit;text-decoration:none;cursor:pointer}
+.produce-card:focus-visible{outline:3px solid var(--lime);outline-offset:-8px}
+.produce-details{display:inline-flex;align-items:center;gap:18px;margin-top:24px;padding-bottom:7px;border-bottom:1px solid #b6821f70;color:var(--lime);font:11px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.produce-details span{display:inline-block;transition:transform .2s}
+.produce-card:hover .produce-details span,.produce-card:focus-visible .produce-details span{transform:translate(3px,-3px)}
 </style>
 </head>
 <body>
@@ -719,7 +755,8 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 
 <!-- ================= HERO ================= -->
 <section class="hero">
-  <canvas id="globeCv"></canvas>
+  <canvas id="globeCv" role="img" tabindex="0" aria-label="Interactive globe showing export routes from Brazil. Drag or use the arrow keys to rotate."></canvas>
+  <div class="globe-caption" aria-hidden="true"><span>23°57′ S · 46°20′ W</span><b>Brazil. Connected to the world.</b><span>Drag to explore ↗</span></div>
   <div class="hero-copy">
     <span class="mono">One exporter · every leg of the journey</span>
     <h1 class="display">From Brazilian soil to tables worldwide</h1>
@@ -765,22 +802,22 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
         <p>Before the cold chain begins, meet the fruit and vegetables selected from our certified Brazilian growing partners.</p>
         <span class="mono produce-index">01 / 14 · Scroll to explore</span><span class="mono produce-swipe">Swipe through →</span>
       </article>
-      <article class="produce-card" data-number="01"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-mango-cut}}" alt="Crate of Brazilian mangoes"></div><div class="produce-copy"><span class="mono">01 · Fruit</span><h3>Mango</h3><p class="variety">Tommy Atkins · Palmer · Keitt</p><p class="mono season">Peak window · Sep–Dec</p></div></article>
-      <article class="produce-card" data-number="02"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-lime-cut}}" alt="Crate of Brazilian Tahiti limes"></div><div class="produce-copy"><span class="mono">02 · Citrus</span><h3>Tahiti Lime</h3><p class="variety">Persian lime · calibrated and export packed</p><p class="mono season">Availability · Year-round</p></div></article>
-      <article class="produce-card" data-number="03"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-papaya-cut}}" alt="Crate of Brazilian papayas"></div><div class="produce-copy"><span class="mono">03 · Fruit</span><h3>Papaya</h3><p class="variety">Formosa · Golden</p><p class="mono season">Availability · Year-round</p></div></article>
-      <article class="produce-card" data-number="04"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-melon-cut}}" alt="Crate of Brazilian yellow melons"></div><div class="produce-copy"><span class="mono">04 · Melon</span><h3>Yellow Melon</h3><p class="variety">Amarelo · Galia</p><p class="mono season">Peak window · Aug–Mar</p></div></article>
-      <article class="produce-card" data-number="05"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-avocado-cut}}" alt="Crate of Brazilian avocados"></div><div class="produce-copy"><span class="mono">05 · Fruit</span><h3>Avocado</h3><p class="variety">Hass · Breda</p><p class="mono season">Peak window · Mar–Sep</p></div></article>
-      <article class="produce-card" data-number="06"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-ginger-cut}}" alt="Crate of Brazilian fresh ginger"></div><div class="produce-copy"><span class="mono">06 · Root</span><h3>Ginger</h3><p class="variety">Fresh root · export graded</p><p class="mono season">Peak window · Jun–Nov</p></div></article>
-      <article class="produce-card" data-number="07"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-sweetpotato-cut}}" alt="Crate of Brazilian sweet potatoes"></div><div class="produce-copy"><span class="mono">07 · Vegetable</span><h3>Sweet Potato</h3><p class="variety">Beauregard · cured and export packed</p><p class="mono season">Availability · Year-round</p></div></article>
-      <article class="produce-card" data-number="08"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-passion-cut}}" alt="Crate of Brazilian passion fruit"></div><div class="produce-copy"><span class="mono">08 · Fruit</span><h3>Passion Fruit</h3><p class="variety">Maracujá azedo</p><p class="mono season">Availability · Year-round</p></div></article>
-      <article class="produce-card" data-number="09"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-pineapple-cut}}" alt="Crate of Brazilian pineapples"></div><div class="produce-copy"><span class="mono">09 · Fruit</span><h3>Pineapple</h3><p class="variety">Pérola · Smooth Cayenne</p><p class="mono season">Availability · Year-round</p></div></article>
-      <article class="produce-card" data-number="10"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-watermelon-cut}}" alt="Crate of Brazilian watermelons"></div><div class="produce-copy"><span class="mono">10 · Melon</span><h3>Watermelon</h3><p class="variety">Crimson Sweet · Manchester</p><p class="mono season">Peak window · Sep–Mar</p></div></article>
-      <article class="produce-card" data-number="11"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapegreen-cut}}" alt="Crate of green seedless grapes"></div><div class="produce-copy"><span class="mono">11 · Grape</span><h3>Green Grape</h3><p class="variety">Seedless · Sugraone · Thompson</p><p class="mono season">Peak window · Oct–Dec</p></div></article>
-      <article class="produce-card" data-number="12"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapered-cut}}" alt="Crate of red seedless grapes"></div><div class="produce-copy"><span class="mono">12 · Grape</span><h3>Red Grape</h3><p class="variety">Seedless · Crimson · Flame</p><p class="mono season">Peak window · Oct–Dec</p></div></article>
-      <article class="produce-card" data-number="13"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapeblack-cut}}" alt="Crate of black seedless grapes"></div><div class="produce-copy"><span class="mono">13 · Grape</span><h3>Black Grape</h3><p class="variety">Seedless · Midnight Beauty · Autumn Royal</p><p class="mono season">Peak window · Oct–Dec</p></div></article>
-      <article class="produce-card" data-number="14"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-banana-cut}}" alt="Crate of Brazilian bananas"></div><div class="produce-copy"><span class="mono">14 · Fruit</span><h3>Banana</h3><p class="variety">Prata · Nanica</p><p class="mono season">Availability · Year-round</p></div></article>
+      <a href="/produce/mango/" class="produce-card" data-number="01"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-mango-cut}}" alt="Crate of Brazilian mangoes"></div><div class="produce-copy"><span class="mono">01 · Fruit</span><h3>Mango</h3><p class="variety">Tommy Atkins · Palmer · Keitt</p><p class="mono season">Peak window · Sep–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/tahiti-lime/" class="produce-card" data-number="02"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-lime-cut}}" alt="Crate of Brazilian Tahiti limes"></div><div class="produce-copy"><span class="mono">02 · Citrus</span><h3>Tahiti Lime</h3><p class="variety">Persian lime · calibrated and export packed</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/papaya/" class="produce-card" data-number="03"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-papaya-cut}}" alt="Crate of Brazilian papayas"></div><div class="produce-copy"><span class="mono">03 · Fruit</span><h3>Papaya</h3><p class="variety">Formosa · Golden</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/yellow-melon/" class="produce-card" data-number="04"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-melon-cut}}" alt="Crate of Brazilian yellow melons"></div><div class="produce-copy"><span class="mono">04 · Melon</span><h3>Yellow Melon</h3><p class="variety">Amarelo · Galia</p><p class="mono season">Peak window · Aug–Mar</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/avocado/" class="produce-card" data-number="05"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-avocado-cut}}" alt="Crate of Brazilian avocados"></div><div class="produce-copy"><span class="mono">05 · Fruit</span><h3>Avocado</h3><p class="variety">Hass · Breda</p><p class="mono season">Peak window · Mar–Sep</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/ginger/" class="produce-card" data-number="06"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-ginger-cut}}" alt="Crate of Brazilian fresh ginger"></div><div class="produce-copy"><span class="mono">06 · Root</span><h3>Ginger</h3><p class="variety">Fresh root · export graded</p><p class="mono season">Peak window · Jun–Nov</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/sweet-potato/" class="produce-card" data-number="07"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-sweetpotato-cut}}" alt="Crate of Brazilian sweet potatoes"></div><div class="produce-copy"><span class="mono">07 · Vegetable</span><h3>Sweet Potato</h3><p class="variety">Beauregard · cured and export packed</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/passion-fruit/" class="produce-card" data-number="08"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-passion-cut}}" alt="Crate of Brazilian passion fruit"></div><div class="produce-copy"><span class="mono">08 · Fruit</span><h3>Passion Fruit</h3><p class="variety">Maracujá azedo</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/pineapple/" class="produce-card" data-number="09"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-pineapple-cut}}" alt="Crate of Brazilian pineapples"></div><div class="produce-copy"><span class="mono">09 · Fruit</span><h3>Pineapple</h3><p class="variety">Pérola · Smooth Cayenne</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/watermelon/" class="produce-card" data-number="10"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-watermelon-cut}}" alt="Crate of Brazilian watermelons"></div><div class="produce-copy"><span class="mono">10 · Melon</span><h3>Watermelon</h3><p class="variety">Crimson Sweet · Manchester</p><p class="mono season">Peak window · Sep–Mar</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/seedless-grape/green/" class="produce-card" data-number="11"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapegreen-cut}}" alt="Crate of green seedless grapes"></div><div class="produce-copy"><span class="mono">11 · Grape</span><h3>Green Grape</h3><p class="variety">Seedless · Sugraone · Thompson</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/seedless-grape/red/" class="produce-card" data-number="12"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapered-cut}}" alt="Crate of red seedless grapes"></div><div class="produce-copy"><span class="mono">12 · Grape</span><h3>Red Grape</h3><p class="variety">Seedless · Crimson · Flame</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/seedless-grape/black/" class="produce-card" data-number="13"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapeblack-cut}}" alt="Crate of black seedless grapes"></div><div class="produce-copy"><span class="mono">13 · Grape</span><h3>Black Grape</h3><p class="variety">Seedless · Midnight Beauty · Autumn Royal</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/banana/" class="produce-card" data-number="14"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-banana-cut}}" alt="Crate of Brazilian bananas"></div><div class="produce-copy"><span class="mono">14 · Fruit</span><h3>Banana</h3><p class="variety">Prata · Nanica</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <article class="produce-handoff">
-        <div><span class="kicker">Selected · graded · ready for the cold chain</span><h2 class="display">Now follow the shipment.</h2><p>The portfolio becomes one accountable journey. All fourteen lines, and the same crates move directly into the loading scene.</p></div>
+        <div><span class="kicker">Selected · graded · ready for the cold chain</span><h2 class="display">Now follow the shipment.</h2><p>From careful selection to a sealed reefer, we take responsibility for the produce and every step that follows.</p></div>
         <div class="handoff-crates" aria-hidden="true"><img src="{{A:crate-mango-cut}}" alt=""><img src="{{A:crate-lime-cut}}" alt=""><img src="{{A:crate-papaya-cut}}" alt=""><img src="{{A:crate-melon-cut}}" alt=""><img src="{{A:crate-avocado-cut}}" alt=""><img src="{{A:crate-ginger-cut}}" alt=""><img src="{{A:crate-sweetpotato-cut}}" alt=""><img src="{{A:crate-passion-cut}}" alt=""><img src="{{A:crate-pineapple-cut}}" alt=""><img src="{{A:crate-watermelon-cut}}" alt=""><img src="{{A:crate-grapegreen-cut}}" alt=""><img src="{{A:crate-grapered-cut}}" alt=""><img src="{{A:crate-grapeblack-cut}}" alt=""><img src="{{A:crate-banana-cut}}" alt=""></div><div class="produce-floor"></div>
       </article>
     </div>
@@ -790,8 +827,15 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 <!-- ================= ONE CONTINUOUS JOURNEY FILM ================= -->
 <section id="journeyFilm" aria-label="The journey from farm to destination">
   <div class="film-pin">
+    <nav class="journey-chapters" aria-label="Shipment journey chapters">
+      <button type="button" data-time="0.1" aria-current="step">01 Origin</button>
+      <button type="button" data-time="1.9">02 Care</button>
+      <button type="button" data-time="5.1">03 Road</button>
+      <button type="button" data-time="7.75">04 Ocean</button>
+      <button type="button" data-time="10.7">05 Air</button>
+    </nav>
     <div class="film-layer" id="filmOrigin">
-      <div class="film-copy" id="filmOriginCopy"><span class="mono">01 / Origin · São Francisco Valley</span><h2 class="display">Picked, packed, and sealed at origin</h2><p>One container remains in view from the packing floor to the vessel.</p></div>
+      <div class="film-copy" id="filmOriginCopy"><span class="mono">01 / Origin · São Francisco Valley</span><h2 class="display">Picked, packed, and sealed at origin</h2><p>Selected produce. Controlled temperatures. A sealed reefer, ready for the journey ahead.</p></div>
       <div class="film-copy film-copy-r" id="filmOriginCopy2"><span class="mono">02 / Origin · we take title here</span><h2 class="display">Ours the moment it is sealed</h2><p>Terra Fresca buys the fruit at the farm gate and owns the box from this lift onward — so the grower is paid and the buyer has one counterparty, not a chain of them.</p></div>
       <div id="filmGround"></div>
       <img class="film-crate" id="fc1" src="{{A:crate-mango-cut}}" alt="Crate of mangoes">
@@ -1290,11 +1334,17 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
   const move=gsap.to(track,{x:()=>-travel(),ease:'none',
     /* Finish one viewport before the sticky section releases. The handoff gets a
        full-screen beat, then yields to the loading floor instead of being clipped. */
-    scrollTrigger:{trigger:section,start:'top top',end:()=>`+=${Math.max(innerHeight,section.offsetHeight-innerHeight*2)}`,scrub:1.15,invalidateOnRefresh:true}
+    scrollTrigger:{trigger:section,start:'top top',end:()=>`+=${Math.max(innerHeight,section.offsetHeight-innerHeight*2)}`,scrub:SCRUB,invalidateOnRefresh:true}
   });
   gsap.utils.toArray('.produce-card').forEach((card,i)=>{
     const image=card.querySelector('.produce-visual img'),copy=card.querySelector('.produce-copy');
-    gsap.fromTo(image,{xPercent:-18,rotation:-7,scale:.82},{xPercent:15,rotation:5,scale:1.08,ease:'none',
+    card.addEventListener('focus',()=>{
+      if(!card.matches(':focus-visible'))return;
+      track.parentElement.scrollLeft=0;
+      const p=clamp((card.offsetLeft-(innerWidth-card.offsetWidth)/2)/travel(),0,1);
+      lenis.scrollTo(section.offsetTop+p*Math.max(innerHeight,section.offsetHeight-innerHeight*2),{immediate:true});
+    });
+    gsap.fromTo(image,{xPercent:-10,rotationY:reduced?0:-16,rotation:reduced?0:-3,scale:.90},{xPercent:10,rotationY:reduced?0:16,rotation:reduced?0:3,scale:1.04,ease:'none',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
     gsap.fromTo(copy,{x:70,autoAlpha:.15},{x:-22,autoAlpha:1,ease:'power1.out',
       scrollTrigger:{trigger:card,containerAnimation:move,start:'left 78%',end:'center 46%',scrub:true}});
@@ -1319,8 +1369,8 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     const d=Math.min(2,devicePixelRatio||1);
     W=cv.clientWidth;H=cv.clientHeight;
     cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);
-    R=Math.min(W,H)*0.52;
-    CX=W*(W>760?0.72:0.5);CY=H*0.58;
+    R=Math.min(W*(W>760?.34:.72),H*(W>760?.40:.32));
+    CX=W*(W>760?0.735:0.58);CY=H*(W>760?.53:.76);
   }
   resize();addEventListener('resize',resize);
   /* real Earth landmass — Natural Earth 110m coastlines packed into a 192×96 bitmask */
@@ -1333,7 +1383,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   };
   const pts=[];
   for(let lat=-58;lat<=80;lat+=1.9)for(let lon=-180;lon<180;lon+=1.9){
-    const jlon=lon+(Math.random()-.5)*0.9,jlat=lat+(Math.random()-.5)*0.9;
+    const jlon=lon+Math.sin(lon*12.9898+lat*78.233)*.4,jlat=lat+Math.cos(lon*4.14+lat*9.13)*.4;
     if(land(jlon,jlat))pts.push([jlat*Math.PI/180,jlon*Math.PI/180]);
   }
   /* Tilt is no longer a constant: the second drag axis feeds it, so the globe
@@ -1401,7 +1451,18 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
 
   const DESTS=PORTS.map(d=>[d.lat*deg,d.lon*deg]);
   const ORIG_PTS=ORIGINS.map(d=>[d.lat*deg,d.lon*deg]);
-  const slerpPt=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t)];
+  // Great-circle interpolation keeps routes on the sphere, including across the dateline.
+  const vector=p=>[Math.cos(p[0])*Math.cos(p[1]),Math.sin(p[0]),Math.cos(p[0])*Math.sin(p[1])];
+  const slerpPt=(a,b,t)=>{
+    const u=vector(a),v=vector(b),omega=Math.acos(clamp(u.reduce((n,x,i)=>n+x*v[i],0),-1,1));
+    if(omega<1e-6)return a;
+    const k=Math.sin((1-t)*omega)/Math.sin(omega),l=Math.sin(t*omega)/Math.sin(omega);
+    const q=u.map((x,i)=>x*k+v[i]*l);
+    return [Math.asin(clamp(q[1],-1,1)),Math.atan2(q[2],q[0])];
+  };
+  const routes=DESTS.map(d=>Array.from({length:65},(_,i)=>{
+    const t=i/64;return [...slerpPt(SANTOS,d,t),1+.20*Math.sin(Math.PI*t)];
+  }));
   let heroVisible=true;
   ScrollTrigger.create({trigger:'.hero',start:'top bottom',end:'bottom top',
     onToggle:s=>{heroVisible=s.isActive}});
@@ -1412,7 +1473,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   cv.addEventListener('pointermove',e=>{
     if(!dragging)return;
     const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
-    userRot+=dx*0.005;spinVel=dx*0.005;
+    userRot+=dx*0.005;spinVel=dx*0.005;globeDrawn=false;
     /* Vertical drag tilts the globe. touch-action:pan-y means the browser keeps
        vertical-initiated gestures for page scrolling, but once a drag has been
        claimed horizontally the events are ours and both axes work. */
@@ -1420,44 +1481,69 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   });
   const endDrag=()=>{dragging=false;cv.classList.remove('dragging');};
   cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+  let globeDrawn=false;
+  cv.addEventListener('keydown',e=>{
+    if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
+    e.preventDefault();spinVel=0;tiltVel=0;
+    if(e.key==='ArrowLeft')userRot-=.12;
+    if(e.key==='ArrowRight')userRot+=.12;
+    if(e.key==='ArrowUp')userTilt-=.12;
+    if(e.key==='ArrowDown')userTilt+=.12;
+    globeDrawn=false;
+  });
+  const graticule=[];
+  for(let lat=-60;lat<=60;lat+=30)graticule.push(Array.from({length:121},(_,i)=>[lat*deg,i*3*deg]));
+  for(let lon=0;lon<360;lon+=30)graticule.push(Array.from({length:61},(_,i)=>[(-90+i*3)*deg,lon*deg]));
+  addEventListener('resize',()=>{globeDrawn=false});
   gsap.ticker.add(()=>{
-    if(!heroVisible)return;
+    if(!heroVisible||document.hidden)return;
+    if(reduced&&!dragging&&globeDrawn)return;
+    globeDrawn=true;
     if(!dragging){userRot+=spinVel;spinVel*=0.95;userTilt+=tiltVel;tiltVel*=0.95;}
     const t=gsap.ticker.time;
     ctx.clearRect(0,0,W,H);
-    const g=ctx.createRadialGradient(CX-R*.45,CY-R*.75,R*.1,CX,CY,R*1.45);
-    g.addColorStop(0,'rgba(182,130,31,.26)');
-    g.addColorStop(.45,'rgba(255,107,74,.10)');
-    g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    ctx.beginPath();ctx.arc(CX,CY,R,0,7);ctx.strokeStyle='rgba(182,130,31,.25)';ctx.lineWidth=1.2;ctx.stroke();
-    const rot=(reduced?0.6:t*0.06)+userRot;
+    // Lit ocean body, atmospheric rim and graticule give the points real volume.
+    const halo=ctx.createRadialGradient(CX,CY,R*.93,CX,CY,R*1.18);
+    halo.addColorStop(0,'rgba(90,173,177,.18)');halo.addColorStop(.5,'rgba(68,139,164,.045)');halo.addColorStop(1,'rgba(2,31,54,0)');
+    ctx.fillStyle=halo;ctx.fillRect(0,0,W,H);
+    const body=ctx.createRadialGradient(CX-R*.42,CY-R*.5,R*.06,CX+R*.3,CY+R*.15,R*1.3);
+    body.addColorStop(0,'#245862');body.addColorStop(.45,'#103c4c');body.addColorStop(.8,'#061d30');body.addColorStop(1,'#010d19');
+    ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=body;ctx.fill();
+    const rot=.80+(reduced?0:t*.025)+userRot;
+    ctx.strokeStyle='rgba(157,203,195,.10)';ctx.lineWidth=.65;
+    const gridLine=points=>{ctx.beginPath();let visible=false;
+      for(const p of points){const [x,y,z]=project(p[0],p[1],rot,R);
+        if(z>0){if(visible)ctx.lineTo(x,y);else ctx.moveTo(x,y);visible=true;}else visible=false;
+      }ctx.stroke();
+    };
+    graticule.forEach(gridLine);
     for(const p of pts){
       const [x,y,z]=project(p[0],p[1],rot,R);
       if(z<=0)continue;
-      ctx.globalAlpha=0.13+z*0.75;
-      ctx.fillStyle='#E8E2D2';
-      ctx.fillRect(x,y,1.6,1.6);
+      const light=clamp(.55+(CX-x)/R*.32+(CY-y)/R*.27,0,1);
+      ctx.globalAlpha=(.2+z*.8)*light;
+      ctx.fillStyle='#E4E9CE';
+      const size=.7+z*1.1;ctx.fillRect(x,y,size,size);
     }
     ctx.globalAlpha=1;
     for(let i=0;i<DESTS.length;i++){
       const d=DESTS[i];
       ctx.beginPath();let started=false;
-      for(let s=0;s<=40;s++){
-        const q=s/40,[la,lo]=slerpPt(SANTOS,d,q);
-        const rad=R*(1+0.28*Math.sin(Math.PI*q));
+      for(let s=0;s<routes[i].length;s++){
+        const [la,lo,radius]=routes[i][s];
+        const rad=R*radius;
         const [x,y,z]=project(la,lo,rot,rad);
-        if(z>-0.15){ if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y); }
+        if(z>0||Math.hypot(x-CX,y-CY)>R+1){ if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y); }
         else started=false;
       }
-      ctx.strokeStyle='rgba(182,130,31,.20)';ctx.lineWidth=.8;ctx.stroke();
+      ctx.strokeStyle=i%5===0?'rgba(216,169,63,.58)':'rgba(216,169,63,.16)';ctx.lineWidth=i%5===0?1.1:.65;ctx.stroke();
       /* Only a third of the lanes carry a running vessel at once — nineteen
          moving dots reads as noise rather than a network. */
       if(i%5===0){
         const q=((reduced?0.5:t*0.11)+i*0.17)%1,[la,lo]=slerpPt(SANTOS,d,q);
-        const rad=R*(1+0.28*Math.sin(Math.PI*q));
+        const rad=R*(1+0.20*Math.sin(Math.PI*q));
         const [x,y,z]=project(la,lo,rot,rad);
-        if(z>-0.15){ctx.beginPath();ctx.arc(x,y,2.4,0,7);ctx.fillStyle='#B6821F';ctx.fill();}
+        if(z>0||Math.hypot(x-CX,y-CY)>R+1){ctx.beginPath();ctx.arc(x,y,2.4,0,7);ctx.shadowColor='#D8A93F';ctx.shadowBlur=9;ctx.fillStyle='#F2D58B';ctx.fill();ctx.shadowBlur=0;}
       }
     }
     /* Destination markers. Every port gets a dot; only those well inside the
@@ -1596,7 +1682,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     const roadD=ribbon/endScale;
 
     flipGeom={left,cx,wheelY,W,sideH,planH,endScale,ribbon,roadD,tx,ty,
-              boxL:b.left-pin.left-cx,boxW:b.width,
+              boxL:b.left-pin.left-cx,boxW:b.width,boxRoofH:wheelY-(b.top-pin.top),cabRoofH:wheelY-(t.top-pin.top),
               truckL:t.left-pin.left-cx,truckW:t.width,truckTop:t.top-pin.top-wheelY};
 
     /* elevation: standing on the wheel line, centred on the pivot */
@@ -1605,9 +1691,10 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     ffBox.style.cssText+=`;left:${flipGeom.boxL+W/2}px;top:${(b.top-pin.top)-topY}px;width:${b.width}px`;
     /* plan art: lying in the road surface, centred on the pivot */
     fTop.style.cssText+=`;left:${-W/2}px;top:${-planH/2}px;width:${W}px;height:${planH}px`;
-    ffBoxTop.style.cssText+=`;left:${flipGeom.boxL+W/2}px;top:0px;width:${b.width}px`;
+    // Keep the source roof's alpha padding; the wall depth below uses its visible edge.
+    ffBoxTop.style.cssText+=`;left:${flipGeom.boxL+W/2}px;top:0px;width:${b.width}px;transform:translateZ(${flipGeom.boxRoofH}px)`;
     const cabW=planH*CAB_AR;
-    ffCabTop.style.cssText+=`;left:${flipGeom.boxL+W/2+b.width-cabW*.06}px;top:0px;width:${cabW}px`;
+    ffCabTop.style.cssText+=`;left:${flipGeom.boxL+W/2+b.width-cabW*.06}px;top:0px;width:${cabW}px;transform:translateZ(${flipGeom.cabRoofH}px)`;
     /* the road surface itself */
     const GW=Math.max(innerWidth*14,14000);
     ground.style.cssText+=`;left:${-GW/2}px;top:${-roadD/2}px;width:${GW}px;height:${roadD}px`;
@@ -1641,19 +1728,19 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
        grazing sliver the side view already reads as ground. */
     const eye=lerp(g.wheelY-innerHeight*(mob()?.24:.135),innerHeight*.5,rot);
     flipRig.style.perspectiveOrigin=`50% ${eye}px`;
-    flipRig.style.perspective=lerp(mob()?820:1050,2600,rot)+'px';
+    flipRig.style.perspective=lerp(mob()?820:1050,30000,Math.pow(rot,3))+'px';
     /* The flat band hands over to the real surface right at the start of the
        move, while the two still read the same, so the swap is not the moment
        anyone notices. */
-    /* Two flat planes at 45 degrees fight each other. Hand the description over
-       across the middle of the climb: the elevation goes as it becomes edge-on,
-       the roof arrives as it opens out. */
-    gsap.set(fSide,{opacity:1-clamp((rot-.40)/.15,0,1)});
-    gsap.set(fTop,{opacity:clamp((rot-.45)/.15,0,1)});
-    /* the cab breaks against the trailer through the turn and settles square */
-    const art=Math.sin(a*Math.PI)*(mob()?7:9);
-    gsap.set(ffCabTop,{rotation:art,transformOrigin:'12% 50%'});
-    gsap.set(ffBoxTop,{rotation:-art*.34,transformOrigin:'88% 50%'});
+    /* Keep the wall and roof joined as the camera rises. Depth opens from zero
+       to retain the original side silhouette at the beginning of the handoff. */
+    const depth=Math.sin(rot*Math.PI/2);
+    fSide.style.transform=`translateZ(${g.planH*(195/211-.5)*depth}px)`;
+    fTop.style.transform=`rotateX(90deg) scaleY(${depth})`;
+    // Both faces stay present: the roof meets the wall instead of dissolving through it.
+    gsap.set(fSide,{opacity:1-clamp((rot-.92)/.08,0,1)});
+    gsap.set(fTop,{opacity:clamp(rot/.06,0,1)});
+    // Each roof stays at the height of its matching side image throughout the orbit.
     /* contact shadow only makes sense while we can still see the side of the rig */
     gsap.set(flipShadow,{x:px-g.W*s*.5,y:py-4,width:g.W*s,
       height:Math.max(4,g.planH*s*.22),opacity:.34*(1-Math.min(1,a*2.2))});
@@ -1787,7 +1874,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to(['#filmSideTruck','#filmSidePayload'],{autoAlpha:0,duration:0,ease:'none'},3.86)
     .set('#flipRig',{autoAlpha:1},3.86)
     .set(['#filmServiceBand','#laneDashes'],{opacity:0},3.86)
-    .fromTo(flipState,{a:0},{a:1,duration:.34,ease:'power1.inOut',onUpdate:applyFlip,immediateRender:false},3.86)
+    .fromTo(flipState,{a:0},{a:1,duration:.42,ease:'none',onUpdate:applyFlip,immediateRender:false},3.86)
     ;
   /* The rig holds its plan pose while the asphalt arrives beneath it — the road
      SVG fades up at the identical position and size, so nothing appears to move. */
@@ -1872,6 +1959,18 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     .to('#filmPlane',{x:'12vw',y:'-5svh',rotation:-2,scale:.92,duration:.72,ease:'none'},9.70)
     .to('#filmSkyCopy',{autoAlpha:1,y:0,clipPath:'inset(0 0% 0 0)',duration:.30,ease:'power2.out'},10.46);
 
+  const chapters=[...film.querySelectorAll('.journey-chapters button')];
+  chapters.forEach(button=>button.addEventListener('click',()=>{
+    const st=tl.scrollTrigger;
+    lenis.scrollTo(st.start+(st.end-st.start)*Number(button.dataset.time)/tl.duration(),{immediate:reduced,duration:1.15});
+  }));
+  let activeChapter=-1;
+  tl.eventCallback('onUpdate',()=>{
+    const time=tl.time(),starts=[0,1.5,4.3,6.75,9.34];
+    const active=starts.reduce((n,start,i)=>time>=start?i:n,0);
+    if(active===activeChapter)return;activeChapter=active;
+    chapters.forEach((button,i)=>{if(i===active)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current')});
+  });
   addEventListener('resize',placeRoad);
   const filmVids=[$('filmOceanVid'),$('filmOceanWakeVid')].filter(Boolean);
   if(filmVids.length&&!reduced){
@@ -2173,5 +2272,6 @@ const _sp=new URLSearchParams(location.search);
 if(_sp.has('scroll')){const _y=+_sp.get('scroll');
   addEventListener('load',()=>setTimeout(()=>{lenis.scrollTo(_y,{immediate:true});ScrollTrigger.update();},300));}
 </script>
+<script type="module" src="scripts/fleet-3d.js"></script>
 </body>
 </html>
