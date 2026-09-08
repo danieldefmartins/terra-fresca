@@ -25,3 +25,8 @@ Start a local server with `python3 -m http.server 3457`, then run
 `node motion-review.mjs` verifies chapter navigation and reduced-motion behavior.
 `node interaction-review.mjs` checks produce links, keyboard navigation, and the model fallback.
 Browser checks use an installed Google Chrome; `CHROME_PATH` can override its path.
+
+`scripts/cargo-loading.js` builds the opening cutaway, roller bed, hinged doors,
+and instanced produce in physical crates. `scripts/port-transfer.js` matches the
+3D reefer and shore crane to the ship deck during the port handoff. Both use the
+master scroll time so loading and unloading poses reverse consistently.

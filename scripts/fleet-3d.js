@@ -93,12 +93,16 @@ try {
     camera.setViewOffset(width,height,width/2-cx,height/2-cy,width,height);camera.updateProjectionMatrix();status.cameraElevation=el;
   };
   const payloadBase=payload.position.clone();
+  const {createCargoLoading}=await import('./cargo-loading.js');
+  const cargo=createCargoLoading(THREE,scene,payloadBase.x);
+  const {createPortTransfer}=await import('./port-transfer.js');
+  const port=createPortTransfer(THREE,payload,environment.texture);
   function draw(now){
     requestAnimationFrame(draw);
     if(!status.ready||document.hidden||!filmVisible)return;
     const time=window.__film?.().t||0;
     const next='film';status.mode=next;
-    if(next==='film'&&(time>6.72||!filmVisible)){canvas.style.visibility='hidden';film.classList.remove('fleet-active');return;}
+    if(next==='film'&&(time>=7.49||!filmVisible)){canvas.style.visibility='hidden';film.classList.remove('fleet-active','port-active');return;}
     canvas.style.visibility='visible';
     const parent=canvas.parentElement,w=parent.clientWidth,h=parent.clientHeight;
     if(width!==w||height!==h){width=w;height=h;renderer.setSize(w,h,false);dirty=true;}
@@ -106,8 +110,11 @@ try {
     if(!dirty&&now-(status.lastFrame||0)<(width<761?42:30))return;
     status.lastFrame=now;lastTime=time;dirty=false;
     const mobile=width<=760;
+    film.classList.toggle('port-active',time>=6.72);
+    if(time>=6.72){film.classList.add('fleet-active');status.port=port.draw(renderer,time,width,height,film);status.time=time;return;}
     target.x=mix(mobile?-3:-1.1,-1.1,smooth(time,1.30,1.68));
     truck.position.set(0,0,0);truck.rotation.set(0,0,0);payload.position.copy(payloadBase);
+    cargo.update(time);truck.children.forEach(child=>child.visible=child===payload||time>=.82);payload.visible=time>=.445;status.loadingCrates=cargo.crates.filter(c=>c.visible).length;
     crane.visible=next==='film'&&time>=.44&&time<1.66;spreader.visible=crane.visible;
     links.concat(hydraulics).forEach(l=>l.visible=crane.visible);
     {
@@ -143,7 +150,7 @@ try {
       status.wheelAngle=-travel/.525;
       if(time<3.7){
         const care=smooth(time,1.30,1.68);
-        poseCamera(mix(.48,.22,care)+Math.sin(phase(time,1.7,3.6)*Math.PI)*.18,mix(.33,.17,care),mix(mobile?52:27,17.5*height/(width*(mobile?.94:.61)),care),width*(mobile?.5:.61),height*mix(.66,mobile?.31:.285,care));
+        poseCamera(mix(mix(-.88,.48,smooth(time,.36,.62)),.22,care)+Math.sin(phase(time,1.7,3.6)*Math.PI)*.18,mix(mix(.40,.33,smooth(time,.36,.62)),.17,care),mix(mix(mobile?35:22,mobile?52:27,smooth(time,.36,.62)),17.5*height/(width*(mobile?.94:.61)),care),width*(mobile?.5:.61),height*mix(mix(.52,.66,smooth(time,.36,.62)),mobile?.31:.285,care));
       }else{
         const orbit=smooth(time,3.7,4.30);
         let cx=width*.5,cy=height*.41,span=width*.11,angle=0;
@@ -165,9 +172,9 @@ try {
   renderer.compile(scene,camera);
   status.ready=true;status.wheels=truckWheels.length;status.craneWheels=craneWheels.length;
 
-  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();status.ready=false;film.classList.remove('fleet-active');canvas.style.display='none'});
+  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();status.ready=false;film.classList.remove('fleet-active','port-active');canvas.style.display='none'});
   requestAnimationFrame(draw);
 }catch(error){
   status.error=String(error);console.error('3D fleet unavailable; retaining illustrated journey.',error);
-  film.classList.remove('fleet-active');canvas?.remove();renderer?.dispose();
+  film.classList.remove('fleet-active','port-active');canvas?.remove();renderer?.dispose();
 }

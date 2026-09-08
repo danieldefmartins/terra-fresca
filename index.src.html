@@ -720,7 +720,8 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 .fleet-canvas.dragging{cursor:grabbing}
 .fleet-canvas:focus-visible{outline:2px solid var(--lime);outline-offset:-4px}
 .film-pin>.fleet-canvas{z-index:36;pointer-events:none;cursor:auto}
-.fleet-active #filmSideTruck,.fleet-active #filmSidePayload,.fleet-active #filmStacker,.fleet-active .fface,.fleet-active #flipSeq,.fleet-active #fCab,.fleet-active #fTrail{visibility:hidden!important}
+.port-active #filmTopPayload,.port-active #filmDeckTarget,.port-active #filmShipSlot{visibility:hidden!important}
+.fleet-active .film-crate,.fleet-active #filmSideTruck,.fleet-active #filmSidePayload,.fleet-active #filmStacker,.fleet-active .fface,.fleet-active #flipSeq,.fleet-active #fCab,.fleet-active #fTrail{visibility:hidden!important}
 
 .produce-card{color:inherit;text-decoration:none;cursor:pointer}
 .produce-card:focus-visible{outline:3px solid var(--lime);outline-offset:-8px}
@@ -1903,7 +1904,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   /* ---- PORT 6.45–7.5: the ocean surfaces beneath the road; the same container
      leaves the chassis and locks into the moving ship ---- */
   tl.set('#filmOcean',{autoAlpha:1},6.45)
-    .fromTo('#filmShip',{xPercent:-50,yPercent:-50,y:'64svh',scale:1.45},{y:'7svh',duration:.72,ease:'power2.out'},6.45)
+    .fromTo('#filmShip',{xPercent:-50,yPercent:-50,y:'64svh',scale:1.45},{y:'7svh',duration:.27,ease:'power2.out'},6.45)
     .to('#filmRoadSvg',{autoAlpha:0,duration:.30,ease:'power1.in'},6.56)
     .to('#filmRoadCamera',{scale:1.22,filter:'blur(9px)',duration:.34,ease:'power1.in'},6.54)
     .to('#filmRoad',{backgroundColor:'rgba(248,248,244,0)',duration:.30},6.56)

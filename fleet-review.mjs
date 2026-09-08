@@ -61,12 +61,13 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
  await delay(1800);
  const capture=async label=>{await delay(350);const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:88});await writeFile(new URL(name+'-3d-'+label+'.jpg',output),Buffer.from(shot.result.data,'base64'));};
  await capture('hero');
- for(const t of [0.15,.58,.88,1.1,1.55,2.4,3.95,4.16,5.5,2.4,.58]){
+ for(const t of [0.15,.32,.41,.58,.88,1.1,2.4,4.16,5.5,6.72,6.96,7.22,7.40,2.4,.15]){
   await evaluate(`(()=>{const st=ScrollTrigger.getAll().find(s=>s.trigger?.id==='journeyFilm'&&s.animation?.duration()>10);lenis.scrollTo(st.start+(st.end-st.start)*${t}/st.animation.duration(),{immediate:true})})()`);await delay(350);
   for(let j=0;j<100;j++){if(await evaluate(`window.__fleet3d?.mode==='film'&&Math.abs(window.__fleet3d.time-${t})<.015`))break;await delay(150);}
   const state=await evaluate('JSON.stringify(window.__fleet3d)');
   const drift=await evaluate('window.__fleet3d?.checkAxles?.()');
   if(drift===undefined||drift>.05)errors.push(name+' axle drift at '+t+': '+drift);
+  if(t===7.40 && await evaluate('window.__fleet3d?.port?.landingError>1'))errors.push(name+' port landing misaligned');
   console.log(name,t,state,'axle drift',drift);await capture(String(t));
  }
 }
