@@ -706,9 +706,9 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 .journey-chapters button[aria-current="step"]{color:#021f36;background:#d8a93f}
 .journey-chapters button:focus-visible{outline:2px solid #f5f2e9;outline-offset:2px}
 @media(max-width:760px){
- .hero{min-height:1060px}
- .hero-copy{padding-top:135px;padding-bottom:360px}
- .hero::before{height:660px;background:linear-gradient(#021f36 65%,#021f3600)}
+ .hero{min-height:0;padding-bottom:calc(100vw + 150px)}
+ .hero-copy{padding-top:120px;padding-bottom:0}
+ .hero::before{display:none}
  .globe-caption{left:22px;right:auto;bottom:95px;font-size:8px}
  .journey-chapters{bottom:22px;left:12px;right:78px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:4px}
  .journey-chapters button{font-size:9px;padding:9px 3px}
@@ -1388,15 +1388,17 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
 /* ================= GLOBE (canvas, time-based) ================= */
 (function(){
   const cv=$('globeCv'),ctx=cv.getContext('2d');
-  let W,H,R,CX,CY;
+  let W,H,R,CX,CY,globeDrawn=false;
   function resize(){
     const d=Math.min(2,devicePixelRatio||1);
     W=cv.clientWidth;H=cv.clientHeight;
     cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);
-    R=Math.min(W*(W>760?.34:.72),H*(W>760?.40:.32));
-    CX=W*(W>760?0.735:0.58);CY=H*(W>760?.53:.76);
+    R=W>760?Math.min(W*.34,H*.40):W*.43;
+    CX=W*(W>760?.735:.5);CY=W>760?H*.53:H-140-R;
+    globeDrawn=false;
   }
   resize();addEventListener('resize',resize);
+  new ResizeObserver(resize).observe(cv.parentElement);
   /* real Earth landmass — Natural Earth 110m coastlines packed into a 192×96 bitmask */
   const LB=Uint8Array.from(atob('{{LAND}}'),c=>c.charCodeAt(0));
   const LW=192,LH=96;
@@ -1505,7 +1507,6 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   });
   const endDrag=()=>{dragging=false;cv.classList.remove('dragging');};
   cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
-  let globeDrawn=false;
   cv.addEventListener('keydown',e=>{
     if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
     e.preventDefault();spinVel=0;tiltVel=0;

@@ -112,7 +112,7 @@ try {
     const mobile=width<=760;
     film.classList.toggle('port-active',time>=6.72);
     if(time>=6.72){film.classList.add('fleet-active');status.port=port.draw(renderer,time,width,height,film);status.time=time;return;}
-    target.x=mix(mobile?-3:-1.1,-1.1,smooth(time,1.30,1.68));
+    target.x=mix(mobile?mix(-3.5,-5.6,smooth(time,.44,.8)):-1.1,mobile?-1.5:-1.1,smooth(time,1.30,1.68));
     truck.position.set(0,0,0);truck.rotation.set(0,0,0);payload.position.copy(payloadBase);
     cargo.update(time);truck.children.forEach(child=>child.visible=child===payload||time>=.82);payload.visible=time>=.445;status.loadingCrates=cargo.crates.filter(c=>c.visible).length;
     crane.visible=next==='film'&&time>=.44&&time<1.66;spreader.visible=crane.visible;
@@ -152,7 +152,7 @@ try {
       status.wheelAngle=-travel/.525;
       if(time<3.7){
         const care=smooth(time,1.30,1.68);
-        poseCamera(mix(mix(-.88,.48,smooth(time,.36,.62)),.22,care)+Math.sin(phase(time,1.7,3.6)*Math.PI)*.18,mix(mix(.40,.33,smooth(time,.36,.62)),.17,care),mix(mix(mobile?35:22,mobile?52:27,smooth(time,.36,.62)),17.5*height/(width*(mobile?.94:.61)),care),width*(mobile?.5:.61),height*mix(mix(.52,.66,smooth(time,.36,.62)),mobile?.31:.285,care));
+        poseCamera(mix(mix(-.88,mobile?.88:.48,smooth(time,.36,.62)),mobile?.55:.22,care)+Math.sin(phase(time,1.7,3.6)*Math.PI)*.18,mix(mix(.40,.33,smooth(time,.36,.62)),.17,care),mix(mix(mobile?35:22,mobile?46:27,smooth(time,.36,.62)),(mobile?14.5:17.5)*height/(width*(mobile?.94:.61)),care),width*(mobile?.5:.61),height*mix(mix(.52,mobile?.50:.66,smooth(time,.36,.62)),mobile?.31:.285,care));
       }else{
         const orbit=smooth(time,3.7,4.30);
         let cx=width*.5,cy=height*.41,span=width*.11,angle=0;
@@ -164,7 +164,7 @@ try {
           span=Math.hypot(Math.max(cab.right,trail.right)-Math.min(cab.left,trail.left),Math.max(cab.bottom,trail.bottom)-Math.min(cab.top,trail.top));
           angle=Math.atan2(cab.top+cab.height/2-trail.top-trail.height/2,cab.left+cab.width/2-trail.left-trail.width/2);
         }
-        poseCamera(mix(.22,0,orbit),mix(.17,Math.PI/2-.001,orbit),mix(17.5*height/(width*(mobile?.94:.61)),17*height/span,orbit),mix(width*(mobile?.5:.61),cx,orbit),mix(height*(mobile?.31:.285),cy,orbit));
+        poseCamera(mix(mobile?.55:.22,0,orbit),mix(.17,Math.PI/2-.001,orbit),mix((mobile?14.5:17.5)*height/(width*(mobile?.94:.61)),17*height/span,orbit),mix(width*(mobile?.5:.61),cx,orbit),mix(height*(mobile?.31:.285),cy,orbit));
         truck.rotation.y=-angle*orbit;
       }
     }

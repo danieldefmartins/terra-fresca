@@ -61,6 +61,9 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
  for(let i=0;i<100;i++){if(await evaluate('window.__globe?.drawn'))break;await delay(150);}
  if(!await evaluate('window.__globe?.drawn'))errors.push(name+' Orange globe unavailable');
  await delay(1500);
+ if(name==='mobile'){await evaluate(`lenis.scrollTo(Math.max(0,document.querySelector('.hero').offsetHeight-innerHeight),{immediate:true})`);await delay(300);}
+ const coverage=await evaluate(`(()=>{const c=document.querySelector('#globeCv'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<d.length;i+=64)if(d[i]>20)n++;return n/(d.length/64)})()`);
+ if(coverage<.05)errors.push(name+' globe canvas blank');
  for(const view of ['americas','rotated']){
   if(view==='rotated'){await evaluate("document.querySelector('#globeCv').focus()");for(let i=0;i<12;i++)await call('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});await delay(500);}
   const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:90});await writeFile(new URL(name+'-orange-glow-'+view+'.jpg',output),Buffer.from(shot.result.data,'base64'));
