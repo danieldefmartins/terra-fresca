@@ -69,4 +69,17 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
   const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:90});await writeFile(new URL(name+'-orange-glow-'+view+'.jpg',output),Buffer.from(shot.result.data,'base64'));
  }
 }
+await call('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+await evaluate(`lenis.scrollTo(Math.max(0,document.querySelector('.hero').offsetHeight-innerHeight),{immediate:true})`);await delay(300);
+const touchCenter=await evaluate(`(()=>{const r=document.querySelector('#globeTouch').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`);
+const beforeTouch=await evaluate('({y:scrollY,tilt:window.__globe.tilt})');
+await call('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touchCenter,id:1}]});
+for(let i=1;i<=8;i++){await call('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touchCenter.x+5*i,y:touchCenter.y-12*i,id:1}]});await delay(35);}
+await call('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await delay(200);
+const afterTouch=await evaluate('({y:scrollY,tilt:window.__globe.tilt,stopped:lenis.isStopped})');
+if(Math.abs(afterTouch.y-beforeTouch.y)>2||Math.abs(afterTouch.tilt-beforeTouch.tilt)<.2||afterTouch.stopped)errors.push('Globe touch did not exclusively rotate');
+await call('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:12,y:180,id:2}]});
+for(let i=1;i<=8;i++){await call('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:12,y:180-i*12,id:2}]});await delay(35);}
+await call('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await delay(500);
+if(await evaluate('scrollY')<afterTouch.y+30)errors.push('Scrolling outside the globe blocked');
 console.log('Orange globe checks',errors);ws.close();browser.kill('SIGTERM');if(errors.length)process.exitCode=1;

@@ -60,8 +60,12 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
  await call('Page.navigate',{url});await delay(1500);
  if(name==='desktop')links.push(...await evaluate(`Promise.all([...document.querySelectorAll('a.produce-card')].map(async a=>{const r=await fetch(a.href);return {href:a.getAttribute('href'),ok:r.ok&&/<h1/.test(await r.text())}}))`));
  await evaluate(`lenis.scrollTo(document.querySelector('#producePrelude').offsetTop+document.querySelector('.produce-heading').offsetHeight,{immediate:true})`);
- await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:width-2,y:height-2});await delay(5700);
+ await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:width/2,y:200});await delay(5700);
  const auto=await evaluate(`document.querySelector('.produce-track').scrollLeft`);if(auto<width*.8)failures.push(name+' autoplay');
+const priorAuto=await evaluate(`document.querySelector('.produce-track').scrollLeft`);
+ await call('Input.dispatchMouseEvent',{type:'mouseWheel',x:width/2,y:250,deltaY:80,deltaX:0});await delay(5700);
+ if(await evaluate(`document.querySelector('.produce-track').scrollLeft`)<priorAuto+width*.8)failures.push(name+' vertical scroll stopped autoplay');
+ await evaluate(`lenis.scrollTo(document.querySelector('#producePrelude').offsetTop+document.querySelector('.produce-heading').offsetHeight,{immediate:true})`);await delay(300);
  const initialY=await evaluate('scrollY');
  const arrow=await evaluate(`(()=>{const r=document.querySelector('[data-produce-step="1"]').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`);
  await call('Input.dispatchMouseEvent',{type:'mousePressed',...arrow,button:'left',buttons:1,clickCount:1});await call('Input.dispatchMouseEvent',{type:'mouseReleased',...arrow,button:'left',buttons:0,clickCount:1});await delay(900);

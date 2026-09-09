@@ -174,7 +174,9 @@ nav.main a:hover{color:var(--paper);border-bottom-color:var(--mango)}
 
 /* ============ HERO ============ */
 .hero{position:relative;background:var(--ink);color:var(--paper);min-height:100svh;overflow:hidden}
-#globeCv{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+#globeCv{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+#globeTouch{position:absolute;z-index:3;border-radius:50%;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#globeTouch.dragging{cursor:grabbing}
 #globeCv.dragging{cursor:grabbing}
 #globeCv:focus-visible{outline:2px solid var(--lime);outline-offset:-5px}
 .hero-copy{
@@ -785,6 +787,7 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 <!-- ================= HERO ================= -->
 <section class="hero">
   <canvas id="globeCv" role="img" tabindex="0" aria-label="Interactive globe showing export routes from Brazil. Drag or use the arrow keys to rotate."></canvas>
+  <div id="globeTouch" aria-hidden="true" data-lenis-prevent-touch></div>
   <div class="globe-caption" aria-hidden="true"><span>23°57′ S · 46°20′ W</span><b>Brazil. Connected to the world.</b><span>Drag to explore ↗</span></div>
   <div class="hero-copy">
     <span class="mono">One exporter · every leg of the journey</span>
@@ -1305,18 +1308,16 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
 (function(){
   const section=$('producePrelude'),track=section.querySelector('.produce-track');
   const cards=[...track.querySelectorAll('.produce-card')];
-  let current=0,visible=false,hover=false,playing=!reduced,timer;
-  function schedule(){clearTimeout(timer);if(playing&&visible&&!hover&&!document.hidden)timer=setTimeout(()=>{go(current+1);schedule()},5000);}
+  let current=0,visible=false,playing=!reduced,timer;
+  function schedule(){clearTimeout(timer);if(playing&&visible&&!document.hidden)timer=setTimeout(()=>{go(current+1);schedule()},5000);}
   function stop(){playing=false;clearTimeout(timer);}
   function go(index,instant=false){current=(index+cards.length)%cards.length;track.scrollTo({left:current*track.clientWidth,behavior:instant||reduced?'instant':'smooth'});}
   section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{stop();go(current+Number(button.dataset.produceStep))}));
   track.addEventListener('scroll',()=>{current=Math.round(track.scrollLeft/track.clientWidth)},{passive:true});
-  section.addEventListener('pointerdown',stop,{passive:true});
-  addEventListener('wheel',()=>{if(visible)stop()},{passive:true});
-  addEventListener('touchstart',()=>{if(visible)stop()},{passive:true});
-  addEventListener('scroll',()=>{if(visible)stop()},{passive:true});
-  section.addEventListener('mouseenter',()=>{hover=true;schedule()});section.addEventListener('mouseleave',()=>{hover=false;schedule()});
-  section.addEventListener('focusin',stop);
+  track.addEventListener('wheel',event=>{if(Math.abs(event.deltaX)>Math.abs(event.deltaY))stop()},{passive:true});
+  let touchX=0,touchY=0;
+  track.addEventListener('touchstart',event=>{const touch=event.touches[0];touchX=touch.clientX;touchY=touch.clientY},{passive:true});
+  track.addEventListener('touchmove',event=>{const touch=event.touches[0],dx=Math.abs(touch.clientX-touchX),dy=Math.abs(touch.clientY-touchY);if(dx>8&&dx>dy)stop()},{passive:true});
   cards.forEach((card,i)=>card.addEventListener('focus',()=>go(i,true)));
   track.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();stop();go(current+(event.key==='ArrowRight'?1:-1));cards[current].focus({preventScroll:true})}});
   new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;schedule()},{threshold:.35}).observe(track);
@@ -1330,7 +1331,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
 
 /* ================= GLOBE (canvas, time-based) ================= */
 (function(){
-  const cv=$('globeCv'),ctx=cv.getContext('2d');
+  const cv=$('globeCv'),ctx=cv.getContext('2d'),surface=$('globeTouch');
   let W,H,R,CX,CY,globeDrawn=false;
   function resize(){
     const d=Math.min(2,devicePixelRatio||1);
@@ -1338,6 +1339,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);
     R=W>760?Math.min(W*.34,H*.40):W*.43;
     CX=W*(W>760?.735:.5);CY=W>760?H*.53:H-140-R;
+    Object.assign(surface.style,{left:(CX-R)+'px',top:(CY-R)+'px',width:(R*2)+'px',height:(R*2)+'px'});
     globeDrawn=false;
   }
   resize();addEventListener('resize',resize);
@@ -1437,19 +1439,23 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     onToggle:s=>{heroVisible=s.isActive}});
   /* the globe is touchable — drag to spin it, with inertia */
   let userRot=0,spinVel=0,tiltVel=0,dragging=false,lastX=0,lastY=0;
-  cv.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;
-    spinVel=0;tiltVel=0;cv.classList.add('dragging');cv.setPointerCapture(e.pointerId);});
-  cv.addEventListener('pointermove',e=>{
-    if(!dragging)return;
-    const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
-    userRot+=dx*0.005;spinVel=dx*0.005;globeDrawn=false;
-    /* Vertical drag tilts the globe. touch-action:pan-y means the browser keeps
-       vertical-initiated gestures for page scrolling, but once a drag has been
-       claimed horizontally the events are ours and both axes work. */
-    userTilt+=dy*0.005;tiltVel=dy*0.005;
+  let activePointer=null;
+  surface.addEventListener('pointerdown',e=>{
+    if(!e.isPrimary||e.button!==0||activePointer!==null)return;
+    e.preventDefault();activePointer=e.pointerId;dragging=true;lastX=e.clientX;lastY=e.clientY;
+    spinVel=0;tiltVel=0;lenis.stop();surface.classList.add('dragging');surface.setPointerCapture(e.pointerId);
   });
-  const endDrag=()=>{dragging=false;cv.classList.remove('dragging');};
-  cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+  surface.addEventListener('pointermove',e=>{
+    if(!dragging||e.pointerId!==activePointer)return;
+    e.preventDefault();
+    const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+    userRot+=dx*.005;spinVel=dx*.005;userTilt+=dy*.005;tiltVel=dy*.005;globeDrawn=false;
+  });
+  const endDrag=e=>{
+    if(activePointer===null||e.pointerId!==activePointer)return;
+    activePointer=null;dragging=false;surface.classList.remove('dragging');lenis.start();
+  };
+  surface.addEventListener('pointerup',endDrag);surface.addEventListener('pointercancel',endDrag);surface.addEventListener('lostpointercapture',endDrag);
   cv.addEventListener('keydown',e=>{
     if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
     e.preventDefault();spinVel=0;tiltVel=0;
@@ -1486,7 +1492,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     const edge=ctx.createLinearGradient(CX-R,CY-R,CX+R,CY+R);
     edge.addColorStop(0,'rgba(255,219,157,.76)');edge.addColorStop(.45,'rgba(240,167,68,.38)');edge.addColorStop(1,'rgba(219,138,46,.08)');
     ctx.strokeStyle=edge;ctx.lineWidth=1.25;ctx.stroke();
-    window.__globe.drawn=true;
+    window.__globe.drawn=true;window.__globe.rotation=userRot;window.__globe.tilt=userTilt;window.__globe.dragging=dragging;
     ctx.strokeStyle='rgba(157,203,195,.10)';ctx.lineWidth=.65;
     const gridLine=points=>{ctx.beginPath();let visible=false;
       for(const p of points){const [x,y,z]=project(p[0],p[1],rot,R);
