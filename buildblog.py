@@ -122,6 +122,8 @@ def shell(title, desc, canonical, body, extra_ld=""):
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/blog/blog.css">
 {extra_ld}
+<link rel="stylesheet" href="/scripts/languages.css">
+<script src="/scripts/languages.js" defer></script>
 </head>
 <body>
 <header class="bhead">
