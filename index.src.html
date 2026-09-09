@@ -735,6 +735,20 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 @media(max-width:760px){.produce-navigation{left:16px;right:80px;bottom:22px;gap:4px;padding:4px}.produce-navigation button{width:38px;flex-shrink:0}.produce-navigation a{font-size:12px;padding:8px;margin-left:0;flex:1}.produce-navigation .journey-label{display:none}.produce-card{padding-bottom:112px}.produce-visual{height:35svh}.produce-visual img{max-height:34svh}.produce-details{margin-top:16px}.produce-swipe{display:none}}
 .produce-details span{display:inline-block;transition:transform .2s}
 .produce-card:hover .produce-details span,.produce-card:focus-visible .produce-details span{transform:translate(3px,-3px)}
+
+/* A single carousel in normal document flow: no pinned sideways scrolling. */
+#producePrelude{height:auto}
+.produce-heading{padding:50px clamp(22px,5vw,72px) 10px}.produce-heading .kicker{color:var(--mango)}
+.produce-heading h2{font-size:clamp(36px,5vw,64px);margin-top:12px}
+.produce-pin{position:relative;height:auto;padding-bottom:86px}
+.produce-track{width:100%;height:clamp(480px,65svh,640px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x pan-y;will-change:auto}
+.produce-track::-webkit-scrollbar{display:none}
+.produce-card{flex:0 0 100%;height:100%;scroll-snap-align:start;padding-top:16px;padding-bottom:16px}
+.produce-visual{height:100%}.produce-visual img{max-height:440px}
+.produce-navigation{bottom:18px;right:auto}
+#producePause{font-size:14px;width:auto;min-width:68px;padding:10px}
+#produceCount{color:#c5d1dc;font-size:12px;min-width:72px;text-align:center}
+@media(max-width:760px){.produce-heading{padding-top:36px}.produce-heading h2{font-size:36px}.produce-heading .kicker{font-size:9px}.produce-track{height:570px}.produce-card{padding:10px 22px 20px;align-content:center}.produce-visual{height:245px}.produce-visual img{max-height:235px;width:74vw}.produce-copy h3{font-size:44px}.produce-navigation{left:22px;right:auto}.produce-copy{margin-top:6px}}
 </style>
 </head>
 <body>
@@ -742,7 +756,6 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 <div class="journey-progress" id="journeyProgress" aria-hidden="true"></div>
 <a class="wa-fab" href="https://wa.me/19543523599?text=Hi%20Terra%20Fresca%20%E2%80%94%20I%27d%20like%20to%20talk%20about%20sourcing%20fruit%20from%20Brazil." target="_blank" rel="noopener" aria-label="Message Terra Fresca on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.22 8.22 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.84-.85 2.03s.87 2.35 1 2.51c.12.16 1.72 2.62 4.16 3.67.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z"/></svg></a>
 <button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
-<div class="scroll-nudge" id="scrollNudge" aria-hidden="true"><span class="mono">Keep scrolling</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
 <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="Turn journey ambience on">Sound</button>
 <div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
 
@@ -801,20 +814,16 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 </section>
 
 <!-- ================= PRODUCE PRELUDE ================= -->
-<section id="producePrelude" aria-label="Fresh produce available for export">
+<section id="producePrelude" aria-label="Fresh produce available for export" aria-roledescription="carousel">
+  <header class="produce-heading"><span class="kicker">Fresh from Brazil · fourteen product lines</span><h2 class="display">Meet the harvest.</h2></header>
   <div class="produce-pin">
-    <nav class="produce-navigation" aria-label="Browse produce or continue down">
+    <nav class="produce-navigation" aria-label="Browse produce">
       <button type="button" data-produce-step="-1" aria-label="Previous produce">←</button>
       <button type="button" data-produce-step="1" aria-label="Next produce">→</button>
-      <a href="#journeyFilm" id="produceContinue">Continue <span class="journey-label">to our journey</span><span aria-hidden="true">↓</span></a>
+      <span id="produceCount" class="mono" aria-live="off">01 / 14</span>
+      <button type="button" id="producePause" aria-label="Pause automatic produce browsing">Pause</button>
     </nav>
-    <div class="produce-track">
-      <article class="produce-intro">
-        <span class="kicker">Fresh from Brazil · fourteen product lines</span>
-        <h2 class="display">Meet the harvest.</h2>
-        <p>Before the cold chain begins, meet the fruit and vegetables selected from our certified Brazilian growing partners.</p>
-        <span class="mono produce-index">01 / 14 · Scroll to explore</span><span class="mono produce-swipe">Swipe through →</span>
-      </article>
+    <div class="produce-track" aria-label="Produce cards">
       <a href="/produce/mango/" class="produce-card" data-number="01"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-mango-cut}}" alt="Crate of Brazilian mangoes"></div><div class="produce-copy"><span class="mono">01 · Fruit</span><h3>Mango</h3><p class="variety">Tommy Atkins · Palmer · Keitt</p><p class="mono season">Peak window · Sep–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <a href="/produce/tahiti-lime/" class="produce-card" data-number="02"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-lime-cut}}" alt="Crate of Brazilian Tahiti limes"></div><div class="produce-copy"><span class="mono">02 · Citrus</span><h3>Tahiti Lime</h3><p class="variety">Persian lime · calibrated and export packed</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <a href="/produce/papaya/" class="produce-card" data-number="03"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-papaya-cut}}" alt="Crate of Brazilian papayas"></div><div class="produce-copy"><span class="mono">03 · Fruit</span><h3>Papaya</h3><p class="variety">Formosa · Golden</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
@@ -829,10 +838,6 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
       <a href="/produce/seedless-grape/red/" class="produce-card" data-number="12"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapered-cut}}" alt="Crate of red seedless grapes"></div><div class="produce-copy"><span class="mono">12 · Grape</span><h3>Red Grape</h3><p class="variety">Seedless · Crimson · Flame</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <a href="/produce/seedless-grape/black/" class="produce-card" data-number="13"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-grapeblack-cut}}" alt="Crate of black seedless grapes"></div><div class="produce-copy"><span class="mono">13 · Grape</span><h3>Black Grape</h3><p class="variety">Seedless · Midnight Beauty · Autumn Royal</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <a href="/produce/banana/" class="produce-card" data-number="14"><div class="produce-visual"><img loading="lazy" decoding="async" src="{{A:crate-banana-cut}}" alt="Crate of Brazilian bananas"></div><div class="produce-copy"><span class="mono">14 · Fruit</span><h3>Banana</h3><p class="variety">Prata · Nanica</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
-      <article class="produce-handoff">
-        <div><span class="kicker">Selected · graded · ready for the cold chain</span><h2 class="display">Now follow the shipment.</h2><p>From careful selection to a sealed reefer, we take responsibility for the produce and every step that follows.</p></div>
-        <div class="handoff-crates" aria-hidden="true"><img src="{{A:crate-mango-cut}}" alt=""><img src="{{A:crate-lime-cut}}" alt=""><img src="{{A:crate-papaya-cut}}" alt=""><img src="{{A:crate-melon-cut}}" alt=""><img src="{{A:crate-avocado-cut}}" alt=""><img src="{{A:crate-ginger-cut}}" alt=""><img src="{{A:crate-sweetpotato-cut}}" alt=""><img src="{{A:crate-passion-cut}}" alt=""><img src="{{A:crate-pineapple-cut}}" alt=""><img src="{{A:crate-watermelon-cut}}" alt=""><img src="{{A:crate-grapegreen-cut}}" alt=""><img src="{{A:crate-grapered-cut}}" alt=""><img src="{{A:crate-grapeblack-cut}}" alt=""><img src="{{A:crate-banana-cut}}" alt=""></div><div class="produce-floor"></div>
-      </article>
     </div>
   </div>
 </section>
@@ -1204,7 +1209,7 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 gsap.registerPlugin(ScrollTrigger);
 /* Lenis owns the inertial feel. ScrollTrigger only gets a very short catch-up,
    avoiding the rubber-band lag caused by smoothing the same gesture twice. */
-const lenis=new Lenis({lerp:reduced?1:0.16,anchors:true});
+const lenis=new Lenis({lerp:reduced?1:0.16,anchors:true,virtualScroll:({event})=>!(event.target.closest?.(".produce-track")&&Math.abs(event.deltaX)>Math.abs(event.deltaY))});
 lenis.on('scroll',ScrollTrigger.update);
 gsap.ticker.add(t=>lenis.raf(t*1000));
 gsap.ticker.lagSmoothing(0);
@@ -1287,99 +1292,25 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
   lenis.on('scroll',({scroll})=>b.classList.toggle('on',scroll>innerHeight*1.6));
 })();
 
-/* ---------- sideways input, and a nudge when someone loses the thread ----------
-   The harvest is a horizontal track driven by VERTICAL scroll. A reader who
-   sees the page moving sideways reasonably tries to scroll sideways, gets
-   nothing, and concludes the page is stuck. So horizontal intent — trackpad
-   swipe or finger drag — is folded back into the same scroll that drives it,
-   which means the animation simply continues either way.
-
-   Lenis owns the scroll position, so the push goes through lenis rather than
-   window.scrollBy, which would fight it. */
+/* ---------- Native horizontal carousel; page scrolling stays vertical ---------- */
 (function(){
-  const sec=$('producePrelude'); if(!sec) return;
-  const nudge=$('scrollNudge');
-  let live=false, back=0, lastY=0, shown=false;
-  /* declared before the trigger: onToggle can fire during create() if the page
-     is restored already scrolled into this section */
-  const show=on=>{ if(on!==shown){ shown=on; nudge&&nudge.classList.toggle('on',on); } };
-  ScrollTrigger.create({trigger:sec,start:'top top',end:'bottom bottom',
-    onToggle:s=>{ live=s.isActive; if(!live){ back=0; show(false); } }});
-
-  const push=d=>{ if(d) lenis.scrollTo(lenis.targetScroll+d,
-    {duration:.30,easing:t=>1-Math.pow(1-t,3),lock:false}); };
-
-  addEventListener('wheel',e=>{
-    if(!live || Math.abs(e.deltaX)<=Math.abs(e.deltaY)) return;  /* vertical intent: leave it */
-    e.preventDefault();
-    push(e.deltaX*1.45);
-  },{passive:false});
-
-  let px=0,py=0,horiz=null;
-  addEventListener('touchstart',e=>{
-    if(!live) return; const t=e.touches[0]; px=t.clientX; py=t.clientY; horiz=null;
-  },{passive:true});
-  addEventListener('touchmove',e=>{
-    if(!live) return;
-    const t=e.touches[0], dx=px-t.clientX, dy=py-t.clientY;
-    if(horiz===null && (Math.abs(dx)>6||Math.abs(dy)>6)) horiz=Math.abs(dx)>Math.abs(dy);
-    if(!horiz) return;
-    e.preventDefault();
-    push(dx*1.8); px=t.clientX; py=t.clientY;
-  },{passive:false});
-
-  /* Scrolling BACK through a pinned section is what someone does when they have
-     lost the thread. Forward motion clears it twice as fast as back builds it,
-     so a small correction never trips the prompt. */
-  lenis.on('scroll',({scroll})=>{
-    if(!live){ lastY=scroll; if(back){back=0;show(false);} return; }
-    const d=scroll-lastY; lastY=scroll;
-    if(d<0) back-=d; else back=Math.max(0,back-d*2);
-    show(back>430);
-  });
-})();
-
-/* ---------- produce prelude: one horizontal harvest, then the loading floor ---------- */
-(function(){
-  const section=$('producePrelude'),track=section&&section.querySelector('.produce-track');
-  if(!section||!track)return;
-  const travel=()=>Math.max(0,track.scrollWidth-innerWidth);
-  const move=gsap.to(track,{x:()=>-travel(),ease:'none',
-    /* Finish one viewport before the sticky section releases. The handoff gets a
-       full-screen beat, then yields to the loading floor instead of being clipped. */
-    scrollTrigger:{trigger:section,start:'top top',end:()=>`+=${Math.max(innerHeight,section.offsetHeight-innerHeight*2)}`,scrub:SCRUB,invalidateOnRefresh:true}
-  });
-  section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{
-    const st=move.scrollTrigger,panels=track.children.length-1;
-    const current=Math.round(st.progress*panels),next=clamp(current+Number(button.dataset.produceStep),0,panels);
-    lenis.scrollTo(st.start+(st.end-st.start)*next/panels,{immediate:reduced,duration:.65});
-  }));
-  $('produceContinue').addEventListener('click',event=>{
-    event.preventDefault();
-    const journey=$('journeyFilm');
-    lenis.scrollTo(journey,{immediate:true});ScrollTrigger.update();
-    const heading=journey.querySelector('h2');heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});
-  });
-  gsap.utils.toArray('.produce-card').forEach((card,i)=>{
-    const image=card.querySelector('.produce-visual img'),copy=card.querySelector('.produce-copy');
-    card.addEventListener('focus',()=>{
-      if(!card.matches(':focus-visible'))return;
-      track.parentElement.scrollLeft=0;
-      const p=clamp((card.offsetLeft-(innerWidth-card.offsetWidth)/2)/travel(),0,1);
-      lenis.scrollTo(section.offsetTop+p*Math.max(innerHeight,section.offsetHeight-innerHeight*2),{immediate:true});
-    });
-    gsap.fromTo(image,{xPercent:-10,rotationY:reduced?0:-16,rotation:reduced?0:-3,scale:.90},{xPercent:10,rotationY:reduced?0:16,rotation:reduced?0:3,scale:1.04,ease:'none',
-      scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
-    gsap.fromTo(copy,{x:70,autoAlpha:.15},{x:()=>innerWidth<=760?0:-22,autoAlpha:1,ease:'power1.out',
-      scrollTrigger:{trigger:card,containerAnimation:move,start:'left 78%',end:'center 46%',scrub:true}});
-    gsap.fromTo(card,{backgroundColor:i%2?'#052033':'#031B2E'},{backgroundColor:i%2?'#031B2E':'#052033',ease:'none',
-      scrollTrigger:{trigger:card,containerAnimation:move,start:'left right',end:'right left',scrub:true}});
-  });
-  gsap.fromTo('.handoff-crates img',{autoAlpha:0,scale:.86,transformOrigin:'50% 100%'},
-    {autoAlpha:1,scale:1,stagger:.03,ease:'power2.out',
-     scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 92%',end:'center 72%',scrub:true}});
-  gsap.fromTo('.produce-handoff h2,.produce-handoff p,.produce-handoff .kicker',{y:34,autoAlpha:0},{y:0,autoAlpha:1,stagger:.06,ease:'power2.out',
-    scrollTrigger:{trigger:'.produce-handoff',containerAnimation:move,start:'left 70%',end:'center 52%',scrub:true}});
+  const section=$('producePrelude'),track=section.querySelector('.produce-track');
+  const cards=[...track.querySelectorAll('.produce-card')],pause=$('producePause'),count=$('produceCount');
+  let current=0,visible=false,hover=false,playing=!reduced,timer;
+  function controls(){pause.textContent=playing?'Pause':'Play';pause.setAttribute('aria-label',playing?'Pause automatic produce browsing':'Start automatic produce browsing');count.textContent=String(current+1).padStart(2,'0')+' / '+cards.length;}
+  function schedule(){clearTimeout(timer);if(playing&&visible&&!hover&&!document.hidden)timer=setTimeout(()=>{go(current+1);schedule()},5000);}
+  function go(index,instant=false){current=(index+cards.length)%cards.length;track.scrollTo({left:current*track.clientWidth,behavior:instant||reduced?'instant':'smooth'});controls();}
+  section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{go(current+Number(button.dataset.produceStep));schedule()}));
+  pause.addEventListener('click',()=>{playing=!playing;controls();schedule()});
+  track.addEventListener('scroll',()=>{current=Math.round(track.scrollLeft/track.clientWidth);controls()},{passive:true});
+  track.addEventListener('pointerdown',()=>{playing=false;controls();schedule()},{passive:true});
+  section.addEventListener('mouseenter',()=>{hover=true;schedule()});section.addEventListener('mouseleave',()=>{hover=false;schedule()});
+  section.addEventListener('focusin',event=>{if(event.target!==pause){playing=false;controls();schedule()}});
+  cards.forEach((card,i)=>card.addEventListener('focus',()=>go(i,true)));
+  track.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();go(current+(event.key==='ArrowRight'?1:-1));cards[current].focus({preventScroll:true})}});
+  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;schedule()},{threshold:.35}).observe(track);
+  new ResizeObserver(()=>go(current,true)).observe(track);
+  document.addEventListener('visibilitychange',schedule);controls();
 })();
 
 /* ---------- hero entrance ---------- */
