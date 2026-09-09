@@ -1309,7 +1309,7 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
   const section=$('producePrelude'),track=section.querySelector('.produce-track');
   const cards=[...track.querySelectorAll('.produce-card')];
   let current=0,visible=false,playing=!reduced,timer;
-  function schedule(){clearTimeout(timer);if(playing&&visible&&!document.hidden)timer=setTimeout(()=>{go(current+1);schedule()},5000);}
+  function schedule(){clearTimeout(timer);if(playing&&visible&&!document.hidden)timer=setTimeout(()=>{go(current+1);schedule()},3000);}
   function stop(){playing=false;clearTimeout(timer);}
   function go(index,instant=false){current=(index+cards.length)%cards.length;track.scrollTo({left:current*track.clientWidth,behavior:instant||reduced?'instant':'smooth'});}
   section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{stop();go(current+Number(button.dataset.produceStep))}));
