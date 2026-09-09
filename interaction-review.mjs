@@ -62,13 +62,14 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
  await evaluate(`lenis.scrollTo(document.querySelector('#producePrelude').offsetTop+document.querySelector('.produce-heading').offsetHeight,{immediate:true})`);
  await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:width-2,y:height-2});await delay(5700);
  const auto=await evaluate(`document.querySelector('.produce-track').scrollLeft`);if(auto<width*.8)failures.push(name+' autoplay');
- const pausePoint=await evaluate(`(()=>{const r=document.querySelector('#producePause').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`);
- await call('Input.dispatchMouseEvent',{type:'mousePressed',...pausePoint,button:'left',buttons:1,clickCount:1});await call('Input.dispatchMouseEvent',{type:'mouseReleased',...pausePoint,button:'left',buttons:0,clickCount:1});
- if(await evaluate(`document.querySelector('#producePause').textContent`)!=='Play')failures.push(name+' pause control');
  const initialY=await evaluate('scrollY');
- await evaluate(`document.querySelector('[data-produce-step="1"]').click()`);await delay(900);
+ const arrow=await evaluate(`(()=>{const r=document.querySelector('[data-produce-step="1"]').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`);
+ await call('Input.dispatchMouseEvent',{type:'mousePressed',...arrow,button:'left',buttons:1,clickCount:1});await call('Input.dispatchMouseEvent',{type:'mouseReleased',...arrow,button:'left',buttons:0,clickCount:1});await delay(900);
  if(Math.abs(await evaluate('scrollY')-initialY)>3)failures.push(name+' arrows moved page');
  const x=await evaluate(`document.querySelector('.produce-track').scrollLeft`);
+ await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:width-2,y:height-2});await delay(5300);
+ if(Math.abs(await evaluate(`document.querySelector('.produce-track').scrollLeft`)-x)>4)failures.push(name+' automation did not stop after arrow');
+ if(await evaluate(`document.querySelectorAll('.produce-navigation button').length!==2||!!document.querySelector('#producePause,#produceCount')`))failures.push(name+' extra controls');
  await call('Input.dispatchMouseEvent',{type:'mouseWheel',x:width/2,y:300,deltaY:340,deltaX:0});await delay(900);
  if(await evaluate('scrollY')<initialY+150||Math.abs(await evaluate(`document.querySelector('.produce-track').scrollLeft`)-x)>4)failures.push(name+' vertical scroll changed carousel');
  await evaluate(`document.querySelector('.produce-card').focus()`);await delay(500);
@@ -76,7 +77,13 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
  await call('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await call('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await delay(900);
  if(await evaluate('location.pathname')!=='/produce/mango/')failures.push(name+' detail navigation');
 }
-if(links.length!==14||new Set(links.map(l=>l.href)).size!==14||links.some(l=>!l.ok))failures.push('Produce destinations');
+if(links.length!==17||new Set(links.map(l=>l.href)).size!==17||links.some(l=>!l.ok))failures.push('Produce destinations');
+for(const path of ['/produce/potato/table-potato/','/produce/onion/','/produce/yuca/']){
+ await call('Page.navigate',{url:new URL(path,url).href});await delay(900);
+ const page=await evaluate(`({headings:[...document.querySelectorAll('h2')].map(h=>h.textContent),broken:[...document.images].some(i=>i.complete&&!i.naturalWidth),overflow:document.documentElement.scrollWidth>innerWidth+1})`);
+ for(const h of ['Varieties','Availability through the year','Where it grows','Organic','Volume and packing','Research sources'])if(!page.headings.includes(h))failures.push(path+' missing '+h);
+ if(page.broken||page.overflow)failures.push(path+' page layout/image');
+}
 await call('Network.enable');await call('Network.setBlockedURLs',{urls:['*terra-fleet.glb*']});
 await call('Page.navigate',{url});await delay(1800);
 await evaluate(`(()=>{const st=ScrollTrigger.getAll().find(s=>s.trigger?.id==='journeyFilm'&&s.animation?.duration()>10);lenis.scrollTo(st.start+100,{immediate:true})})()`);

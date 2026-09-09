@@ -217,6 +217,48 @@ PRODUCTS = [
     ),
 ]
 
+# Researched vegetable additions. Calendar promises are confirmed per programme.
+PRODUCTS.extend([
+    dict(
+        slug="onion", name="Onion", latin="Allium cepa", crate="crate-onion-cut", tag="Vegetable",
+        blurb="Yellow and red onions from Brazil, selected for firm bulbs, dry skins and the buyer's size specification.",
+        varieties=["Yellow onions", "Red onions", "BRS Alfa São Francisco"],
+        states=["Santa Catarina", "Minas Gerais", "Goiás", "Bahia", "Pernambuco", "São Paulo"],
+        peak=[], available=[], organic="TBC",
+        availability_note="Brazilian production spans several regions with different growing calendars. Confirm the current origin, colour, cultivar and delivery window for each order; a national growing pattern is not a promise of export stock.",
+        notes="Specify skin colour, bulb diameter and intended use before choosing the cultivar. BRS Alfa São Francisco is a Brazilian cultivar reference for warmer growing regions; the cultivar supplied is confirmed per order. Look for firm bulbs with dry outer skins and well-dried necks. Careful curing, protection from bruising and dry, ventilated handling matter for arrival quality.",
+        sources=[
+            ("Embrapa — Cultivo da cebola no Nordeste (2025)", "https://www.infoteca.cnptia.embrapa.br/infoteca/handle/doc/1178254?locale=en"),
+            ("Embrapa — BRS Alfa São Francisco", "https://www.embrapa.br/en/web/hortalicas/busca-de-solucoes-tecnologicas/-/produto-servico/10397/cebola-brs-alfa-sao-francisco"),
+            ("Embrapa — Post-harvest handling of vegetables", "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/921546/1/500perguntasposcolheitahortalicas.pdf"),
+        ],
+    ),
+    dict(
+        slug="yuca", name="Yuca (Cassava)", latin="Manihot esculenta", crate="crate-yuca-cut", tag="Root",
+        blurb="Brazilian table yuca, also called mandioca, aipim or macaxeira, with brown skin and white or yellow flesh.",
+        varieties=["White-fleshed table yuca — cultivar on request", "IAC 576-70 (yellow flesh)", "BRS 399 (yellow flesh)"],
+        states=["São Paulo", "Paraná", "Mato Grosso do Sul", "Goiás", "Distrito Federal"],
+        peak=[], available=[], organic="TBC",
+        availability_note="The harvest window depends on planting date and cultivar. IAC 576-70 is commonly harvested 9–14 months after planting, while Embrapa recommends 8–12 months for BRS 399. Delivery dates and product format are confirmed against a harvesting and handling plan.",
+        notes="This line is table cassava, distinct from varieties selected for industrial starch. Specify flesh colour, root size and fresh or processed format when requesting a quote. Fresh roots deteriorate quickly after harvest, so avoid broken roots and unnecessary handling delays. Packing, preservation method and transit time must be agreed together; any peeled or frozen format is confirmed on request.",
+        sources=[
+            ("IAC — Table cassava cultivar IAC 576-70", "https://www.iac.sp.gov.br/cultivares/inicio/Folders/Mandioca/IAC576-70.htm"),
+            ("IAC — Table cassava growing regions and cultivars", "https://oagronomico.iac.sp.gov.br/?p=893"),
+            ("Embrapa — Table cassava BRS 399", "https://www.embrapa.br/en/busca-de-solucoes-tecnologicas/-/produto-servico/6126/mandioca-de-mesa-brs-399"),
+            ("Embrapa — Post-harvest deterioration of cassava", "https://www.embrapa.br/en/busca-de-publicacoes/-/publicacao/914714/deterioracao-fisiologica-pos-colheita-em-germoplasma-de-mandioca"),
+        ],
+    ),
+])
+_table_potato = next(v for p in PRODUCTS if p["slug"] == "potato" for v in p["variants"] if v["slug"] == "table-potato")
+_table_potato.update(
+    notes="Choose the potato for its intended cooking use as well as its skin colour and size. Embrapa sensory work found Ágata well suited to boiling and Asterix moderately suited to several preparations. Markies is also used for processing. Confirm dry matter, calibre and the supplied cultivar with each programme; avoid treating all table potatoes as interchangeable.",
+    availability_note="Brazilian production uses different regional planting and harvest windows. Confirm the origin, cultivar and dispatch date for your programme rather than assuming the same lot is available throughout the year.",
+    sources=[
+        ("Embrapa — Culinary suitability of potato cultivars", "https://www.alice.cnptia.embrapa.br/alice/handle/doc/779525"),
+        ("Embrapa — Main potato cultivars grown in Brazil", "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1106943/1/ArionePereiraSeedNews.pdf"),
+    ],
+)
+
 # The three grape colours share a page but are sold as separate lines.
 GRAPE_COLOURS = [
     ("Green", "crate-grapegreen-cut", "Sugraone · Thompson Seedless"),

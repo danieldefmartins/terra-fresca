@@ -97,6 +97,19 @@ addEventListener("scroll",function(){{b.classList.toggle("on",scrollY>innerHeigh
 """
 
 
+def availability(p):
+    if p.get("availability_note"):
+        return "<p>" + html.escape(p["availability_note"]) + "</p>"
+    return calendar(p["peak"], p["available"])
+
+
+def research_sources(p):
+    if not p.get("sources"):
+        return ""
+    links = "".join(f"<li><a href='{html.escape(url, quote=True)}'>{html.escape(title)}</a></li>" for title, url in p["sources"])
+    return "<section class='pblock'><h2>Research sources</h2><p class='sm'>Agronomy references checked September 2026. Available lots and commercial specifications are confirmed per programme.</p><ul>" + links + "</ul></section>"
+
+
 def product_page(p):
     url = f"{SITE}/produce/{p['slug']}/"
     organic = ("<p>" + html.escape(D.ORGANIC_NOTE) + "</p>"
@@ -133,7 +146,7 @@ def product_page(p):
 
 <section class='pblock'>
   <h2>Availability through the year</h2>
-  {calendar(p['peak'], p['available'])}
+  {availability(p)}
   {f"<p>{html.escape(p['second_window'])}</p>" if p.get('second_window') else ""}
 </section>
 
@@ -156,6 +169,7 @@ def product_page(p):
 </section>
 
 {variants}
+{research_sources(p)}
 
 <section class='pblock'>
   <h2>Organic</h2>
@@ -207,11 +221,13 @@ def variant_page(parent, v):
 <section class='pblock'><h2>Varieties</h2>
   <ul class='pills'>{"".join(f"<li>{html.escape(x)}</li>" for x in v['varieties'])}</ul></section>
 <section class='pblock'><h2>Availability through the year</h2>
-  {calendar(parent['peak'], parent['available'])}</section>
+  {availability(dict(parent, **v))}</section>
 <section class='pblock'><h2>Where it grows</h2>
   <ul class='pills alt'>{"".join(f"<li>{html.escape(x)}</li>" for x in parent['states'])}</ul>
   <p class='sm'>{html.escape(D.REACH_NOTE)}</p></section>
 <section class='pblock'><h2>What matters on this type</h2><p>{html.escape(v['notes'])}</p></section>
+{research_sources(v)}
+<section class='pblock'><h2>Organic</h2><p>Organic certification and availability are confirmed per programme. Ask what is certified for the season and destination you are buying for.</p></section>
 <section class='pblock volume'><h2>Volume and packing</h2>
   <p>Volume is agreed per programme rather than quoted from a list. Tell us the weekly quantity,
   the calibre and the format you need, and the window you need it in.</p>
@@ -254,7 +270,7 @@ def index_page():
         shell("Brazilian fresh produce — varieties, seasons and availability | Terra Fresca",
               "Every fresh produce line Terra Fresca trades out of Brazil: mango, seedless grape, "
               "melon, papaya, lime, banana, pineapple, watermelon, avocado, ginger, sweet potato "
-              "and passion fruit — with varieties, growing states and month-by-month availability.",
+              "passion fruit, onion and yuca — with varieties, growing states and availability guidance.",
               f"{SITE}/produce/", body), encoding="utf-8")
 
 

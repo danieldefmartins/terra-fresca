@@ -33,7 +33,7 @@
   {"@type":"ContactPoint","contactType":"sales","telephone":"+1-954-352-3599","areaServed":["US","CA","MX"],"availableLanguage":["en","pt"]},
   {"@type":"ContactPoint","contactType":"sales","telephone":"+55-31-98777-0220","areaServed":"BR","availableLanguage":["pt","en"]}],
  "areaServed":[{"@type":"Place","name":"Europe"},{"@type":"Place","name":"North America"},{"@type":"Place","name":"Middle East"},{"@type":"Place","name":"Asia"}],
- "knowsAbout":["fresh produce export","reefer cold chain","GLOBALG.A.P. certified growers","MAPA phytosanitary certification","mango","seedless grape","Tahiti lime","papaya","yellow melon","banana","pineapple","watermelon","avocado","ginger","sweet potato","passion fruit"]}
+ "knowsAbout":["fresh produce export","reefer cold chain","GLOBALG.A.P. certified growers","MAPA phytosanitary certification","mango","seedless grape","Tahiti lime","papaya","yellow melon","banana","pineapple","watermelon","avocado","ginger","sweet potato","passion fruit","potato","onion","yuca"]}
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -749,6 +749,14 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 #producePause{font-size:14px;width:auto;min-width:68px;padding:10px}
 #produceCount{color:#c5d1dc;font-size:12px;min-width:72px;text-align:center}
 @media(max-width:760px){.produce-heading{padding-top:36px}.produce-heading h2{font-size:36px}.produce-heading .kicker{font-size:9px}.produce-track{height:570px}.produce-card{padding:10px 22px 20px;align-content:center}.produce-visual{height:245px}.produce-visual img{max-height:235px;width:74vw}.produce-copy h3{font-size:44px}.produce-navigation{left:22px;right:auto}.produce-copy{margin-top:6px}}
+
+/* Quiet edge controls; user interaction takes over from automatic browsing. */
+.produce-pin{padding-bottom:24px}
+.produce-navigation{inset:0;display:block;padding:0;border:0;border-radius:0;background:none;box-shadow:none;pointer-events:none}
+.produce-navigation button{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;min-height:48px;border-radius:50%;font-size:28px;font-weight:400;color:#f5f2e9b3;background:transparent;pointer-events:auto;transition:color .2s,background .2s}
+.produce-navigation [data-produce-step="-1"]{left:12px}.produce-navigation [data-produce-step="1"]{right:12px}
+.produce-navigation button:hover{color:#fff;background:#ffffff0c}
+@media(max-width:760px){.produce-navigation{inset:0}.produce-navigation button{top:140px;width:44px;height:48px;font-size:25px}.produce-navigation [data-produce-step="-1"]{left:2px}.produce-navigation [data-produce-step="1"]{right:2px}}
 </style>
 </head>
 <body>
@@ -815,13 +823,11 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
 
 <!-- ================= PRODUCE PRELUDE ================= -->
 <section id="producePrelude" aria-label="Fresh produce available for export" aria-roledescription="carousel">
-  <header class="produce-heading"><span class="kicker">Fresh from Brazil · fourteen product lines</span><h2 class="display">Meet the harvest.</h2></header>
+  <header class="produce-heading"><span class="kicker">Fresh from Brazil · seventeen product lines</span><h2 class="display">Meet the harvest.</h2></header>
   <div class="produce-pin">
     <nav class="produce-navigation" aria-label="Browse produce">
       <button type="button" data-produce-step="-1" aria-label="Previous produce">←</button>
       <button type="button" data-produce-step="1" aria-label="Next produce">→</button>
-      <span id="produceCount" class="mono" aria-live="off">01 / 14</span>
-      <button type="button" id="producePause" aria-label="Pause automatic produce browsing">Pause</button>
     </nav>
     <div class="produce-track" aria-label="Produce cards">
       <a href="/produce/mango/" class="produce-card" data-number="01"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-mango-cut.webp" alt="Crate of Brazilian mangoes"></div><div class="produce-copy"><span class="mono">01 · Fruit</span><h3>Mango</h3><p class="variety">Tommy Atkins · Palmer · Keitt</p><p class="mono season">Peak window · Sep–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
@@ -838,6 +844,9 @@ footer.site{background:var(--paper);border-top:1px solid var(--line);padding-top
       <a href="/produce/seedless-grape/red/" class="produce-card" data-number="12"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-grapered-cut.webp" alt="Crate of red seedless grapes"></div><div class="produce-copy"><span class="mono">12 · Grape</span><h3>Red Grape</h3><p class="variety">Seedless · Crimson · Flame</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <a href="/produce/seedless-grape/black/" class="produce-card" data-number="13"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-grapeblack-cut.webp" alt="Crate of black seedless grapes"></div><div class="produce-copy"><span class="mono">13 · Grape</span><h3>Black Grape</h3><p class="variety">Seedless · Midnight Beauty · Autumn Royal</p><p class="mono season">Peak window · Oct–Dec</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
       <a href="/produce/banana/" class="produce-card" data-number="14"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-banana-cut.webp" alt="Crate of Brazilian bananas"></div><div class="produce-copy"><span class="mono">14 · Fruit</span><h3>Banana</h3><p class="variety">Prata · Nanica</p><p class="mono season">Availability · Year-round</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/potato/table-potato/" class="produce-card" data-number="15"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-potato-cut.webp" alt="Crate of Brazilian potato"></div><div class="produce-copy"><span class="mono">15 · Vegetable</span><h3>Potato</h3><p class="variety">Ágata · Asterix · Markies</p><p class="mono season">Availability · Confirm your window</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/onion/" class="produce-card" data-number="16"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-onion-cut.webp" alt="Crate of Brazilian onion"></div><div class="produce-copy"><span class="mono">16 · Vegetable</span><h3>Onion</h3><p class="variety">Yellow · Red · cultivar on request</p><p class="mono season">Availability · Confirm your window</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
+      <a href="/produce/yuca/" class="produce-card" data-number="17"><div class="produce-visual"><img loading="lazy" decoding="async" src="assets/crate-yuca-cut.webp" alt="Crate of Brazilian yuca"></div><div class="produce-copy"><span class="mono">17 · Vegetable</span><h3>Yuca</h3><p class="variety">Cassava · Mandioca · Aipim</p><p class="mono season">Availability · Confirm your window</p><span class="produce-details">View details <span aria-hidden="true">↗</span></span></div></a>
     </div>
   </div>
 </section>
@@ -1178,22 +1187,25 @@ gsap.from('.mission-crates img',{y:34,autoAlpha:0,duration:.9,ease:'power3.out',
 /* ---------- Native horizontal carousel; page scrolling stays vertical ---------- */
 (function(){
   const section=$('producePrelude'),track=section.querySelector('.produce-track');
-  const cards=[...track.querySelectorAll('.produce-card')],pause=$('producePause'),count=$('produceCount');
+  const cards=[...track.querySelectorAll('.produce-card')];
   let current=0,visible=false,hover=false,playing=!reduced,timer;
-  function controls(){pause.textContent=playing?'Pause':'Play';pause.setAttribute('aria-label',playing?'Pause automatic produce browsing':'Start automatic produce browsing');count.textContent=String(current+1).padStart(2,'0')+' / '+cards.length;}
   function schedule(){clearTimeout(timer);if(playing&&visible&&!hover&&!document.hidden)timer=setTimeout(()=>{go(current+1);schedule()},5000);}
-  function go(index,instant=false){current=(index+cards.length)%cards.length;track.scrollTo({left:current*track.clientWidth,behavior:instant||reduced?'instant':'smooth'});controls();}
-  section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{go(current+Number(button.dataset.produceStep));schedule()}));
-  pause.addEventListener('click',()=>{playing=!playing;controls();schedule()});
-  track.addEventListener('scroll',()=>{current=Math.round(track.scrollLeft/track.clientWidth);controls()},{passive:true});
-  track.addEventListener('pointerdown',()=>{playing=false;controls();schedule()},{passive:true});
+  function stop(){playing=false;clearTimeout(timer);}
+  function go(index,instant=false){current=(index+cards.length)%cards.length;track.scrollTo({left:current*track.clientWidth,behavior:instant||reduced?'instant':'smooth'});}
+  section.querySelectorAll('[data-produce-step]').forEach(button=>button.addEventListener('click',()=>{stop();go(current+Number(button.dataset.produceStep))}));
+  track.addEventListener('scroll',()=>{current=Math.round(track.scrollLeft/track.clientWidth)},{passive:true});
+  section.addEventListener('pointerdown',stop,{passive:true});
+  addEventListener('wheel',()=>{if(visible)stop()},{passive:true});
+  addEventListener('touchstart',()=>{if(visible)stop()},{passive:true});
+  addEventListener('scroll',()=>{if(visible)stop()},{passive:true});
   section.addEventListener('mouseenter',()=>{hover=true;schedule()});section.addEventListener('mouseleave',()=>{hover=false;schedule()});
-  section.addEventListener('focusin',event=>{if(event.target!==pause){playing=false;controls();schedule()}});
+  section.addEventListener('focusin',stop);
   cards.forEach((card,i)=>card.addEventListener('focus',()=>go(i,true)));
-  track.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();go(current+(event.key==='ArrowRight'?1:-1));cards[current].focus({preventScroll:true})}});
+  track.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();stop();go(current+(event.key==='ArrowRight'?1:-1));cards[current].focus({preventScroll:true})}});
   new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;schedule()},{threshold:.35}).observe(track);
   new ResizeObserver(()=>go(current,true)).observe(track);
-  document.addEventListener('visibilitychange',schedule);controls();
+  document.addEventListener('visibilitychange',schedule);
+
 })();
 
 /* ---------- hero entrance ---------- */
