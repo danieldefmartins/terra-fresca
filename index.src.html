@@ -1518,9 +1518,7 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
   const graticule=[];
   for(let lat=-60;lat<=60;lat+=30)graticule.push(Array.from({length:121},(_,i)=>[lat*deg,i*3*deg]));
   for(let lon=0;lon<360;lon+=30)graticule.push(Array.from({length:61},(_,i)=>[(-90+i*3)*deg,lon*deg]));
-  let earthGlobe=null;
-  window.__earthGlobe={ready:false};
-  import('./scripts/earth-globe.js').then(m=>m.createEarthGlobe()).then(globe=>{earthGlobe=globe;window.__earthGlobe.ready=true;globeDrawn=false}).catch(error=>{window.__earthGlobe.error=String(error)});
+  window.__globe={style:'orange',drawn:false};
   addEventListener('resize',()=>{globeDrawn=false});
   gsap.ticker.add(()=>{
     if(!heroVisible||document.hidden)return;
@@ -1530,15 +1528,21 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
     const t=gsap.ticker.time;
     ctx.clearRect(0,0,W,H);
     // Lit ocean body, atmospheric rim and graticule give the points real volume.
-    const halo=ctx.createRadialGradient(CX,CY,R*.93,CX,CY,R*1.18);
-    halo.addColorStop(0,'rgba(90,173,177,.18)');halo.addColorStop(.5,'rgba(68,139,164,.045)');halo.addColorStop(1,'rgba(2,31,54,0)');
+    const halo=ctx.createRadialGradient(CX,CY,R*.97,CX,CY,R*1.20);
+    halo.addColorStop(0,'rgba(244,165,67,.26)');halo.addColorStop(.18,'rgba(227,143,46,.12)');halo.addColorStop(.5,'rgba(211,131,41,.035)');halo.addColorStop(1,'rgba(211,131,41,0)');
     ctx.fillStyle=halo;ctx.fillRect(0,0,W,H);
     const body=ctx.createRadialGradient(CX-R*.42,CY-R*.5,R*.06,CX+R*.3,CY+R*.15,R*1.3);
     body.addColorStop(0,'#664323');body.addColorStop(.45,'#362c24');body.addColorStop(.8,'#171f26');body.addColorStop(1,'#071522');
     ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=body;ctx.fill();
     const rot=.80+(reduced?0:t*.025)+userRot;
-    const natural=earthGlobe?.draw(ctx,CX,CY,R,rot,TILT+userTilt)||false;
-    window.__earthGlobe.natural=natural;
+    // Broad atmospheric falloff plus a directional rim, independent of the crisp land dots.
+    const atmosphere=ctx.createRadialGradient(CX,CY,R*.91,CX,CY,R);
+    atmosphere.addColorStop(0,'rgba(247,177,77,0)');atmosphere.addColorStop(.78,'rgba(247,177,77,.025)');atmosphere.addColorStop(1,'rgba(255,190,98,.23)');
+    ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=atmosphere;ctx.fill();
+    const edge=ctx.createLinearGradient(CX-R,CY-R,CX+R,CY+R);
+    edge.addColorStop(0,'rgba(255,219,157,.76)');edge.addColorStop(.45,'rgba(240,167,68,.38)');edge.addColorStop(1,'rgba(219,138,46,.08)');
+    ctx.strokeStyle=edge;ctx.lineWidth=1.25;ctx.stroke();
+    window.__globe.drawn=true;
     ctx.strokeStyle='rgba(157,203,195,.10)';ctx.lineWidth=.65;
     const gridLine=points=>{ctx.beginPath();let visible=false;
       for(const p of points){const [x,y,z]=project(p[0],p[1],rot,R);
@@ -1546,10 +1550,10 @@ gsap.from('.hero-copy > *',{y:26,autoAlpha:0,duration:1,ease:'power3.out',stagge
       }ctx.stroke();
     };
     graticule.forEach(gridLine);
-    if(!natural)for(const p of pts){
+    for(const p of pts){
       const [x,y,z]=project(p[0],p[1],rot,R);
       if(z<=0)continue;
-      const light=clamp(.55+(CX-x)/R*.32+(CY-y)/R*.27,0,1);
+      const light=clamp(.72+(CX-x)/R*.24+(CY-y)/R*.20,0,1);
       ctx.globalAlpha=(.2+z*.8)*light;
       ctx.fillStyle='#edaa43';
       const size=.7+z*1.1;ctx.fillRect(x,y,size,size);

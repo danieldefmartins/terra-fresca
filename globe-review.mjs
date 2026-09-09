@@ -58,15 +58,12 @@ for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
  await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:name==='mobile'});
  await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
  await call('Page.navigate',{url});
- for(let i=0;i<100;i++){if(await evaluate('window.__earthGlobe?.natural'))break;await delay(150);}
- if(!await evaluate('window.__earthGlobe?.natural'))errors.push(name+' natural globe unavailable');
+ for(let i=0;i<100;i++){if(await evaluate('window.__globe?.drawn'))break;await delay(150);}
+ if(!await evaluate('window.__globe?.drawn'))errors.push(name+' Orange globe unavailable');
  await delay(1500);
  for(const view of ['americas','rotated']){
   if(view==='rotated'){await evaluate("document.querySelector('#globeCv').focus()");for(let i=0;i<12;i++)await call('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});await delay(500);}
-  const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:90});await writeFile(new URL(name+'-earth-'+view+'.jpg',output),Buffer.from(shot.result.data,'base64'));
+  const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:90});await writeFile(new URL(name+'-orange-glow-'+view+'.jpg',output),Buffer.from(shot.result.data,'base64'));
  }
 }
-await call('Network.enable');await call('Network.setBlockedURLs',{urls:['*earth-topography.jpg*']});
-await call('Page.navigate',{url});await delay(2000);
-if(!await evaluate('window.__earthGlobe?.error&&!window.__earthGlobe?.natural'))errors.push('Orange fallback unavailable');
-console.log('Earth checks',errors);ws.close();browser.kill('SIGTERM');if(errors.length)process.exitCode=1;
+console.log('Orange globe checks',errors);ws.close();browser.kill('SIGTERM');if(errors.length)process.exitCode=1;
