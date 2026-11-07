@@ -118,6 +118,11 @@ def shell(title, desc, canonical, body, extra_ld=""):
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:url" content="{canonical}">
 <meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://terrafrescatrading.com/assets/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Terra Fresca Trading logo with a crate of mangoes">
+<meta name="twitter:image" content="https://terrafrescatrading.com/assets/og-card.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/blog/blog.css">
